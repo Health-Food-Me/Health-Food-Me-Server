@@ -1,11 +1,12 @@
-import express, { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+import express, { NextFunction, Request, Response } from "express";
 import config from "./config";
 
 const app = express();
 
 import connectDB from "./loaders/db";
 import routes from "./routes";
-require("dotenv").config();
+dotenv.config();
 
 connectDB();
 
@@ -21,7 +22,12 @@ interface ErrorType {
 }
 
 // 모든 에러
-app.use(function (err: ErrorType, req: Request, res: Response, next: NextFunction) {
+app.use(function (
+  err: ErrorType,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "production" ? err : {};
 
