@@ -3,6 +3,7 @@ import winston, { config, createLogger, format, transports } from "winston";
 interface TransformableInfo {
   level: string;
   message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -69,6 +70,7 @@ export const logger: LogLevels = <LogLevels>createLogger({
 });
 
 export const logStream = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   write: (message: any) => {
     logger.log("i", message);
   },

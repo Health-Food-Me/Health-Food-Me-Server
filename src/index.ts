@@ -31,6 +31,7 @@ app.use(function (
   err: ErrorType,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) {
   res.locals.message = err.message;
