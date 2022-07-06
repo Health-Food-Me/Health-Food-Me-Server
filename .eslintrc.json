@@ -18,7 +18,7 @@
     "no-console": "off",
     "no-debugger": "warn",
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         "singleQuote": false,
         "semi": true,
