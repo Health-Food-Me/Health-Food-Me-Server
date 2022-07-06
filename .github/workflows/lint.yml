@@ -14,14 +14,9 @@ jobs:
     
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: npm install, build, and test
-        run: |
-          npm ci
-          npm run lint
-        env:
-          CI: true
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn install
+      - name: Lint check
+        run: yarn lint
+        
