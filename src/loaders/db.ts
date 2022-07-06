@@ -8,6 +8,7 @@ const connectDB = async () => {
     mongoose.set("autoCreate", true);
 
     console.log("Mongoose Connected ...");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     console.error(err.message);
     process.exit(1);

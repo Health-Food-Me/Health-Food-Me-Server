@@ -1,6 +1,2 @@
-
-
 //service index file
-export { 
-    
- };
+export {};
