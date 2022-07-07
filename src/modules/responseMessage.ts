@@ -13,6 +13,9 @@ const message = {
   CREATE_FEED_SUCCESS: "피드 업로드 성공",
   GET_FEED_SUCCESS: "피드 조회 성공",
   READ_IMAGES_SUCCESS: "이미지 조회 성공",
+
+  SIGN_IN_SUCCESS: "로그인 성공",
+  SIGN_UP_SUCCESS: "회원가입 성공",
 };
 
 export default message;
