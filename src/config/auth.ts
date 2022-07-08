@@ -1,7 +1,7 @@
-import { logger } from "./winstonConfig";
 import axios from "axios";
+import em from "../modules/exceptionMessage";
 
-const naverAuth = async (naverAccessToken: string): Promise<string | null> => {
+const naverAuth = async (naverAccessToken: string) => {
   try {
     const user = await axios({
       method: "get",
@@ -13,13 +13,35 @@ const naverAuth = async (naverAccessToken: string): Promise<string | null> => {
 
     const naverUser = user.data.response.id;
 
-    if (!naverUser) return null;
+    if (!naverUser) return em.INVALID_USER;
 
     return naverUser;
-  } catch (error: any) {
-    logger.log(error);
+  } catch (error) {
     return null;
   }
 };
 
-export default naverAuth;
+const kakaoAuth = async (kakaoAccessToken: string) => {
+  try {
+    const user = await axios({
+      method: "get",
+      url: "https://kapi.kakao.com/v2/user/me",
+      headers: {
+        Authorization: `Bearer ${kakaoAccessToken}`,
+      },
+    });
+
+    const kakaoUser = user.data.id;
+
+    if (!kakaoUser) return em.INVALID_USER;
+
+    return kakaoUser;
+  } catch (error) {
+    return null;
+  }
+};
+
+export default {
+  naverAuth,
+  kakaoAuth,
+};
