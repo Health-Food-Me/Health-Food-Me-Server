@@ -4,8 +4,8 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import config from "./config";
+import configMongoose from "./config/mongooseConfig";
 import { logStream } from "./config/winstonConfig";
-import connectDB from "./loaders/db";
 import routes from "./routes";
 
 const app = express();
@@ -19,7 +19,7 @@ Sentry.init({
   tracesSampleRate: 0.2,
 });
 
-connectDB();
+configMongoose();
 
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
