@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import Tracing from "@sentry/tracing";
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
@@ -9,13 +10,21 @@ import routes from "./routes";
 
 const app = express();
 
-Sentry.init({ dsn: process.env.SENTRY_DSN });
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [
+    new Sentry.Integrations.Http({ tracing: true }),
+    new Tracing.Integrations.Express({ app }),
+  ],
+  tracesSampleRate: 0.2,
+});
 
 connectDB();
 
 const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
 app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(morgan(morganFormat, { stream: logStream }));
