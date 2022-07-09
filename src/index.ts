@@ -3,6 +3,7 @@ import Tracing from "@sentry/tracing";
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
+import nunjucks from "nunjucks";
 import config from "./config";
 import configMongoose from "./config/mongooseConfig";
 import { logStream } from "./config/winstonConfig";
@@ -27,8 +28,13 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan(morganFormat, { stream: logStream }));
+app.set("view engine", "html");
+nunjucks.configure("views", {
+  express: app,
+  watch: true,
+});
 
+app.use(morgan(morganFormat, { stream: logStream }));
 app.use(routes); //라우터
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
