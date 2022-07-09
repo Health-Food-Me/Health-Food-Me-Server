@@ -1,17 +1,52 @@
 import { logger } from "../config/winstonConfig";
 import auth from "../config/auth";
+import User from "../models/User";
 
 const getUser = async (social: string, accessToken: string) => {
   try {
-    let user;
+    let email;
     switch (social) {
       case "naver":
-        user = await auth.naverAuth(accessToken);
+        email = await auth.naverAuth(accessToken);
         break;
       case "kakao":
-        user = await auth.kakaoAuth(accessToken);
+        email = await auth.kakaoAuth(accessToken);
+        break;
+      case "apple":
+        email = await auth.appleAuth(accessToken);
         break;
     }
+    return email;
+  } catch (error) {
+    logger.error("", error);
+    throw error;
+  }
+};
+
+const findUserByEmail = async (email: string) => {
+  try {
+    const user = await User.findOne({
+      email: email,
+    });
+    return user;
+  } catch (error) {
+    logger.error("", error);
+    throw error;
+  }
+};
+
+const signUpUser = async (email: string) => {
+  try {
+    const userCount = await User.count();
+
+    const user = new User({
+      name: `헬푸미${userCount + 1}`,
+      email: email,
+      scrapRestaurants: [],
+    });
+
+    await user.save();
+
     return user;
   } catch (error) {
     logger.error("", error);
@@ -21,4 +56,6 @@ const getUser = async (social: string, accessToken: string) => {
 
 export default {
   getUser,
+  findUserByEmail,
+  signUpUser,
 };

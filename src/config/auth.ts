@@ -1,5 +1,6 @@
 import axios from "axios";
 import em from "../modules/exceptionMessage";
+import jwt from "jsonwebtoken";
 
 const naverAuth = async (naverAccessToken: string) => {
   try {
@@ -11,7 +12,7 @@ const naverAuth = async (naverAccessToken: string) => {
       },
     });
 
-    const naverUser = user.data.response.id;
+    const naverUser = user.data.response.email;
 
     if (!naverUser) return em.INVALID_USER;
 
@@ -31,7 +32,7 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
       },
     });
 
-    const kakaoUser = user.data.id;
+    const kakaoUser = user.data.kakao_account.email;
 
     if (!kakaoUser) return em.INVALID_USER;
 
@@ -41,7 +42,20 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
   }
 };
 
+const appleAuth = async (appleAccessToken: string) => {
+  try {
+    const appleUser = jwt.decode(appleAccessToken);
+    if (appleUser === null) return null;
+    if ((appleUser as jwt.JwtPayload).email_verified === "false") return null;
+
+    return (appleUser as jwt.JwtPayload).email;
+  } catch (error) {
+    return null;
+  }
+};
+
 export default {
   naverAuth,
   kakaoAuth,
+  appleAuth,
 };
