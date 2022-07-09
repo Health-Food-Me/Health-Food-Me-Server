@@ -21,6 +21,11 @@ const UserSchema = new mongoose.Schema({
       },
     },
   ],
+  refreshToken: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
 
 export default mongoose.model<UserInfo & mongoose.Document>("User", UserSchema);

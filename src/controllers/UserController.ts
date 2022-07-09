@@ -37,13 +37,13 @@ const getUser = async (req: Request, res: Response) => {
     const existUser = await UserService.findUserByEmail(email);
     if (!existUser) {
       const refreshToken = jwt.createRefresh();
-      const newUser = await UserService.signUpUser(email);
+      const newUser = await UserService.signUpUser(email, refreshToken);
       const accessToken = jwt.sign(newUser._id, newUser.email);
 
       const data = {
         user: newUser,
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
       };
 
       return res
@@ -54,10 +54,12 @@ const getUser = async (req: Request, res: Response) => {
     const refreshToken = jwt.createRefresh();
     const accessToken = jwt.sign(existUser._id, existUser.email);
 
+    await UserService.updateRefreshToken(existUser._id, refreshToken);
+
     const data = {
       user: existUser,
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     };
 
     return res

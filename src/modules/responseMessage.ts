@@ -9,7 +9,7 @@ const message = {
 
   //token
   NULL_VALUE_TOKEN: "토큰이 없음",
-  INVALID_TOKEN: "잘못된 토큰",
+  INVALID_TOKEN: "유효하지 않은 토큰",
 
   // social
   UNAUTHORIZED_SOCIAL_USER: "유효하지 않은 소셜 유저",

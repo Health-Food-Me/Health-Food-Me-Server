@@ -35,7 +35,7 @@ const findUserByEmail = async (email: string) => {
   }
 };
 
-const signUpUser = async (email: string) => {
+const signUpUser = async (email: string, refreshToken: string) => {
   try {
     const userCount = await User.count();
 
@@ -43,6 +43,7 @@ const signUpUser = async (email: string) => {
       name: `헬푸미${userCount + 1}`,
       email: email,
       scrapRestaurants: [],
+      refreshToken: refreshToken,
     });
 
     await user.save();
@@ -54,8 +55,21 @@ const signUpUser = async (email: string) => {
   }
 };
 
+const updateRefreshToken = async (userId: string, refreshToken: string) => {
+  try {
+    await User.updateOne(
+      { _id: userId },
+      { $set: { refreshToken: refreshToken } },
+    );
+  } catch (error) {
+    logger.error("", error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserByEmail,
   signUpUser,
+  updateRefreshToken,
 };
