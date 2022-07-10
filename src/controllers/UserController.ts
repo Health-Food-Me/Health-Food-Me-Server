@@ -6,7 +6,6 @@ import UserService from "../services";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import { SocialUserInfo } from "../interfaces/SocialUserInfo";
-import { UserInfo } from "os";
 
 /**
  * @route POST /auth

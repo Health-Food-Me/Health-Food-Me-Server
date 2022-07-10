@@ -61,7 +61,19 @@ const updateRefreshToken = async (userId: string, refreshToken: string) => {
       { $set: { refreshToken: refreshToken } },
     );
   } catch (error) {
-    logger.error("", error);
+    logger.e(error);
+    throw error;
+  }
+};
+
+const findUserByRfToken = async (refreshToken: string) => {
+  try {
+    const user = await User.findOne({
+      refreshToken: refreshToken,
+    });
+    return user;
+  } catch (error) {
+    logger.e(error);
     throw error;
   }
 };
@@ -71,4 +83,5 @@ export default {
   findUserById,
   signUpUser,
   updateRefreshToken,
+  findUserByRfToken,
 };
