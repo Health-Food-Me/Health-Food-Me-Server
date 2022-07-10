@@ -6,8 +6,8 @@ export type SocialPlatform = "kakao" | "naver" | "apple";
 
 const getUser = async (social: SocialPlatform, accessToken: string) => {
   try {
-    const email = await authStrategy[social].execute(accessToken);
-    return email;
+    const user = await authStrategy[social].execute(accessToken);
+    return user;
   } catch (error) {
     logger.e(error);
     throw error;
