@@ -1,6 +1,8 @@
 import axios from "axios";
 import em from "../modules/exceptionMessage";
 import jwt from "jsonwebtoken";
+import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import { logger } from "./winstonConfig";
 
 const naverAuth = async (naverAccessToken: string) => {
   try {
@@ -12,9 +14,14 @@ const naverAuth = async (naverAccessToken: string) => {
       },
     });
 
-    const naverUser = user.data.response.email;
+    const userId = user.data.response.id;
 
-    if (!naverUser) return em.INVALID_USER;
+    if (!userId) return em.INVALID_USER;
+
+    const naverUser: SocialUserInfo = {
+      userId: userId,
+      email: user.data.response.email,
+    };
 
     return naverUser;
   } catch (error) {
@@ -32,9 +39,14 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
       },
     });
 
-    const kakaoUser = user.data.kakao_account.email;
+    const userId = user.data.id;
 
-    if (!kakaoUser) return em.INVALID_USER;
+    if (!userId) return em.INVALID_USER;
+
+    const kakaoUser: SocialUserInfo = {
+      userId: userId,
+      email: user.data.kakao_account.email,
+    };
 
     return kakaoUser;
   } catch (error) {
@@ -44,11 +56,16 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
 
 const appleAuth = async (appleAccessToken: string) => {
   try {
-    const appleUser = jwt.decode(appleAccessToken);
-    if (appleUser === null) return null;
-    if ((appleUser as jwt.JwtPayload).email_verified === "false") return null;
+    const user = jwt.decode(appleAccessToken);
+    if (user === null) return null;
+    if (!(user as jwt.JwtPayload).sub) return null;
 
-    return (appleUser as jwt.JwtPayload).email;
+    const appleUser: SocialUserInfo = {
+      userId: (user as jwt.JwtPayload).sub as string,
+      email: (user as jwt.JwtPayload).email,
+    };
+
+    return appleUser;
   } catch (error) {
     return null;
   }

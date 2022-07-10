@@ -7,9 +7,18 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  email: {
+  social: {
     type: String,
     required: true,
+    unique: true,
+  },
+  socialId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: String,
     unique: true,
   },
   scrapRestaurants: [

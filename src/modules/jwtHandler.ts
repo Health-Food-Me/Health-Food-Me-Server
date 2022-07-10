@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import mongoose from "mongoose";
 import config from "../config";
 import { logger } from "../config/winstonConfig";
@@ -23,21 +23,26 @@ const verify = (token: string) => {
   let decoded;
   try {
     decoded = jwt.verify(token, config.jwtSecret);
-  } catch (error: any) {
-    if (error.message === "jwt expired") {
-      logger.error("만료된 토큰입니다.");
-      return em.TOKEN_EXPIRED;
+  } catch (error: unknown) {
+    if (isJsonWeboTokenError(error)) {
+      if (error.message === "jwt expired") {
+        logger.e("만료된 토큰입니다.");
+        return em.TOKEN_EXPIRED;
+      }
+      if (error.message === "invalid signature") {
+        logger.e("유효하지 않은 토큰입니다.");
+        return em.TOKEN_INVALID;
+      }
+      logger.e("유효하지 않은 토큰입니다.");
     }
-    if (error.message === "invalid signature") {
-      logger.error("유효하지 않은 토큰입니다.");
-      return em.TOKEN_INVALID;
-    }
-    logger.error("유효하지 않은 토큰입니다.");
+
     return em.TOKEN_INVALID;
   }
 
   return decoded;
 };
+
+declare function isJsonWeboTokenError(x: unknown): x is JsonWebTokenError;
 
 export default {
   sign,

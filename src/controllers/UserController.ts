@@ -5,6 +5,7 @@ import util from "../modules/util";
 import UserService from "../services";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
+import { SocialUserInfo } from "../interfaces/SocialUserInfo";
 
 /**
  * @route POST /auth
@@ -21,23 +22,31 @@ const getUser = async (req: Request, res: Response) => {
       .send(util.fail(sc.UNAUTHORIZED, message.NULL_VALUE_TOKEN));
   }
   try {
-    const email = await UserService.getUser(social, token);
+    const user = await UserService.getUser(social, token);
 
-    if (!email) {
-      res
+    if (!user) {
+      return res
         .status(sc.UNAUTHORIZED)
         .send(util.fail(sc.UNAUTHORIZED, message.INVALID_TOKEN));
     }
-    if (email === em.INVALID_USER) {
-      res
+    if (user === em.INVALID_USER) {
+      return res
         .status(sc.UNAUTHORIZED)
         .send(util.fail(sc.UNAUTHORIZED, message.UNAUTHORIZED_SOCIAL_USER));
     }
 
-    const existUser = await UserService.findUserByEmail(email);
+    const existUser = await UserService.findUserById(
+      (user as SocialUserInfo).userId,
+      social,
+    );
     if (!existUser) {
       const refreshToken = jwt.createRefresh();
-      const newUser = await UserService.signUpUser(email, refreshToken);
+      const newUser = await UserService.signUpUser(
+        social,
+        (user as SocialUserInfo).userId,
+        (user as SocialUserInfo).email,
+        refreshToken,
+      );
       const accessToken = jwt.sign(newUser._id, newUser.email);
 
       const data = {

@@ -2,45 +2,55 @@ import { logger } from "../config/winstonConfig";
 import auth from "../config/auth";
 import User from "../models/User";
 
-const getUser = async (social: string, accessToken: string) => {
+export type SocialPlatform = "kakao" | "naver" | "apple";
+
+const getUser = async (social: SocialPlatform, accessToken: string) => {
   try {
-    let email;
+    let user;
     switch (social) {
       case "naver":
-        email = await auth.naverAuth(accessToken);
+        user = await auth.naverAuth(accessToken);
         break;
       case "kakao":
-        email = await auth.kakaoAuth(accessToken);
+        user = await auth.kakaoAuth(accessToken);
         break;
       case "apple":
-        email = await auth.appleAuth(accessToken);
+        user = await auth.appleAuth(accessToken);
         break;
     }
-    return email;
+    return user;
   } catch (error) {
-    logger.error("", error);
+    logger.e(error);
     throw error;
   }
 };
 
-const findUserByEmail = async (email: string) => {
+const findUserById = async (userId: string, social: string) => {
   try {
     const user = await User.findOne({
-      email: email,
+      social: social,
+      socialId: userId,
     });
     return user;
   } catch (error) {
-    logger.error("", error);
+    logger.e(error);
     throw error;
   }
 };
 
-const signUpUser = async (email: string, refreshToken: string) => {
+const signUpUser = async (
+  social: string,
+  socialId: string,
+  email: string,
+  refreshToken: string,
+) => {
   try {
     const userCount = await User.count();
 
     const user = new User({
       name: `헬푸미${userCount + 1}`,
+      social: social,
+      socialId: socialId,
       email: email,
       scrapRestaurants: [],
       refreshToken: refreshToken,
@@ -69,7 +79,7 @@ const updateRefreshToken = async (userId: string, refreshToken: string) => {
 
 export default {
   getUser,
-  findUserByEmail,
+  findUserById,
   signUpUser,
   updateRefreshToken,
 };
