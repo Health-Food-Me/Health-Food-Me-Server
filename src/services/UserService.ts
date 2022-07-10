@@ -1,23 +1,12 @@
 import { logger } from "../config/winstonConfig";
-import auth from "../config/auth";
 import User from "../models/User";
+import { authStrategy } from "./SocialAuthStrategy";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
 const getUser = async (social: SocialPlatform, accessToken: string) => {
   try {
-    let user;
-    switch (social) {
-      case "naver":
-        user = await auth.naverAuth(accessToken);
-        break;
-      case "kakao":
-        user = await auth.kakaoAuth(accessToken);
-        break;
-      case "apple":
-        user = await auth.appleAuth(accessToken);
-        break;
-    }
+    const user = await authStrategy[social].execute(accessToken);
     return user;
   } catch (error) {
     logger.e(error);
