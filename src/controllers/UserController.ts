@@ -6,6 +6,7 @@ import UserService from "../services";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import { UserInfo } from "os";
 
 /**
  * @route POST /auth
@@ -40,20 +41,7 @@ const getUser = async (req: Request, res: Response) => {
       social,
     );
     if (!existUser) {
-      const refreshToken = jwt.createRefresh();
-      const newUser = await UserService.signUpUser(
-        social,
-        (user as SocialUserInfo).userId,
-        (user as SocialUserInfo).email,
-        refreshToken,
-      );
-      const accessToken = jwt.sign(newUser._id, newUser.email);
-
-      const data = {
-        user: newUser,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      };
+      const data = createUser(social, user);
 
       return res
         .status(sc.OK)
@@ -80,6 +68,23 @@ const getUser = async (req: Request, res: Response) => {
       .send(util.fail(sc.INTERNAL_SERVER_ERROR, message.INTERNAL_SERVER_ERROR));
   }
 };
+
+async function createUser(social: string, user: SocialUserInfo) {
+  const refreshToken = jwt.createRefresh();
+  const newUser = await UserService.signUpUser(
+    social,
+    (user as SocialUserInfo).userId,
+    (user as SocialUserInfo).email,
+    refreshToken,
+  );
+  const accessToken = jwt.sign(newUser._id, newUser.email);
+
+  return {
+    user: newUser,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
+}
 
 export default {
   getUser,

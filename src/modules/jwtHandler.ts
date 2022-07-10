@@ -20,9 +20,9 @@ const createRefresh = () => {
 };
 
 const verify = (token: string) => {
-  let decoded;
   try {
-    decoded = jwt.verify(token, config.jwtSecret);
+    const decoded = jwt.verify(token, config.jwtSecret);
+    return decoded;
   } catch (error: unknown) {
     if (isJsonWeboTokenError(error)) {
       if (error.message === "jwt expired") {
@@ -38,8 +38,6 @@ const verify = (token: string) => {
 
     return em.TOKEN_INVALID;
   }
-
-  return decoded;
 };
 
 declare function isJsonWeboTokenError(x: unknown): x is JsonWebTokenError;
