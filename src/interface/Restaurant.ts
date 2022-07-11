@@ -1,4 +1,4 @@
-export interface IRestaurant {
+interface Restaurant {
   latitude: number;
   longitude: number;
   name: string;
@@ -11,3 +11,5 @@ export interface IRestaurant {
   reviews: string[];
   menus: string[];
 }
+
+export default Restaurant;
