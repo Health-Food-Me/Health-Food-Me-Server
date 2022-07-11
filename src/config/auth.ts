@@ -1,6 +1,8 @@
 import axios from "axios";
-import execptionMessage from "../modules/exceptionMessage";
 import jwt from "jsonwebtoken";
+import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import execptionMessage from "../modules/exceptionMessage";
+import { logger } from "./winstonConfig";
 import { SocialUserInfo } from "../interface/SocialUserInfo";
 
 const naverAuth = async (naverAccessToken: string) => {
@@ -31,6 +33,7 @@ const naverAuth = async (naverAccessToken: string) => {
 
     return naverUser;
   } catch (error) {
+    logger.e("NaverAuth error", error);
     return null;
   }
 };
@@ -63,6 +66,7 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
 
     return kakaoUser;
   } catch (error) {
+    logger.e("KakaoAuth error", error);
     return null;
   }
 };
@@ -87,6 +91,7 @@ const appleAuth = async (appleAccessToken: string) => {
 
     return appleUser;
   } catch (error) {
+    logger.e("AppleAuth error", error);
     return null;
   }
 };
