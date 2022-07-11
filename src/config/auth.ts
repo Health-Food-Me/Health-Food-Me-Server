@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { SocialUserInfo } from "../interfaces/SocialUserInfo";
 import execptionMessage from "../modules/exceptionMessage";
 import { logger } from "./winstonConfig";
-import { SocialUserInfo } from "../interface/SocialUserInfo";
 
 const naverAuth = async (naverAccessToken: string) => {
   try {

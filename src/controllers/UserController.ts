@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
+import { logger } from "../config/winstonConfig";
+import { ISocialUser } from "../interface/SocialUser";
+import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import sc from "../modules/statusCode";
-import BaseResponse from "../modules/BaseResponse";
 import UserService from "../services";
-import { logger } from "../config/winstonConfig";
-import { SocialUserInfo } from "../interface/SocialUserInfo";
 
 /**
  * @route POST /auth
@@ -42,7 +42,7 @@ const getUser = async (req: Request, res: Response) => {
     }
 
     const existUser = await UserService.findUserById(
-      (user as SocialUserInfo).userId,
+      (user as ISocialUser).userId,
       social,
     );
     if (!existUser) {
@@ -80,12 +80,12 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
-async function createUser(social: string, user: SocialUserInfo) {
+async function createUser(social: string, user: ISocialUser) {
   const refreshToken = jwt.createRefresh();
   const newUser = await UserService.signUpUser(
     social,
-    (user as SocialUserInfo).userId,
-    (user as SocialUserInfo).email,
+    (user as ISocialUser).userId,
+    (user as ISocialUser).email,
     refreshToken,
   );
   const accessToken = jwt.sign(newUser._id, newUser.email);
