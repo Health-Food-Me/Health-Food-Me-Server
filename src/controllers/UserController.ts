@@ -4,8 +4,9 @@ import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import sc from "../modules/statusCode";
-import BaseResponse from "../modules/util";
+import BaseResponse from "../modules/BaseResponse";
 import UserService from "../services";
+import { logger } from "../config/winstonConfig";
 
 /**
  * @route POST /auth
@@ -67,6 +68,7 @@ const getUser = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(BaseResponse.success(sc.OK, message.SIGN_IN_SUCCESS, data));
   } catch (error) {
+    logger.e("UserController getUser error", error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(

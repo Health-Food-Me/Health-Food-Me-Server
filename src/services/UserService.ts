@@ -49,7 +49,7 @@ const signUpUser = async (
 
     return user;
   } catch (error) {
-    logger.error("", error);
+    logger.e("", error);
     throw error;
   }
 };

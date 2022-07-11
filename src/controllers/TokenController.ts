@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import { logger } from "../config/winstonConfig";
+import BaseResponse from "../modules/BaseResponse";
 import exceptionMessage from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
-import BaseResponse from "../modules/util";
 import UserService from "../services/UserService";
 
 /**
@@ -79,6 +80,7 @@ const getToken = async (req: Request, res: Response) => {
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.VALID_TOKEN));
   } catch (error) {
+    logger.e("TokenController getToken error: ", error);
     return res
       .status(statusCode.INTERNAL_SERVER_ERROR)
       .send(
