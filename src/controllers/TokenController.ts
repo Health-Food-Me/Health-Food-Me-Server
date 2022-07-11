@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import statusCode from "../modules/statusCode";
-import message from "../modules/responseMessage";
-import util from "../modules/util";
-import jwt from "../modules/jwtHandler";
 import exceptionMessage from "../modules/exceptionMessage";
+import jwt from "../modules/jwtHandler";
+import message from "../modules/responseMessage";
+import statusCode from "../modules/statusCode";
+import BaseResponse from "../modules/util";
 import UserService from "../services/UserService";
 
 /**
@@ -18,7 +18,9 @@ const getToken = async (req: Request, res: Response) => {
   if (!accessToken || !refreshToken) {
     return res
       .status(statusCode.BAD_REQUEST)
-      .send(util.fail(statusCode.BAD_REQUEST, message.NULL_VALUE_TOKEN));
+      .send(
+        BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE_TOKEN),
+      );
   }
 
   try {
@@ -27,7 +29,9 @@ const getToken = async (req: Request, res: Response) => {
     if (access === exceptionMessage.TOKEN_INVALID) {
       return res
         .status(statusCode.UNAUTHORIZED)
-        .send(util.fail(statusCode.UNAUTHORIZED, message.INVALID_TOKEN));
+        .send(
+          BaseResponse.failure(statusCode.UNAUTHORIZED, message.INVALID_TOKEN),
+        );
     }
 
     if (access === exceptionMessage.TOKEN_EXPIRED) {
@@ -36,13 +40,23 @@ const getToken = async (req: Request, res: Response) => {
       if (refresh === exceptionMessage.TOKEN_INVALID) {
         return res
           .status(statusCode.UNAUTHORIZED)
-          .send(util.fail(statusCode.UNAUTHORIZED, message.INVALID_TOKEN));
+          .send(
+            BaseResponse.failure(
+              statusCode.UNAUTHORIZED,
+              message.INVALID_TOKEN,
+            ),
+          );
       }
 
       if (refresh === exceptionMessage.TOKEN_EXPIRED) {
         return res
           .status(statusCode.UNAUTHORIZED)
-          .send(util.fail(statusCode.UNAUTHORIZED, message.EXPIRED_TOKEN));
+          .send(
+            BaseResponse.failure(
+              statusCode.UNAUTHORIZED,
+              message.EXPIRED_TOKEN,
+            ),
+          );
       }
 
       const user = await UserService.findUserByRfToken(refreshToken as string);
@@ -53,16 +67,22 @@ const getToken = async (req: Request, res: Response) => {
 
       return res
         .status(statusCode.OK)
-        .send(util.success(statusCode.OK, message.CREATE_TOKEN_SUCCESS, data));
+        .send(
+          BaseResponse.success(
+            statusCode.OK,
+            message.CREATE_TOKEN_SUCCESS,
+            data,
+          ),
+        );
     }
     return res
       .status(statusCode.BAD_REQUEST)
-      .send(util.fail(statusCode.BAD_REQUEST, message.VALID_TOKEN));
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.VALID_TOKEN));
   } catch (error) {
     return res
       .status(statusCode.INTERNAL_SERVER_ERROR)
       .send(
-        util.fail(
+        BaseResponse.failure(
           statusCode.INTERNAL_SERVER_ERROR,
           message.INTERNAL_SERVER_ERROR,
         ),

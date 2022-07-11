@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import message from "../modules/responseMessage";
-import sc from "../modules/statusCode";
-import util from "../modules/util";
-import UserService from "../services";
+import { SocialUserInfo } from "../interfaces/SocialUserInfo";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
-import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import message from "../modules/responseMessage";
+import sc from "../modules/statusCode";
+import BaseResponse from "../modules/util";
+import UserService from "../services";
 
 /**
  * @route POST /auth
@@ -19,7 +19,7 @@ const getUser = async (req: Request, res: Response) => {
   if (!social || !token) {
     return res
       .status(sc.UNAUTHORIZED)
-      .send(util.fail(sc.UNAUTHORIZED, message.NULL_VALUE_TOKEN));
+      .send(BaseResponse.failure(sc.UNAUTHORIZED, message.NULL_VALUE_TOKEN));
   }
   try {
     const user = await UserService.getUser(social, token);
@@ -27,12 +27,17 @@ const getUser = async (req: Request, res: Response) => {
     if (!user) {
       return res
         .status(sc.UNAUTHORIZED)
-        .send(util.fail(sc.UNAUTHORIZED, message.INVALID_TOKEN));
+        .send(BaseResponse.failure(sc.UNAUTHORIZED, message.INVALID_TOKEN));
     }
     if (user === em.INVALID_USER) {
       return res
         .status(sc.UNAUTHORIZED)
-        .send(util.fail(sc.UNAUTHORIZED, message.UNAUTHORIZED_SOCIAL_USER));
+        .send(
+          BaseResponse.failure(
+            sc.UNAUTHORIZED,
+            message.UNAUTHORIZED_SOCIAL_USER,
+          ),
+        );
     }
 
     const existUser = await UserService.findUserById(
@@ -44,7 +49,7 @@ const getUser = async (req: Request, res: Response) => {
 
       return res
         .status(sc.OK)
-        .send(util.success(sc.OK, message.SIGN_UP_SUCCESS, data));
+        .send(BaseResponse.success(sc.OK, message.SIGN_UP_SUCCESS, data));
     }
 
     const refreshToken = jwt.createRefresh();
@@ -60,11 +65,16 @@ const getUser = async (req: Request, res: Response) => {
 
     return res
       .status(sc.OK)
-      .send(util.success(sc.OK, message.SIGN_IN_SUCCESS, data));
+      .send(BaseResponse.success(sc.OK, message.SIGN_IN_SUCCESS, data));
   } catch (error) {
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
-      .send(util.fail(sc.INTERNAL_SERVER_ERROR, message.INTERNAL_SERVER_ERROR));
+      .send(
+        BaseResponse.failure(
+          sc.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
   }
 };
 
