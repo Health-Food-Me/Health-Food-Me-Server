@@ -21,26 +21,23 @@ const createRefresh = () => {
 
 const verify = (token: string) => {
   try {
+    console.log(token);
     const decoded = jwt.verify(token, config.jwtSecret);
     return decoded;
-  } catch (error: unknown) {
-    if (isJsonWeboTokenError(error)) {
-      if (error.message === "jwt expired") {
-        logger.e("만료된 토큰입니다.");
-        return em.TOKEN_EXPIRED;
-      }
-      if (error.message === "invalid signature") {
-        logger.e("유효하지 않은 토큰입니다.");
-        return em.TOKEN_INVALID;
-      }
-      logger.e("유효하지 않은 토큰입니다.");
+  } catch (error) {
+    if ((error as JsonWebTokenError).message === "jwt expired") {
+      logger.e("만료된 토큰입니다.", error);
+      return em.TOKEN_EXPIRED;
     }
+    if ((error as JsonWebTokenError).message === "invalid signature") {
+      logger.e("유효하지 않은 토큰입니다.", error);
+      return em.TOKEN_INVALID;
+    }
+    logger.e("유효하지 않은 토큰입니다.", error);
 
     return em.TOKEN_INVALID;
   }
 };
-
-declare function isJsonWeboTokenError(x: unknown): x is JsonWebTokenError;
 
 export default {
   sign,
