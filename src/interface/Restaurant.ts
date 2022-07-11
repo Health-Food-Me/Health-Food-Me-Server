@@ -1,5 +1,4 @@
 export interface IRestaurant {
-  _id: string;
   latitude: number;
   longitude: number;
   name: string;
@@ -10,4 +9,5 @@ export interface IRestaurant {
   worktime: string[];
   contact: string;
   reviews: string[];
+  menus: string[];
 }

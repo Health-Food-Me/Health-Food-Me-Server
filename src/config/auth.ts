@@ -1,7 +1,7 @@
 import axios from "axios";
 import execptionMessage from "../modules/exceptionMessage";
 import jwt from "jsonwebtoken";
-import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import { SocialUserInfo } from "../interface/SocialUserInfo";
 
 const naverAuth = async (naverAccessToken: string) => {
   try {
