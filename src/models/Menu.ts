@@ -1,0 +1,34 @@
+import mongoose from "mongoose";
+import IMenu from "../interface/Menu";
+import { DataModel } from "./Model";
+
+const MenuSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  nutrient: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Nutrient",
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  from: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Restaurant",
+  },
+  isHelfoomePick: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+export default mongoose.model<DataModel<IMenu>>("Menu", MenuSchema);

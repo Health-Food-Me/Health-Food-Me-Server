@@ -45,20 +45,16 @@ const ResaturantSchema = new mongoose.Schema({
   },
   reviews: [
     {
-      reviewId: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        ref: "Review",
-      },
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Review",
     },
   ],
   menus: [
     {
-      reviewId: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        ref: "Menu",
-      },
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Menu",
     },
   ],
 });
