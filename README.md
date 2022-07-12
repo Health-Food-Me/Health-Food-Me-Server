@@ -22,7 +22,7 @@
 |기능명|엔드포인트|담당|구현 진척도|
 | :---: | :---: | :---: | :---: |
 |소셜 로그인|[POST] /auth|`김소현`|- [ ]|
-|토큰 재발급|[GET] /auth/token|`김소현`|
+|토큰 재발급|[GET] /auth/token|`김소현`|- [ ]|
 |메인 지도 뷰|[GET] /restaurant?longtitude={위도}&latitude={위도}&zoom={반경범위}|`이현우`|
 |식당 검색|[GET] /restaurant?query={검색어}|`이현우`|
 |식당 간략 정보|[GET] /restaurant/:restaurantId|`김소현`|
