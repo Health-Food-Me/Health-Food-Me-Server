@@ -14,6 +14,9 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
+  "ignorePatterns": [
+    "dist/**/*.js"
+  ],
   "rules": {
     "no-console": "off",
     "no-debugger": "warn",

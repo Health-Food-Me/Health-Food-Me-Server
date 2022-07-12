@@ -1,4 +1,4 @@
-export interface SocialUserInfo {
+export interface SocialUser {
   userId: string;
   email: string;
 }
