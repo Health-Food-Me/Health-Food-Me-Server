@@ -276,7 +276,7 @@ const DealingSchema = new mongoose.Schema({
 |리뷰 작성|[POST] /user/:userId/:restaurantId/review|`이현우`|
 |리뷰 삭제|[DELETE] /user/:userId/:restaurantId/review|`이현우`|
 |리뷰 수정|[PUT] /user/:userId/:restaurantId/review|`이현우`|
-|리뷰 모아보기|[GET] /user/:userId/:restaurantId/reviews|`이현우`|
+|리뷰 모아보기|[GET] /user/:userId/reviews|`이현우`|
 |식당 스크랩 업데이트|[PUT] /user/:userId/scrap/:restaurantId|`김소현`|
 |식당 스크랩 모아보기|[GET] /user/:userId/scraps|`김소현`|
 |유저 프로필 보기|[GET] /user/:userId/profile|`김소현`|
