@@ -34,10 +34,8 @@ const signUpUser = async (
   refreshToken: string,
 ) => {
   try {
-    const userCount = await User.count();
-
     const user = new User({
-      name: `헬푸미${userCount + 1}`,
+      name: `헬푸미${socialId}`,
       social: social,
       socialId: socialId,
       email: email,
