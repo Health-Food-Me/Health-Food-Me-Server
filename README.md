@@ -16,7 +16,13 @@
 |<img src="https://user-images.githubusercontent.com/55437339/178451474-e8ba24b3-ea25-4d25-b46a-c0d33351e7de.jpeg" width="360"/>|<img src="https://user-images.githubusercontent.com/55437339/178452102-224590a4-4760-4736-9c7b-4f4a7fc3f270.jpeg" width="360"/>|
 |[@l2hyunwoo](https://github.com/l2hyunwoo)|[@thguss](https://github.com/thguss)|
 
+<br/>
+
 ### ℹ️ Collection
+<details>
+<summary>User</summary>   
+<div markdown="1">       
+
 ```
 const UserSchema = new mongoose.Schema({
   name: {
@@ -52,6 +58,12 @@ const UserSchema = new mongoose.Schema({
   },
 });
 ```
+</div>
+</details>
+
+<details>
+<summary>Restaurant</summary>   
+<div markdown="1">    
 ```
 const ResaturantSchema = new mongoose.Schema({
   latitude: {
@@ -110,6 +122,12 @@ const ResaturantSchema = new mongoose.Schema({
   ],
 });
 ```
+</div>
+</details>
+
+<details>
+<summary>Menu</summary>   
+<div markdown="1">  
 ```
 const MenuSchema = new mongoose.Schema({
   name: {
@@ -140,6 +158,12 @@ const MenuSchema = new mongoose.Schema({
   },
 });
 ```
+</div>
+</details>
+
+<details>
+<summary>Nutrient</summary>   
+<div markdown="1">  
 ```
 const NutrientSchema = new mongoose.Schema({
   kcal: {
@@ -165,6 +189,12 @@ const NutrientSchema = new mongoose.Schema({
   },
 });
 ```
+</div>
+</details>
+
+<details>
+<summary>Review</summary>   
+<div markdown="1">  
 ```
 const ReviewSchema = new mongoose.Schema({
   restaurantId: {
@@ -199,6 +229,12 @@ const ReviewSchema = new mongoose.Schema({
   ],
 });
 ```
+</div>
+</details>
+
+<details>
+<summary>Dealing (외식대처법)</summary>   
+<div markdown="1">  
 ```
 const DealingSchema = new mongoose.Schema({
   category: {
@@ -215,6 +251,8 @@ const DealingSchema = new mongoose.Schema({
   },
 });
 ```
+</div>
+</details>
 
 <br/>
 
