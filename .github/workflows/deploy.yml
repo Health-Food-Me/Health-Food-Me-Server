@@ -38,7 +38,7 @@ jobs:
           echo PORT=${{ secrets.PORT }} >> .env
           echo MONGODB_URI=${{ secrets.MONGODB_URI }} >> .env
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo JWT_ALGO=${{ secrets.JWT_ALGO }} >> .env
+          echo JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }} >> .env
           echo SENTRY_DSN=${{ secrets.SENTRY_DSN }} >> .env
           cat .env
 
