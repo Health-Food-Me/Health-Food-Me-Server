@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { IUser } from "../interface/User";
+import { User } from "../interface/User";
+import { MongoEntity } from "./Model";
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -37,4 +38,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<IUser & mongoose.Document>("User", UserSchema);
+export default mongoose.model<MongoEntity<User>>("UserRepository", UserSchema);

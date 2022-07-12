@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import IMenu from "../interface/Menu";
-import { DataModel } from "./Model";
+import Menu from "../interface/Menu";
+import { MongoEntity } from "./Model";
 
 const MenuSchema = new mongoose.Schema({
   name: {
@@ -31,4 +31,4 @@ const MenuSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<DataModel<IMenu>>("Menu", MenuSchema);
+export default mongoose.model<MongoEntity<Menu>>("MenuRepository", MenuSchema);

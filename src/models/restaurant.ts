@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import IRestaurant from "../interface/Restaurant";
-import { DataModel } from "./Model";
+import Restaurant from "../interface/Restaurant";
+import { MongoEntity } from "./Model";
 
 const ResaturantSchema = new mongoose.Schema({
   latitude: {
@@ -59,7 +59,7 @@ const ResaturantSchema = new mongoose.Schema({
   ],
 });
 
-export default mongoose.model<DataModel<IRestaurant>>(
-  "Restaurant",
+export default mongoose.model<MongoEntity<Restaurant>>(
+  "RestaurantRepository",
   ResaturantSchema,
 );

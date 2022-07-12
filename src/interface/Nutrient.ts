@@ -1,4 +1,4 @@
-interface INutrient {
+interface Nutrient {
   kcal: number;
   carbohydrate: number;
   protein: number;
@@ -6,4 +6,4 @@ interface INutrient {
   menuId: string;
 }
 
-export default INutrient;
+export default Nutrient;

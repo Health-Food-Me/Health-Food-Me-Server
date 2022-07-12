@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import INutrient from "../interface/Nutrient";
-import { DataModel } from "./Model";
+import Nutrient from "../interface/Nutrient";
+import { MongoEntity } from "./Model";
 
 const NutrientSchema = new mongoose.Schema({
   kcal: {
@@ -26,4 +26,7 @@ const NutrientSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<DataModel<INutrient>>("Nutrient", NutrientSchema);
+export default mongoose.model<MongoEntity<Nutrient>>(
+  "NutrientRepository",
+  NutrientSchema,
+);

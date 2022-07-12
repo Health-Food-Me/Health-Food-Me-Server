@@ -1,4 +1,4 @@
-interface IReview {
+interface Review {
   restaurantId: string;
   writerId: string;
   score: number;
@@ -7,4 +7,4 @@ interface IReview {
   reason: string[];
 }
 
-export default IReview;
+export default Review;

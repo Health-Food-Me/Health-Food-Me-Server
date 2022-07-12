@@ -1,4 +1,4 @@
-interface IMenu {
+interface Menu {
   name: string;
   image: string;
   nutrient: string;
@@ -7,4 +7,4 @@ interface IMenu {
   isHelfoomePick: boolean;
 }
 
-export default IMenu;
+export default Menu;

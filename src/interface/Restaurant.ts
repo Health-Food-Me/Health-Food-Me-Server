@@ -1,5 +1,5 @@
 // TODO 음식대처법은 hashtag쪽이야 아니면 category야....
-interface IRestaurant {
+interface Restaurant {
   latitude: number;
   longitude: number;
   name: string;
@@ -13,4 +13,4 @@ interface IRestaurant {
   menus: string[];
 }
 
-export default IRestaurant;
+export default Restaurant;

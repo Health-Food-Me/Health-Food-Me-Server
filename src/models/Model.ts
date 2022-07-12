@@ -1,3 +1,3 @@
 import mongoose from "mongoose";
 
-export type DataModel<T> = T & mongoose.Document;
+export type MongoEntity<T> = T & mongoose.Document;
