@@ -31,4 +31,4 @@ const MenuSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<MongoEntity<Menu>>("MenuRepository", MenuSchema);
+export default mongoose.model<MongoEntity<Menu>>("Menu", MenuSchema);

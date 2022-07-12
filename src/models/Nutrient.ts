@@ -27,6 +27,6 @@ const NutrientSchema = new mongoose.Schema({
 });
 
 export default mongoose.model<MongoEntity<Nutrient>>(
-  "NutrientRepository",
+  "Nutrient",
   NutrientSchema,
 );

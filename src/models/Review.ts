@@ -4,7 +4,4 @@ import { MongoEntity } from "./Model";
 
 const ReviewSchema = new mongoose.Schema({});
 
-export default mongoose.model<MongoEntity<Review>>(
-  "ReviewRepository",
-  ReviewSchema,
-);
+export default mongoose.model<MongoEntity<Review>>("Review", ReviewSchema);

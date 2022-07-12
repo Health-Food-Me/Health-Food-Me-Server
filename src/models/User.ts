@@ -38,4 +38,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<MongoEntity<User>>("UserRepository", UserSchema);
+export default mongoose.model<MongoEntity<User>>("User", UserSchema);

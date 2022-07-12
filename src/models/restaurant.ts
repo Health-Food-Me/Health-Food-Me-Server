@@ -60,6 +60,6 @@ const ResaturantSchema = new mongoose.Schema({
 });
 
 export default mongoose.model<MongoEntity<Restaurant>>(
-  "RestaurantRepository",
+  "Restaurant",
   ResaturantSchema,
 );
