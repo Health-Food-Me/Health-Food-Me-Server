@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const util = {
+const BaseResponse = {
   success: (status: number, message: string, data?: any) => {
     return {
       status,
@@ -8,7 +8,7 @@ const util = {
       data,
     };
   },
-  fail: (status: number, message: string, data?: any) => {
+  failure: (status: number, message: string, data?: any) => {
     return {
       status,
       success: false,
@@ -18,4 +18,4 @@ const util = {
   },
 };
 
-export default util;
+export default BaseResponse;
