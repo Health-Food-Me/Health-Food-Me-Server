@@ -26,6 +26,9 @@ const message = {
   // auth
   SIGN_IN_SUCCESS: "로그인 성공",
   SIGN_UP_SUCCESS: "회원가입 성공",
+
+  //restaurant
+  READ_RESTAURANT_SUMMARY_SUCCESS: "식당 요약 정보 조회 성공",
 };
 
 export default message;
