@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import Tracing from "@sentry/tracing";
+import * as Tracing from "@sentry/tracing";
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
