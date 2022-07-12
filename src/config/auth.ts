@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwt from "jsonwebtoken";
-import { SocialUserInfo } from "../interfaces/SocialUserInfo";
+import { SocialUser } from "../interface/SocialUser";
 import execptionMessage from "../modules/exceptionMessage";
 import { logger } from "./winstonConfig";
 
@@ -25,7 +25,7 @@ const naverAuth = async (naverAccessToken: string) => {
       };
     }
 
-    const naverUser: SocialUserInfo = {
+    const naverUser: SocialUser = {
       userId: userId,
       email: user.data.response.email,
     };
@@ -58,7 +58,7 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
       };
     }
 
-    const kakaoUser: SocialUserInfo = {
+    const kakaoUser: SocialUser = {
       userId: userId,
       email: user.data.kakao_account.email,
     };
@@ -83,7 +83,7 @@ const appleAuth = async (appleAccessToken: string) => {
       };
     }
 
-    const appleUser: SocialUserInfo = {
+    const appleUser: SocialUser = {
       userId: (user as jwt.JwtPayload).sub as string,
       email: (user as jwt.JwtPayload).email,
     };

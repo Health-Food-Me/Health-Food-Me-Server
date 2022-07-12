@@ -43,5 +43,5 @@ jobs:
       - name: build server files
         working-directory: ./
         run: |
-          yarn
-          yarn run build
+          yarn reset
+          yarn build
