@@ -1,4 +1,3 @@
-// TODO 음식대처법은 hashtag쪽이야 아니면 category야....
 interface Restaurant {
   latitude: number;
   longitude: number;
