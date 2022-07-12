@@ -6,7 +6,6 @@ import UserService from "../services";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import { SocialUserInfo } from "../interfaces/SocialUserInfo";
-import { UserInfo } from "os";
 
 /**
  * @route POST /auth
@@ -45,7 +44,7 @@ const getUser = async (req: Request, res: Response) => {
 
       return res
         .status(sc.OK)
-        .send(util.success(sc.OK, message.SIGN_UP_SUCCESS, data));
+        .send(util.success(sc.OK, message.SIGN_UP_SUCCESS, await data));
     }
 
     const refreshToken = jwt.createRefresh();
