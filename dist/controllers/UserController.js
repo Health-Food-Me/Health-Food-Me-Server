@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const winstonConfig_1 = require("../config/winstonConfig");
+const BaseResponse_1 = __importDefault(require("../modules/BaseResponse"));
 const exceptionMessage_1 = __importDefault(require("../modules/exceptionMessage"));
 const jwtHandler_1 = __importDefault(require("../modules/jwtHandler"));
 const responseMessage_1 = __importDefault(require("../modules/responseMessage"));
 const statusCode_1 = __importDefault(require("../modules/statusCode"));
-const BaseResponse_1 = __importDefault(require("../modules/BaseResponse"));
 const services_1 = __importDefault(require("../services"));
-const winstonConfig_1 = require("../config/winstonConfig");
 /**
  * @route POST /auth
  * @desc Authenticate user & Get token
@@ -49,7 +49,7 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const data = createUser(social, user);
             return res
                 .status(statusCode_1.default.OK)
-                .send(BaseResponse_1.default.success(statusCode_1.default.OK, responseMessage_1.default.SIGN_UP_SUCCESS, data));
+                .send(BaseResponse_1.default.success(statusCode_1.default.OK, responseMessage_1.default.SIGN_UP_SUCCESS, yield data));
         }
         const refreshToken = jwtHandler_1.default.createRefresh();
         const accessToken = jwtHandler_1.default.sign(existUser._id, existUser.email);

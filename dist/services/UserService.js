@@ -40,15 +40,26 @@ const findUserById = (userId, social) => __awaiter(void 0, void 0, void 0, funct
 });
 const signUpUser = (social, socialId, email, refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userCount = yield User_1.default.count();
-        const user = new User_1.default({
-            name: `헬푸미${userCount + 1}`,
-            social: social,
-            socialId: socialId,
-            email: email,
-            scrapRestaurants: [],
-            refreshToken: refreshToken,
-        });
+        let user;
+        if (!email) {
+            user = new User_1.default({
+                name: `헬푸미${socialId}`,
+                social: social,
+                socialId: socialId,
+                scrapRestaurants: [],
+                refreshToken: refreshToken,
+            });
+        }
+        else {
+            user = new User_1.default({
+                name: `헬푸미${socialId}`,
+                social: social,
+                socialId: socialId,
+                email: email,
+                scrapRestaurants: [],
+                refreshToken: refreshToken,
+            });
+        }
         yield user.save();
         return user;
     }
