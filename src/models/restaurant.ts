@@ -22,8 +22,9 @@ const ResaturantSchema = new mongoose.Schema({
     unique: true,
   },
   category: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
+    ref: "Category",
   },
   hashtag: [
     {
