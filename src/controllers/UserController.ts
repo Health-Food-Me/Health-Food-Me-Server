@@ -50,7 +50,7 @@ const getUser = async (req: Request, res: Response) => {
 
       return res
         .status(sc.OK)
-        .send(BaseResponse.success(sc.OK, message.SIGN_UP_SUCCESS, data));
+        .send(BaseResponse.success(sc.OK, message.SIGN_UP_SUCCESS, await data));
     }
 
     const refreshToken = jwt.createRefresh();
