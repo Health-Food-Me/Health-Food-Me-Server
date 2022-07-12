@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
   social: {
     type: String,
     required: true,
-    unique: true,
   },
   socialId: {
     type: String,
@@ -19,7 +18,6 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
   },
   scrapRestaurants: [
     {

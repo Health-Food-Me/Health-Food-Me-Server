@@ -34,16 +34,25 @@ const signUpUser = async (
   refreshToken: string,
 ) => {
   try {
-    const userCount = await User.count();
-
-    const user = new User({
-      name: `헬푸미${userCount + 1}`,
-      social: social,
-      socialId: socialId,
-      email: email,
-      scrapRestaurants: [],
-      refreshToken: refreshToken,
-    });
+    let user;
+    if (!email) {
+      user = new User({
+        name: `헬푸미${socialId}`,
+        social: social,
+        socialId: socialId,
+        scrapRestaurants: [],
+        refreshToken: refreshToken,
+      });
+    } else {
+      user = new User({
+        name: `헬푸미${socialId}`,
+        social: social,
+        socialId: socialId,
+        email: email,
+        scrapRestaurants: [],
+        refreshToken: refreshToken,
+      });
+    }
 
     await user.save();
 
