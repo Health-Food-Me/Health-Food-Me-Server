@@ -63,7 +63,8 @@ const UserSchema = new mongoose.Schema({
 
 <details>
 <summary>Restaurant</summary>   
-<div markdown="1">    
+<div markdown="1">   
+ 
 ```
 const ResaturantSchema = new mongoose.Schema({
   latitude: {
@@ -128,6 +129,7 @@ const ResaturantSchema = new mongoose.Schema({
 <details>
 <summary>Menu</summary>   
 <div markdown="1">  
+ 
 ```
 const MenuSchema = new mongoose.Schema({
   name: {
@@ -164,6 +166,7 @@ const MenuSchema = new mongoose.Schema({
 <details>
 <summary>Nutrient</summary>   
 <div markdown="1">  
+ 
 ```
 const NutrientSchema = new mongoose.Schema({
   kcal: {
@@ -195,6 +198,7 @@ const NutrientSchema = new mongoose.Schema({
 <details>
 <summary>Review</summary>   
 <div markdown="1">  
+ 
 ```
 const ReviewSchema = new mongoose.Schema({
   restaurantId: {
@@ -235,6 +239,7 @@ const ReviewSchema = new mongoose.Schema({
 <details>
 <summary>Dealing (외식대처법)</summary>   
 <div markdown="1">  
+ 
 ```
 const DealingSchema = new mongoose.Schema({
   category: {
