@@ -10,6 +10,9 @@ const message = {
   //token
   NULL_VALUE_TOKEN: "토큰이 없음",
   INVALID_TOKEN: "유효하지 않은 토큰",
+  VALID_TOKEN: "유효한 토큰",
+  CREATE_TOKEN_SUCCESS: "토큰 재발급 성공",
+  EXPIRED_TOKEN: "모두 만료된 토큰이므로 재로그인 필요",
 
   // social
   UNAUTHORIZED_SOCIAL_USER: "유효하지 않은 소셜 유저",
