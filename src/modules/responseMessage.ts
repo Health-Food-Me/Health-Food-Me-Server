@@ -32,6 +32,7 @@ const message = {
   //restaurant
   READ_RESTAURANT_SUMMARY_SUCCESS: "식당 요약 정보 조회 성공",
   UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
+  READ_SCRAP_LIST_SUCCESS: "스크랩 식당 리스트 조회 성공",
 };
 
 export default message;
