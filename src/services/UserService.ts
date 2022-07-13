@@ -1,5 +1,6 @@
 import { logger } from "../config/winstonConfig";
 import User from "../models/User";
+import exceptionMessage from "../modules/exceptionMessage";
 import { authStrategy } from "./SocialAuthStrategy";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
@@ -53,6 +54,8 @@ const signUpUser = async (
         refreshToken: refreshToken,
       });
     }
+
+    console.log(user);
 
     await user.save();
 
@@ -144,7 +147,12 @@ const updateUserProfile = async (userId: string, name: string) => {
 
 const destroyUser = async (userId: string) => {
   try {
+    if (!(await User.findById(userId))) {
+      return null;
+    }
+
     await User.findByIdAndDelete(userId);
+    return exceptionMessage.DELETE_USER;
   } catch (error) {
     logger.e(error);
     throw error;

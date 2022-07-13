@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { setTimeout } from "timers/promises";
 import { logger } from "../config/winstonConfig";
 import { SocialUser } from "../interface/SocialUser";
+import User from "../models/User";
 import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
@@ -242,7 +244,13 @@ const destroyUser = async (req: Request, res: Response) => {
   }
 
   try {
-    await UserService.destroyUser(userId);
+    const result = await UserService.destroyUser(userId);
+
+    if (!result) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.NO_CONTENT)
@@ -250,6 +258,7 @@ const destroyUser = async (req: Request, res: Response) => {
         BaseResponse.success(
           statusCode.NO_CONTENT,
           message.DELETE_USER_SUCCESS,
+          result,
         ),
       );
   } catch (error) {
