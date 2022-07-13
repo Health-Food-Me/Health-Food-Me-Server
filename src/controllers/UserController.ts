@@ -227,9 +227,48 @@ const updateUserProfile = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route DELETE /auth/withdrawal/:userId
+ * @desc User Withdrawal
+ * @access Private
+ */
+const destroyUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    await UserService.destroyUser(userId);
+
+    return res
+      .status(statusCode.NO_CONTENT)
+      .send(
+        BaseResponse.success(
+          statusCode.NO_CONTENT,
+          message.DELETE_USER_SUCCESS,
+        ),
+      );
+  } catch (error) {
+    logger.e("UserController.destroyUser error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getUser,
   scrapRestaurant,
   getUserProfile,
   updateUserProfile,
+  destroyUser,
 };

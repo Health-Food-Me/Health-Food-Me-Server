@@ -142,6 +142,15 @@ const updateUserProfile = async (userId: string, name: string) => {
   }
 };
 
+const destroyUser = async (userId: string) => {
+  try {
+    await User.findByIdAndDelete(userId);
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -151,4 +160,5 @@ export default {
   scrapRestaurant,
   getUserProfile,
   updateUserProfile,
+  destroyUser,
 };

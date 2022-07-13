@@ -5,6 +5,7 @@ import execptionMessage from "../modules/exceptionMessage";
 import { logger } from "./winstonConfig";
 
 const naverAuth = async (naverAccessToken: string) => {
+  console.log("enter");
   try {
     const user = await axios({
       method: "get",
@@ -15,6 +16,8 @@ const naverAuth = async (naverAccessToken: string) => {
     });
 
     const userId = user.data.response.id;
+
+    console.log(userId, user.data.response.email);
 
     if (!userId) return execptionMessage.INVALID_USER;
 
