@@ -21,7 +21,6 @@ const createRefresh = () => {
 
 const verify = (token: string) => {
   try {
-    console.log(token);
     const decoded = jwt.verify(token, config.jwtSecret);
     return decoded;
   } catch (error) {
