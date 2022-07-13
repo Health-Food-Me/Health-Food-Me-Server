@@ -14,6 +14,10 @@ const CategorySchema = new mongoose.Schema({
       ref: "Prescription",
     },
   ],
+  isDiet: {
+    type: Boolean,
+    require: true,
+  },
 });
 
 export default mongoose.model<MongoEntity<Category>>(
