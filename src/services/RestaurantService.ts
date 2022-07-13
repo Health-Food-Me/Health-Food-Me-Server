@@ -16,7 +16,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     let score = 0;
     let review;
     if (reviews !== undefined) {
-      const promises = reviews.map(async (reviewId, index) => {
+      const promises = reviews.map(async (reviewId) => {
         review = await Review.findById(reviewId);
         score = score + (review as IReview).score;
       });
