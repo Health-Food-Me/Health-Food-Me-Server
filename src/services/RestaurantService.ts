@@ -1,7 +1,8 @@
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
-import Category from "../interface/Category";
+import ICategory from "../interface/Category";
 import IReview from "../interface/Review";
+import Category from "../models/Category";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -64,7 +65,7 @@ const getAroundRestaurants = async (
         },
         $maxDistance: zoom,
       },
-    }).populate<{ category: Category }>("category");
+    }).populate<{ category: ICategory }>("category");
     const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
