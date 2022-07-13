@@ -253,14 +253,8 @@ const destroyUser = async (req: Request, res: Response) => {
     }
 
     return res
-      .status(statusCode.NO_CONTENT)
-      .send(
-        BaseResponse.success(
-          statusCode.NO_CONTENT,
-          message.DELETE_USER_SUCCESS,
-          result,
-        ),
-      );
+      .status(statusCode.OK)
+      .send(BaseResponse.success(statusCode.OK, message.DELETE_USER_SUCCESS));
   } catch (error) {
     logger.e("UserController.destroyUser error", error);
     return res
