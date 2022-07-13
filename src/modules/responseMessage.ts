@@ -32,6 +32,9 @@ const message = {
   //restaurant
   READ_RESTAURANT_SUMMARY_SUCCESS: "식당 요약 정보 조회 성공",
   UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
+
+  // prescription
+  READ_PRESCRIPTION_SUCCESS: "외식 대처법 조회 성공",
 };
 
 export default message;
