@@ -16,17 +16,19 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     let score = 0;
     let review;
     if (reviews !== undefined) {
-      for (const reviewId of reviews) {
+      const promises = reviews.map(async (reviewId, index) => {
         review = await Review.findById(reviewId);
         score = score + (review as IReview).score;
-      }
+      });
+      await Promise.all(promises);
+
       if (reviews.length > 0) {
         score = Number((score / (reviews as string[]).length).toFixed(1));
       }
     }
 
     let isScrap = false;
-    if (scraps?.find((x) => x === restaurantId) !== undefined) {
+    if (scraps?.find((x) => x == restaurantId) !== undefined) {
       isScrap = true;
     }
 
