@@ -10,4 +10,6 @@ router.put(
   UserController.scrapRestaurant,
 );
 
+router.get("/:userId/profile", auth, UserController.getUserProfile);
+
 export default router;

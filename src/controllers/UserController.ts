@@ -7,7 +7,7 @@ import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import sc from "../modules/statusCode";
-import UserService from "../services";
+import UserService from "../services/UserService";
 
 /**
  * @route POST /auth
@@ -136,7 +136,53 @@ const scrapRestaurant = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /user/:userId/profile
+ * @desc Get User Profile
+ * @access Private
+ */
+const getUserProfile = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const userProfile = await UserService.getUserProfile(userId);
+
+    if (!userProfile) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.READ_USER_PROFILE_SUCCESS,
+          userProfile,
+        ),
+      );
+  } catch (error) {
+    logger.e(error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getUser,
   scrapRestaurant,
+  getUserProfile,
 };
