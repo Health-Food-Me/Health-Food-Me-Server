@@ -1,3 +1,7 @@
 import UserService from "./UserService";
+import RestaurantService from "./RestaurantService";
 
-export default UserService;
+export default {
+  UserService,
+  RestaurantService,
+};

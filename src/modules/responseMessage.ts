@@ -6,6 +6,7 @@ const message = {
   BAD_REQUEST: "잘못된 요청",
   INTERNAL_SERVER_ERROR: "서버 내부 오류",
   INVALID_PASSWORD: "비밀번호 오류",
+  NULL_VALUE_PARAM: "param 값이 없음",
   NO_USER: "존재하지 않은 유저",
 
   //token
@@ -28,7 +29,8 @@ const message = {
   SIGN_IN_SUCCESS: "로그인 성공",
   SIGN_UP_SUCCESS: "회원가입 성공",
 
-  // restaurant
+  //restaurant
+  READ_RESTAURANT_SUMMARY_SUCCESS: "식당 요약 정보 조회 성공",
   UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
 };
 
