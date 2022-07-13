@@ -89,15 +89,10 @@ const findUserByRfToken = async (refreshToken: string) => {
 
 const scrapRestaurant = async (userId: string, restaurantId: string) => {
   const user = await User.findById(userId);
-  const scraps = user?.scrapRestaurants;
+  let scraps = user?.scrapRestaurants;
 
-  if (scraps?.find((x) => (x as any)._id == restaurantId)) {
-    for (let i = 0; i < scraps.length; i++) {
-      if ((scraps[i] as any)._id == restaurantId) {
-        scraps.splice(i, 1);
-        i--;
-      }
-    }
+  if (scraps?.find((x) => x == restaurantId)) {
+    scraps = scraps.filter((restaurantId) => restaurantId !== restaurantId);
     await User.findByIdAndUpdate(userId, {
       $set: { scrapRestaurants: scraps },
     });
