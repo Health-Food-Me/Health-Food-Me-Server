@@ -87,10 +87,30 @@ const findUserByRfToken = async (refreshToken: string) => {
   }
 };
 
+const scrapRestaurant = async (userId: string, restaurantId: string) => {
+  const user = await User.findById(userId);
+  let scraps = user?.scrapRestaurants;
+
+  if (scraps?.find((x) => x == restaurantId)) {
+    scraps = scraps.filter((restaurantId) => restaurantId !== restaurantId);
+    await User.findByIdAndUpdate(userId, {
+      $set: { scrapRestaurants: scraps },
+    });
+    return false;
+  } else {
+    scraps?.push(restaurantId);
+    await User.findByIdAndUpdate(userId, {
+      $set: { scrapRestaurants: scraps },
+    });
+    return true;
+  }
+};
+
 export default {
   getUser,
   findUserById,
   signUpUser,
   updateRefreshToken,
   findUserByRfToken,
+  scrapRestaurant,
 };

@@ -22,11 +22,9 @@ const UserSchema = new mongoose.Schema({
   },
   scrapRestaurants: [
     {
-      restaurantId: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        ref: "Restaurant",
-      },
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Restaurant",
     },
   ],
   refreshToken: {

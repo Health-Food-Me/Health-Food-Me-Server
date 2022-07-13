@@ -6,13 +6,14 @@ const message = {
   BAD_REQUEST: "잘못된 요청",
   INTERNAL_SERVER_ERROR: "서버 내부 오류",
   INVALID_PASSWORD: "비밀번호 오류",
+  NO_USER: "존재하지 않은 유저",
 
   //token
   NULL_VALUE_TOKEN: "토큰이 없음",
   INVALID_TOKEN: "유효하지 않은 토큰",
   VALID_TOKEN: "유효한 토큰",
   CREATE_TOKEN_SUCCESS: "토큰 재발급 성공",
-  EXPIRED_TOKEN: "모두 만료된 토큰이므로 재로그인 필요",
+  EXPIRED_TOKEN: "만료된 토큰",
 
   // social
   UNAUTHORIZED_SOCIAL_USER: "유효하지 않은 소셜 유저",
@@ -26,6 +27,9 @@ const message = {
   // auth
   SIGN_IN_SUCCESS: "로그인 성공",
   SIGN_UP_SUCCESS: "회원가입 성공",
+
+  // restaurant
+  UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
 };
 
 export default message;
