@@ -6,6 +6,7 @@ const message = {
   BAD_REQUEST: "잘못된 요청",
   INTERNAL_SERVER_ERROR: "서버 내부 오류",
   INVALID_PASSWORD: "비밀번호 오류",
+  NULL_VALUE_PARAM: "param 값이 없음",
 
   //token
   NULL_VALUE_TOKEN: "토큰이 없음",

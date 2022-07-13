@@ -14,11 +14,30 @@ const getRestaurantSummary = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
   const userId = req.params.userId;
 
+  if (!restaurantId || !userId) {
+    res
+      .status(statusCode.BAD_REQUEST)
+      .send(
+        BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE_PARAM),
+      );
+  }
+
   try {
     const restaurant = await RestaurantService.getRestaurantSummary(
       restaurantId,
       userId,
     );
+
+    if (!restaurant) {
+      return res
+        .status(statusCode.NO_CONTENT)
+        .send(
+          BaseResponse.success(
+            statusCode.NO_CONTENT,
+            message.READ_RESTAURANT_SUMMARY_SUCCESS,
+          ),
+        );
+    }
 
     return res
       .status(statusCode.OK)

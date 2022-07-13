@@ -20,7 +20,9 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
         review = await Review.findById(reviewId);
         score = score + (review as IReview).score;
       }
-      score = Number((score / (reviews as string[]).length).toFixed(1));
+      if (reviews.length > 0) {
+        score = Number((score / (reviews as string[]).length).toFixed(1));
+      }
     }
 
     let isScrap = false;
