@@ -7,7 +7,7 @@ import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import sc from "../modules/statusCode";
-import UserService from "../services";
+import UserService from "../services/UserService";
 
 /**
  * @route POST /auth

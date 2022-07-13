@@ -61,6 +61,52 @@ const getRestaurantSummary = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /restaurant/:restaurantId/menus
+ * @desc Restaurant's menu detail
+ * @access Private
+ */
+const getMenuDetail = async (req: Request, res: Response) => {
+  const restaurantId = req.params.restaurantId;
+  const latitude = req.query.latitude;
+  const longtitude = req.query.longtitude;
+
+  if (!restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const data = await RestaurantService.getMenuDetail(
+      restaurantId,
+      Number(latitude),
+      Number(longtitude),
+    );
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.READ_RESTAURANT_MENU_SUCCESS,
+          data,
+        ),
+      );
+  } catch (error) {
+    logger.e("RestaurantController.getMenuDetail error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getRestaurantSummary,
+  getMenuDetail,
 };

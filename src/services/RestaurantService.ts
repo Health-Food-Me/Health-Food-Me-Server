@@ -1,6 +1,9 @@
 import { logger } from "../config/winstonConfig";
+import MenuData from "../interface/menuData";
 import IReview from "../interface/Review";
 import Category from "../models/Category";
+import Menu from "../models/Menu";
+import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -49,6 +52,99 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   }
 };
 
+const getMenuDetail = async (
+  restaurantId: string,
+  latitude: number,
+  longtitude: number,
+) => {
+  try {
+    const restaurant = await Restaurant.findById(restaurantId);
+    const category = await Category.findById(restaurant?.category);
+    const menuIdArray = restaurant?.menus;
+    const restaurantLatitude = restaurant?.latitude;
+    const restaurantLongtitude = restaurant?.longitude;
+
+    const distance = await getDistance(
+      latitude,
+      longtitude,
+      restaurantLatitude as number,
+      restaurantLongtitude as number,
+    );
+
+    const menus: MenuData[] = [];
+    if (menuIdArray !== undefined) {
+      const promise = menuIdArray?.map(async (menuId) => {
+        const menu = await Menu.findById(menuId);
+        const nutrient = await Nutrient.findById(menu?.nutrient);
+
+        const menuData: MenuData = {
+          _id: menuId,
+          name: menu?.name as string,
+          image: menu?.image as string,
+          kcal: nutrient?.kcal as number,
+          carbohydrate: nutrient?.carbohydrate as number,
+          protein: nutrient?.protein as number,
+          fat: nutrient?.fat as number,
+          price: menu?.price as number,
+          isPick: menu?.isHelfoomePick as boolean,
+        };
+
+        menus.push(menuData);
+      });
+      await Promise.all(promise);
+    }
+
+    const data = {
+      restaurant: {
+        _id: restaurantId,
+        distance: distance,
+        name: restaurant?.name,
+        logo: restaurant?.logo,
+        category: category?.title,
+        hashtag: restaurant?.hashtag,
+        address: restaurant?.address,
+        workTime: restaurant?.worktime,
+        contact: restaurant?.contact,
+      },
+      menu: menus,
+    };
+
+    return data;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
+const getDistance = async (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) => {
+  if (lat1 == lat2 && lon1 == lon2) return 0;
+
+  const radLat1 = (Math.PI * lat1) / 180;
+  const radLat2 = (Math.PI * lat2) / 180;
+  const theta = lon1 - lon2;
+  const radTheta = (Math.PI * theta) / 180;
+  let dist =
+    Math.sin(radLat1) * Math.sin(radLat2) +
+    Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+
+  if (dist > 1) dist = 1;
+
+  dist = Math.acos(dist);
+  dist = (dist * 180) / Math.PI;
+  dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+
+  if (dist < 100) dist = Math.round(dist / 10) * 10;
+  else dist = Math.round(dist / 100) * 100;
+
+  return dist;
+};
+
 export default {
   getRestaurantSummary,
+  getMenuDetail,
 };
