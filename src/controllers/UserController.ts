@@ -5,6 +5,7 @@ import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
+import statusCode from "../modules/statusCode";
 import sc from "../modules/statusCode";
 import UserService from "../services";
 
@@ -97,6 +98,45 @@ async function createUser(social: string, user: SocialUser) {
   };
 }
 
+/**
+ * @route PUT /user/:userId/scrap/:restaurantId
+ * @desc User's scraping the restaurant
+ * @access Private
+ */
+const scrapRestaurant = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const restaurantId = req.params.restaurantId;
+
+  if (!userId || !restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const isScrap = await UserService.scrapRestaurant(userId, restaurantId);
+
+    const data = { isScrap: isScrap };
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(statusCode.OK, message.UPDATE_SCRAP_SUCCESS, data),
+      );
+  } catch (error) {
+    logger.e("UserController.scrapRestaurant error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getUser,
+  scrapRestaurant,
 };
