@@ -35,6 +35,7 @@ const message = {
 
   // user
   READ_USER_PROFILE_SUCCESS: "유저 프로필 조회 성공",
+  UPDATE_USER_PROFILE_SUCCESS: "유저 프로필 수정 성공",
 };
 
 export default message;

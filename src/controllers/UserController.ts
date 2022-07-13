@@ -169,7 +169,53 @@ const getUserProfile = async (req: Request, res: Response) => {
         ),
       );
   } catch (error) {
-    logger.e(error);
+    logger.e("UserController.getUserProfile error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
+/**
+ * @route PUT /user/:userId/profile
+ * @desc Update User Profile
+ * @access Private
+ */
+const updateUserProfile = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const userName = req.body.name;
+
+  if (!userId || !userName) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const user = await UserService.updateUserProfile(userId, userName);
+
+    if (!user) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.UPDATE_USER_PROFILE_SUCCESS,
+          user,
+        ),
+      );
+  } catch (error) {
+    logger.e("UserController.updateUserProfile error", error);
     return res
       .status(statusCode.INTERNAL_SERVER_ERROR)
       .send(
@@ -185,4 +231,5 @@ export default {
   getUser,
   scrapRestaurant,
   getUserProfile,
+  updateUserProfile,
 };

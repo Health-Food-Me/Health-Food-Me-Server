@@ -12,4 +12,6 @@ router.put(
 
 router.get("/:userId/profile", auth, UserController.getUserProfile);
 
+router.put("/:userId/profile", auth, UserController.updateUserProfile);
+
 export default router;

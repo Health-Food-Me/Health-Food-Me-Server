@@ -122,6 +122,26 @@ const getUserProfile = async (userId: string) => {
   }
 };
 
+const updateUserProfile = async (userId: string, name: string) => {
+  try {
+    await User.findByIdAndUpdate(userId, {
+      $set: { name: name },
+    });
+
+    const user = await User.findById(userId);
+
+    const data = {
+      _id: userId,
+      name: user?.name,
+    };
+
+    return data;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -130,4 +150,5 @@ export default {
   findUserByRfToken,
   scrapRestaurant,
   getUserProfile,
+  updateUserProfile,
 };
