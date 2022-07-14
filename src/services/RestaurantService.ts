@@ -10,6 +10,7 @@ import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
 import Prescription from "../models/Prescription";
+import { Types } from "mongoose";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -22,27 +23,9 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       return null;
     }
 
-    const reviewList = restaurant?.reviews;
-
-    // 2. 식당에 리뷰가 없는 경우 => score: 0
-
-    // 리뷰 평점을 계산하는 함수 로직 따로 빼내는 방법으로 개선해볼 것
-
+    const reviewList = restaurant.reviews;
+    const score = getScore(reviewList);
     const scrapList = user?.scrapRestaurants;
-
-    let score = 0;
-    let review;
-    if (reviewList !== undefined) {
-      const promises = reviewList.map(async (reviewId) => {
-        review = await Review.findById(reviewId);
-        score = score + (review as IReview).score;
-      });
-      await Promise.all(promises);
-
-      if (reviewList.length > 0) {
-        score = Number((score / reviewList.length).toFixed(1));
-      }
-    }
 
     let isScrap = false;
     if (scrapList?.find((x) => x == restaurantId) !== undefined) {
@@ -62,11 +45,35 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     return data;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).name == "CastError") {
+    if ((error as Error).name === "CastError") {
       return null;
     }
     throw error;
   }
+};
+
+const getScore = async (reviewList: Types.ObjectId[]) => {
+  if (reviewList == undefined) {
+    return 0;
+  }
+
+  if (reviewList.length <= 0) {
+    return 0;
+  }
+
+  let score = 0;
+
+  const promises = reviewList.map(async (reviewId) => {
+    const review = await Review.findById(reviewId);
+    if (review != undefined) {
+      score = score + review?.score;
+    }
+  });
+  await Promise.all(promises);
+
+  score = Number((score / reviewList.length).toFixed(1));
+
+  // findbyId(reviewId)에서 CastError가 발생한다면? restaurant.reviews에서 reviewId를 삭제해야하지 않을까?
 };
 
 const getMenuDetail = async (
