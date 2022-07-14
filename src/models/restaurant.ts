@@ -2,14 +2,22 @@ import mongoose from "mongoose";
 import Restaurant from "../interface/Restaurant";
 import { MongoEntity } from "./Model";
 
-const ResaturantSchema = new mongoose.Schema({
-  latitude: {
-    type: Number,
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Point"],
     required: true,
   },
-  longitude: {
-    type: Number,
+  coordinates: {
+    type: [Number],
     required: true,
+  },
+});
+
+const ResaturantSchema = new mongoose.Schema({
+  location: {
+    type: pointSchema,
+    index: "2dsphere",
   },
   name: {
     type: String,
@@ -47,7 +55,6 @@ const ResaturantSchema = new mongoose.Schema({
   reviews: [
     {
       type: mongoose.Types.ObjectId,
-      required: true,
       ref: "Review",
     },
   ],
