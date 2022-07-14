@@ -135,6 +135,22 @@ const getUserScrpaList = async (userId: string) => {
   return scrapList;
 };
 
+const getUserProfile = async (userId: string) => {
+  try {
+    const user = await User.findById(userId);
+
+    const data = {
+      _id: userId,
+      name: user?.name,
+    };
+
+    return data;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -143,4 +159,5 @@ export default {
   findUserByRfToken,
   scrapRestaurant,
   getUserScrpaList,
+  getUserProfile,
 };
