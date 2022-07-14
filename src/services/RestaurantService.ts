@@ -13,28 +13,42 @@ import Prescription from "../models/Prescription";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    const category = await Category.findById(restaurant?.category);
-    const reviews = restaurant?.reviews;
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory;
+    }>("category");
+
+    // 1. 찾는 식당 없는 예외처리 (404)
+
+    //const restaurant = await Restaurant.findById(restaurantId);
+    //const category = await Category.findById(restaurant?.category);
+    const reviewList = restaurant?.reviews;
+
+    // 2. 식당에 리뷰가 없는 경우 => score: 0
+
+    // 리뷰 평점을 계산하는 함수 로직 따로 빼내는 방법으로 개선해볼 것
+
     const user = await User.findById(userId);
-    const scraps = user?.scrapRestaurants;
+
+    // 3. 로그인한 유저 정보가 존재하지 않는 예외처리 (404)
+
+    const scrapList = user?.scrapRestaurants;
 
     let score = 0;
     let review;
-    if (reviews !== undefined) {
-      const promises = reviews.map(async (reviewId) => {
+    if (reviewList !== undefined) {
+      const promises = reviewList.map(async (reviewId) => {
         review = await Review.findById(reviewId);
         score = score + (review as IReview).score;
       });
       await Promise.all(promises);
 
-      if (reviews.length > 0) {
-        score = Number((score / reviews.length).toFixed(1));
+      if (reviewList.length > 0) {
+        score = Number((score / reviewList.length).toFixed(1));
       }
     }
 
     let isScrap = false;
-    if (scraps?.find((x) => x == restaurantId) !== undefined) {
+    if (scrapList?.find((x) => x == restaurantId) !== undefined) {
       isScrap = true;
     }
 
@@ -42,7 +56,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       _id: restaurantId,
       name: restaurant?.name,
       logo: restaurant?.logo,
-      category: category?.title,
+      category: restaurant?.category.title,
       hashtag: restaurant?.hashtag,
       score: score,
       isScrap: isScrap,
