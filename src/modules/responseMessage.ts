@@ -36,6 +36,8 @@ const message = {
 
   // user
   READ_USER_PROFILE_SUCCESS: "유저 프로필 조회 성공",
+  UPDATE_USER_PROFILE_SUCCESS: "유저 프로필 수정 성공",
+  DUPLICATE_USER_NAME: "동일한 유저 이름 존재",
   READ_SCRAP_LIST_SUCCESS: "스크랩 식당 리스트 조회 성공",
   READ_AROUND_RESTAURANT_SUCCESS: "주변 식당 조회 성공",
 
