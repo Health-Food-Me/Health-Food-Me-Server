@@ -298,7 +298,7 @@ const withdrawUser = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await UserService.destroyUser(userId);
+    const result = await UserService.withdrawUser(userId);
 
     if (!result) {
       return res

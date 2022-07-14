@@ -185,9 +185,10 @@ const updateUserProfile = async (userId: string, name: string) => {
   }
 };
 
-const destroyUser = async (userId: string) => {
+const withdrawUser = async (userId: string) => {
   try {
-    if (!(await User.findById(userId))) {
+    const user = await User.findById(userId);
+    if (!user) {
       return null;
     }
 
@@ -209,5 +210,5 @@ export default {
   getUserScrpaList,
   getUserProfile,
   updateUserProfile,
-  destroyUser,
+  withdrawUser,
 };
