@@ -2,7 +2,6 @@ import { logger } from "../config/winstonConfig";
 import MenuData from "../interface/menuData";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
 import ICategory from "../interface/Category";
-import IReview from "../interface/Review";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Nutrient from "../models/Nutrient";
