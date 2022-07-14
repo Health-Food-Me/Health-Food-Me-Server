@@ -71,8 +71,6 @@ const getScore = async (reviewList: Types.ObjectId[]) => {
   await Promise.all(promises);
 
   score = Number((score / reviewList.length).toFixed(1));
-
-  // findbyId(reviewId)에서 CastError가 발생한다면? restaurant.reviews에서 reviewId를 삭제해야하지 않을까?
 };
 
 const getMenuDetail = async (
