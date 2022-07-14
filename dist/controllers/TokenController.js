@@ -52,6 +52,11 @@ const getToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     .send(BaseResponse_1.default.failure(statusCode_1.default.UNAUTHORIZED, responseMessage_1.default.EXPIRED_TOKEN));
             }
             const user = yield UserService_1.default.findUserByRfToken(refreshToken);
+            if (!user) {
+                return res
+                    .status(statusCode_1.default.UNAUTHORIZED)
+                    .send(BaseResponse_1.default.failure(statusCode_1.default.UNAUTHORIZED, responseMessage_1.default.INVALID_TOKEN));
+            }
             const data = {
                 accessToken: jwtHandler_1.default.sign(user === null || user === void 0 ? void 0 : user._id, user === null || user === void 0 ? void 0 : user.email),
                 refreshToken: refreshToken,

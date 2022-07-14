@@ -91,13 +91,13 @@ function createUser(social, user) {
 const scrapRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
     const restaurantId = req.params.restaurantId;
-    if (!userId || !restaurantId) {
-        return res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
-    }
     try {
         const isScrap = yield UserService_1.default.scrapRestaurant(userId, restaurantId);
+        if (!isScrap) {
+            return res
+                .status(statusCode_1.default.NOT_FOUND)
+                .send(BaseResponse_1.default.failure(statusCode_1.default.NOT_FOUND, responseMessage_1.default.NOT_FOUND));
+        }
         const data = { isScrap: isScrap };
         return res
             .status(statusCode_1.default.OK)
@@ -117,11 +117,6 @@ const scrapRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, function
  */
 const getUserScrpaList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
-    if (!userId) {
-        return res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
-    }
     try {
         const scrapList = yield UserService_1.default.getUserScrpaList(userId);
         if (!scrapList) {
@@ -147,11 +142,6 @@ const getUserScrpaList = (req, res) => __awaiter(void 0, void 0, void 0, functio
  */
 const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
-    if (!userId) {
-        return res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
-    }
     try {
         const userProfile = yield UserService_1.default.getUserProfile(userId);
         if (!userProfile) {
@@ -213,11 +203,6 @@ const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, functi
  */
 const withdrawUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
-    if (!userId) {
-        return res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
-    }
     try {
         const result = yield UserService_1.default.withdrawUser(userId);
         if (!result) {

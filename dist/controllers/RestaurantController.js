@@ -18,24 +18,18 @@ const responseMessage_1 = __importDefault(require("../modules/responseMessage"))
 const statusCode_1 = __importDefault(require("../modules/statusCode"));
 const RestaurantService_1 = __importDefault(require("../services/RestaurantService"));
 /**
- * @route GET /restaurant/:restaurantId
+ * @route GET /restaurant/:restaurantId/:userId
  * @desc 식당 카드의 요약 정보를 호출
  * @access Private
  */
 const getRestaurantSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const restaurantId = req.params.restaurantId;
-    const userId = req.params.userId;
-    if (!restaurantId || !userId) {
-        res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE_PARAM));
-    }
+    const { restaurantId, userId } = req.params;
     try {
         const restaurant = yield RestaurantService_1.default.getRestaurantSummary(restaurantId, userId);
         if (!restaurant) {
             return res
-                .status(statusCode_1.default.NO_CONTENT)
-                .send(BaseResponse_1.default.success(statusCode_1.default.NO_CONTENT, responseMessage_1.default.READ_RESTAURANT_SUMMARY_SUCCESS));
+                .status(statusCode_1.default.NOT_FOUND)
+                .send(BaseResponse_1.default.failure(statusCode_1.default.NOT_FOUND, responseMessage_1.default.NOT_FOUND));
         }
         return res
             .status(statusCode_1.default.OK)
@@ -57,13 +51,18 @@ const getMenuDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const restaurantId = req.params.restaurantId;
     const latitude = req.query.latitude;
     const longtitude = req.query.longtitude;
-    if (!restaurantId) {
+    if (!latitude || !longtitude) {
         return res
             .status(statusCode_1.default.BAD_REQUEST)
             .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
     }
     try {
         const data = yield RestaurantService_1.default.getMenuDetail(restaurantId, Number(latitude), Number(longtitude));
+        if (!data) {
+            return res
+                .status(statusCode_1.default.NOT_FOUND)
+                .send(BaseResponse_1.default.failure(statusCode_1.default.NOT_FOUND, responseMessage_1.default.NOT_FOUND));
+        }
         return res
             .status(statusCode_1.default.OK)
             .send(BaseResponse_1.default.success(statusCode_1.default.OK, responseMessage_1.default.READ_RESTAURANT_MENU_SUCCESS, data));
@@ -114,11 +113,6 @@ const getAroundRestaurants = (req, res) => __awaiter(void 0, void 0, void 0, fun
  */
 const getPrescription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const restaurantId = req.params.restaurantId;
-    if (!restaurantId) {
-        return res
-            .status(statusCode_1.default.BAD_REQUEST)
-            .send(BaseResponse_1.default.failure(statusCode_1.default.BAD_REQUEST, responseMessage_1.default.NULL_VALUE));
-    }
     try {
         const prescription = yield RestaurantService_1.default.getPrescription(restaurantId);
         if (!prescription) {

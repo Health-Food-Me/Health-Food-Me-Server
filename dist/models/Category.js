@@ -9,13 +9,10 @@ const CategorySchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    prescriptions: [
-        {
-            type: mongoose_1.default.Types.ObjectId,
-            required: true,
-            ref: "Prescription",
-        },
-    ],
+    prescription: {
+        type: mongoose_1.default.Types.ObjectId,
+        ref: "Prescription",
+    },
     isDiet: {
         type: Boolean,
         require: true,

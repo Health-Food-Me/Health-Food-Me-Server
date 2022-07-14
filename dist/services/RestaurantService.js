@@ -15,39 +15,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const winstonConfig_1 = require("../config/winstonConfig");
 const Category_1 = __importDefault(require("../models/Category"));
 const Menu_1 = __importDefault(require("../models/Menu"));
-const Nutrient_1 = __importDefault(require("../models/Nutrient"));
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const Review_1 = __importDefault(require("../models/Review"));
 const User_1 = __importDefault(require("../models/User"));
 const Prescription_1 = __importDefault(require("../models/Prescription"));
 const getRestaurantSummary = (restaurantId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const restaurant = yield Restaurant_1.default.findById(restaurantId);
-        const category = yield Category_1.default.findById(restaurant === null || restaurant === void 0 ? void 0 : restaurant.category);
-        const reviews = restaurant === null || restaurant === void 0 ? void 0 : restaurant.reviews;
+        const restaurant = yield Restaurant_1.default.findById(restaurantId).populate("category");
         const user = yield User_1.default.findById(userId);
-        const scraps = user === null || user === void 0 ? void 0 : user.scrapRestaurants;
-        let score = 0;
-        let review;
-        if (reviews !== undefined) {
-            const promises = reviews.map((reviewId) => __awaiter(void 0, void 0, void 0, function* () {
-                review = yield Review_1.default.findById(reviewId);
-                score = score + review.score;
-            }));
-            yield Promise.all(promises);
-            if (reviews.length > 0) {
-                score = Number((score / reviews.length).toFixed(1));
-            }
+        if (!restaurant || !user) {
+            return null;
         }
+        const reviewList = restaurant.reviews;
+        const score = yield getScore(reviewList);
+        const scrapList = user === null || user === void 0 ? void 0 : user.scrapRestaurants;
         let isScrap = false;
-        if ((scraps === null || scraps === void 0 ? void 0 : scraps.find((x) => x == restaurantId)) !== undefined) {
+        if ((scrapList === null || scrapList === void 0 ? void 0 : scrapList.find((x) => x == restaurantId)) !== undefined) {
             isScrap = true;
         }
         const data = {
             _id: restaurantId,
             name: restaurant === null || restaurant === void 0 ? void 0 : restaurant.name,
             logo: restaurant === null || restaurant === void 0 ? void 0 : restaurant.logo,
-            category: category === null || category === void 0 ? void 0 : category.title,
+            category: restaurant === null || restaurant === void 0 ? void 0 : restaurant.category.title,
             hashtag: restaurant === null || restaurant === void 0 ? void 0 : restaurant.hashtag,
             score: score,
             isScrap: isScrap,
@@ -56,55 +46,62 @@ const getRestaurantSummary = (restaurantId, userId) => __awaiter(void 0, void 0,
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.name === "CastError") {
+            return null;
+        }
         throw error;
     }
 });
+const getScore = (reviewList) => __awaiter(void 0, void 0, void 0, function* () {
+    if (reviewList == undefined) {
+        return 0;
+    }
+    if (reviewList.length <= 0) {
+        return 0;
+    }
+    let score = 0;
+    const promises = reviewList.map((reviewId) => __awaiter(void 0, void 0, void 0, function* () {
+        const review = yield Review_1.default.findById(reviewId);
+        if (review != undefined) {
+            score = score + (review === null || review === void 0 ? void 0 : review.score);
+        }
+    }));
+    yield Promise.all(promises);
+    score = Number((score / reviewList.length).toFixed(1));
+    return score;
+});
 const getMenuDetail = (restaurantId, latitude, longtitude) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const restaurant = yield Restaurant_1.default.findById(restaurantId);
-        const category = yield Category_1.default.findById(restaurant === null || restaurant === void 0 ? void 0 : restaurant.category);
-        const menuIdArray = restaurant === null || restaurant === void 0 ? void 0 : restaurant.menus;
-        const restaurantLatitude = restaurant === null || restaurant === void 0 ? void 0 : restaurant.location.coordinates.at(0);
-        const restaurantLongtitude = restaurant === null || restaurant === void 0 ? void 0 : restaurant.location.coordinates.at(1);
-        const distance = yield getDistance(latitude, longtitude, restaurantLatitude, restaurantLongtitude);
-        const menus = [];
-        if (menuIdArray !== undefined) {
-            const promise = menuIdArray === null || menuIdArray === void 0 ? void 0 : menuIdArray.map((menuId) => __awaiter(void 0, void 0, void 0, function* () {
-                const menu = yield Menu_1.default.findById(menuId);
-                const nutrient = yield Nutrient_1.default.findById(menu === null || menu === void 0 ? void 0 : menu.nutrient);
-                const menuData = {
-                    _id: menuId,
-                    name: menu === null || menu === void 0 ? void 0 : menu.name,
-                    image: menu === null || menu === void 0 ? void 0 : menu.image,
-                    kcal: nutrient === null || nutrient === void 0 ? void 0 : nutrient.kcal,
-                    carbohydrate: nutrient === null || nutrient === void 0 ? void 0 : nutrient.carbohydrate,
-                    protein: nutrient === null || nutrient === void 0 ? void 0 : nutrient.protein,
-                    fat: nutrient === null || nutrient === void 0 ? void 0 : nutrient.fat,
-                    price: menu === null || menu === void 0 ? void 0 : menu.price,
-                    isPick: menu === null || menu === void 0 ? void 0 : menu.isHelfoomePick,
-                };
-                menus.push(menuData);
-            }));
-            yield Promise.all(promise);
+        const restaurant = yield Restaurant_1.default.findById(restaurantId).populate("category");
+        if (!restaurant) {
+            return null;
         }
+        const restaurantLatitude = restaurant.location.coordinates.at(0);
+        const restaurantLongtitude = restaurant.location.coordinates.at(1);
+        const distance = yield getDistance(latitude, longtitude, restaurantLatitude, restaurantLongtitude);
+        const menuIdList = restaurant.menus;
+        const menuList = yield getMenuList(menuIdList);
         const data = {
             restaurant: {
                 _id: restaurantId,
                 distance: distance,
                 name: restaurant === null || restaurant === void 0 ? void 0 : restaurant.name,
                 logo: restaurant === null || restaurant === void 0 ? void 0 : restaurant.logo,
-                category: category === null || category === void 0 ? void 0 : category.title,
+                category: restaurant === null || restaurant === void 0 ? void 0 : restaurant.category.title,
                 hashtag: restaurant === null || restaurant === void 0 ? void 0 : restaurant.hashtag,
                 address: restaurant === null || restaurant === void 0 ? void 0 : restaurant.address,
                 workTime: restaurant === null || restaurant === void 0 ? void 0 : restaurant.worktime,
                 contact: restaurant === null || restaurant === void 0 ? void 0 : restaurant.contact,
             },
-            menu: menus,
+            menu: menuList,
         };
         return data;
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.name === "CastError") {
+            return null;
+        }
         throw error;
     }
 });
@@ -127,6 +124,40 @@ const getDistance = (lat1, lon1, lat2, lon2) => __awaiter(void 0, void 0, void 0
     else
         dist = Math.round(dist / 100) * 100;
     return dist;
+});
+const getMenuList = (menuIdList) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (menuIdList == undefined) {
+            return [];
+        }
+        if (menuIdList.length <= 0) {
+            return [];
+        }
+        const menuList = [];
+        const promises = menuIdList.map((menuId) => __awaiter(void 0, void 0, void 0, function* () {
+            const menu = yield Menu_1.default.findById(menuId).populate("nutrient");
+            const menuData = {
+                _id: menuId,
+                name: menu === null || menu === void 0 ? void 0 : menu.name,
+                image: menu === null || menu === void 0 ? void 0 : menu.image,
+                kcal: menu === null || menu === void 0 ? void 0 : menu.nutrient.kcal,
+                carbohydrate: menu === null || menu === void 0 ? void 0 : menu.nutrient.carbohydrate,
+                protein: menu === null || menu === void 0 ? void 0 : menu.nutrient.protein,
+                fat: menu === null || menu === void 0 ? void 0 : menu.nutrient.fat,
+                price: menu === null || menu === void 0 ? void 0 : menu.price,
+                isPick: menu === null || menu === void 0 ? void 0 : menu.isHelfoomePick,
+            };
+            menuList.push(menuData);
+        }));
+        yield Promise.all(promises);
+    }
+    catch (error) {
+        winstonConfig_1.logger.e(error);
+        if (error.name === "CastError") {
+            return null;
+        }
+        throw error;
+    }
 });
 const getAroundRestaurants = (longitude, latitude, zoom) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -156,22 +187,38 @@ const getAroundRestaurants = (longitude, latitude, zoom) => __awaiter(void 0, vo
     }
 });
 const getPrescription = (restaurantId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     try {
-        const categoryId = (_a = (yield Restaurant_1.default.findById(restaurantId))) === null || _a === void 0 ? void 0 : _a.category;
-        const prescription = yield Prescription_1.default.findOne({ category: categoryId });
-        if (!prescription) {
+        const restaurant = yield Restaurant_1.default.findById(restaurantId);
+        if (restaurant == undefined) {
             return null;
         }
+        const category = yield Category_1.default.findById(restaurant.category);
+        if (category == undefined) {
+            throw new Error("no category");
+        }
+        if (category.prescription == undefined) {
+            const data = {
+                category: category.title,
+                content: null,
+            };
+            return data;
+        }
+        const prescription = yield Prescription_1.default.findById(category.prescription);
+        const content = prescription === null || prescription === void 0 ? void 0 : prescription.content;
+        if (content == undefined) {
+            throw new Error("no content of the prescription");
+        }
         const data = {
-            _id: prescription._id,
-            category: (_b = (yield Category_1.default.findById(categoryId))) === null || _b === void 0 ? void 0 : _b.title,
-            content: prescription.content,
+            category: category.title,
+            content: content,
         };
         return data;
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.name === "CastError") {
+            return null;
+        }
         throw error;
     }
 });

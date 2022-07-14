@@ -37,6 +37,8 @@ const findUserById = (userId, social) => __awaiter(void 0, void 0, void 0, funct
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
@@ -62,7 +64,6 @@ const signUpUser = (social, socialId, email, refreshToken) => __awaiter(void 0, 
                 refreshToken: refreshToken,
             });
         }
-        console.log(user);
         yield user.save();
         return user;
     }
@@ -77,6 +78,8 @@ const updateRefreshToken = (userId, refreshToken) => __awaiter(void 0, void 0, v
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
@@ -89,71 +92,99 @@ const findUserByRfToken = (refreshToken) => __awaiter(void 0, void 0, void 0, fu
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
 const scrapRestaurant = (userId, restaurantId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User_1.default.findById(userId);
-    let scraps = user === null || user === void 0 ? void 0 : user.scrapRestaurants;
-    if (scraps === null || scraps === void 0 ? void 0 : scraps.find((x) => x == restaurantId)) {
-        scraps = scraps.filter((restaurantId) => restaurantId !== restaurantId);
-        yield User_1.default.findByIdAndUpdate(userId, {
-            $set: { scrapRestaurants: scraps },
-        });
-        return false;
+    try {
+        const user = yield User_1.default.findById(userId);
+        if (user == undefined)
+            return null;
+        let scraps = user.scrapRestaurants;
+        if (scraps === null || scraps === void 0 ? void 0 : scraps.find((x) => x == restaurantId)) {
+            scraps = scraps.filter((restaurantId) => restaurantId !== restaurantId);
+            yield User_1.default.findByIdAndUpdate(userId, {
+                $set: { scrapRestaurants: scraps },
+            });
+            return false;
+        }
+        else {
+            scraps === null || scraps === void 0 ? void 0 : scraps.push(restaurantId);
+            yield User_1.default.findByIdAndUpdate(userId, {
+                $set: { scrapRestaurants: scraps },
+            });
+            return true;
+        }
     }
-    else {
-        scraps === null || scraps === void 0 ? void 0 : scraps.push(restaurantId);
-        yield User_1.default.findByIdAndUpdate(userId, {
-            $set: { scrapRestaurants: scraps },
-        });
-        return true;
+    catch (error) {
+        winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
+        throw error;
     }
 });
 const getUserScrpaList = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User_1.default.findById(userId);
-    const userScrap = user === null || user === void 0 ? void 0 : user.scrapRestaurants;
-    const scrapList = [];
-    if (userScrap !== undefined) {
-        const promise = userScrap.map((restaurantId) => __awaiter(void 0, void 0, void 0, function* () {
-            const restaurant = yield RestaurantService_1.default.getRestaurantSummary(restaurantId, userId);
-            const data = {
-                _id: restaurant._id,
-                name: restaurant.name,
-                logo: restaurant.logo,
-                score: restaurant.score,
-                category: restaurant.category,
-            };
-            scrapList.push(data);
-        }));
-        yield Promise.all(promise);
+    try {
+        const user = yield User_1.default.findById(userId);
+        if (user == undefined)
+            return null;
+        const userScrap = user.scrapRestaurants;
+        const scrapList = [];
+        if (userScrap != undefined) {
+            const promises = userScrap.map((restaurantId) => __awaiter(void 0, void 0, void 0, function* () {
+                const restaurant = yield RestaurantService_1.default.getRestaurantSummary(restaurantId, userId);
+                if (!restaurant)
+                    return null;
+                const data = {
+                    _id: restaurant._id,
+                    name: restaurant.name,
+                    logo: restaurant.logo,
+                    score: restaurant.score,
+                    category: restaurant.category,
+                };
+                scrapList.push(data);
+            }));
+            yield Promise.all(promises);
+        }
+        else
+            return [];
+        return scrapList;
     }
-    return scrapList;
+    catch (error) {
+        winstonConfig_1.logger.e(error);
+        if (error.name === "CastError")
+            return null;
+        throw error;
+    }
 });
 const getUserProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield User_1.default.findById(userId);
+        if (user == undefined)
+            return null;
         const data = {
             _id: userId,
-            name: user === null || user === void 0 ? void 0 : user.name,
+            name: user.name,
         };
         return data;
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
 const updateUserProfile = (userId, name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user = yield User_1.default.findById(userId);
-        if (!user) {
+        if (user == undefined)
             return null;
-        }
         const userName = yield User_1.default.findOne({ name: name });
-        if (userName) {
+        if (userName)
             return exceptionMessage_1.default.DUPLICATE_NAME;
-        }
         yield User_1.default.findByIdAndUpdate(userId, {
             $set: { name: name },
         });
@@ -166,20 +197,23 @@ const updateUserProfile = (userId, name) => __awaiter(void 0, void 0, void 0, fu
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
 const withdrawUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield User_1.default.findById(userId);
-        if (!user) {
+        if (user == undefined)
             return null;
-        }
         yield User_1.default.findByIdAndDelete(userId);
         return exceptionMessage_1.default.DELETE_USER;
     }
     catch (error) {
         winstonConfig_1.logger.e(error);
+        if (error.message === "CastError")
+            return null;
         throw error;
     }
 });
