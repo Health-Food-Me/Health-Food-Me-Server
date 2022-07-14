@@ -58,6 +58,8 @@ const signUpUser = async (
       });
     }
 
+    console.log(user);
+
     await user.save();
 
     return user;
@@ -183,6 +185,21 @@ const updateUserProfile = async (userId: string, name: string) => {
   }
 };
 
+const withdrawUser = async (userId: string) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return null;
+    }
+
+    await User.findByIdAndDelete(userId);
+    return exceptionMessage.DELETE_USER;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -193,4 +210,5 @@ export default {
   getUserScrpaList,
   getUserProfile,
   updateUserProfile,
+  withdrawUser,
 };
