@@ -9,7 +9,6 @@ import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-import IRestaurant from "../interface/Restaurant";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -166,9 +165,7 @@ const getAroundRestaurants = async (
       return {
         _id: restaurant._id as string,
         name: restaurant.name,
-        longitude: (
-          restaurant as unknown as IRestaurant
-        ).location.coordinates.at(1),
+        longitude: restaurant.location.coordinates.at(1),
         latitude: restaurant.location.coordinates.at(0),
         isDietRestaurant: restaurant.category.isDiet,
       };
