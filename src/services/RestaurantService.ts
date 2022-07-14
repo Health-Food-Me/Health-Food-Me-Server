@@ -16,20 +16,17 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
       category: ICategory;
     }>("category");
+    const user = await User.findById(userId);
 
-    // 1. 찾는 식당 없는 예외처리 (404)
+    if (!restaurant || !user) {
+      return null;
+    }
 
-    //const restaurant = await Restaurant.findById(restaurantId);
-    //const category = await Category.findById(restaurant?.category);
     const reviewList = restaurant?.reviews;
 
     // 2. 식당에 리뷰가 없는 경우 => score: 0
 
     // 리뷰 평점을 계산하는 함수 로직 따로 빼내는 방법으로 개선해볼 것
-
-    const user = await User.findById(userId);
-
-    // 3. 로그인한 유저 정보가 존재하지 않는 예외처리 (404)
 
     const scrapList = user?.scrapRestaurants;
 
@@ -65,6 +62,9 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name == "CastError") {
+      return null;
+    }
     throw error;
   }
 };
