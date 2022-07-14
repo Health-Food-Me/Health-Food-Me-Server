@@ -1,4 +1,6 @@
 import { logger } from "../config/winstonConfig";
+import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
+import ICategory from "../interface/Category";
 import IReview from "../interface/Review";
 import Category from "../models/Category";
 import Restaurant from "../models/Restaurant";
@@ -23,7 +25,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       await Promise.all(promises);
 
       if (reviews.length > 0) {
-        score = Number((score / (reviews as string[]).length).toFixed(1));
+        score = Number((score / reviews.length).toFixed(1));
       }
     }
 
@@ -49,6 +51,38 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   }
 };
 
+const getAroundRestaurants = async (
+  longitude: number,
+  latitude: number,
+  zoom: number,
+) => {
+  try {
+    const restaurants = await Restaurant.find({
+      $nearSphere: {
+        $geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+        $maxDistance: zoom,
+      },
+    }).populate<{ category: ICategory }>("category");
+    const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
+      return {
+        _id: restaurant._id as string,
+        name: restaurant.name,
+        longitude: restaurant.location.coordinates.at(1),
+        latitude: restaurant.location.coordinates.at(0),
+        isDietRestaurant: restaurant.category.isDiet,
+      };
+    });
+    return results;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getRestaurantSummary,
+  getAroundRestaurants,
 };

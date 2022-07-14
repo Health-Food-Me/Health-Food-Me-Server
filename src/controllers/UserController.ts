@@ -5,9 +5,8 @@ import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
-import statusCode from "../modules/statusCode";
-import sc from "../modules/statusCode";
-import UserService from "../services";
+import { default as sc, default as statusCode } from "../modules/statusCode";
+import UserService from "../services/UserService";
 
 /**
  * @route POST /auth
