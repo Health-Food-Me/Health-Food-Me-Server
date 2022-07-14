@@ -4,6 +4,8 @@ import auth from "../middleware/auth";
 
 const router = Router();
 
+router.get("/:restaurantId/menus", auth, RestaurantController.getMenuDetail);
+router.get("/", auth, RestaurantController.getAroundRestaurants);
 router.get(
   "/:restaurantId/prescription",
   auth,
