@@ -9,6 +9,7 @@ import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
+import Prescription from "../models/Prescription";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -177,8 +178,31 @@ const getAroundRestaurants = async (
   }
 };
 
+const getPrescription = async (restaurantId: string) => {
+  try {
+    const categoryId = (await Restaurant.findById(restaurantId))?.category;
+    const prescription = await Prescription.findOne({ category: categoryId });
+
+    if (!prescription) {
+      return null;
+    }
+
+    const data = {
+      _id: prescription._id,
+      category: (await Category.findById(categoryId))?.title,
+      content: prescription.content,
+    };
+
+    return data;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
+  getPrescription,
 };

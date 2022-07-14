@@ -34,6 +34,9 @@ const message = {
   READ_RESTAURANT_MENU_SUCCESS: "식당 상세 메뉴 정보 조회 성공",
   UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
   READ_AROUND_RESTAURANT_SUCCESS: "주변 식당 조회 성공",
+
+  // prescription
+  READ_PRESCRIPTION_SUCCESS: "외식 대처법 조회 성공",
 };
 
 export default message;

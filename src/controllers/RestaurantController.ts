@@ -164,8 +164,54 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /restaurant/:restaurantId/prescription
+ * @desc 외식 대처법 정보 조회
+ * @access Private
+ */
+const getPrescription = async (req: Request, res: Response) => {
+  const restaurantId = req.params.restaurantId;
+
+  if (!restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const prescription = await RestaurantService.getPrescription(restaurantId);
+
+    if (!prescription) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.READ_PRESCRIPTION_SUCCESS,
+          prescription,
+        ),
+      );
+  } catch (error) {
+    logger.e("RestaurantController.getPrescription error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
+  getPrescription,
 };
