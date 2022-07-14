@@ -2,6 +2,9 @@ import { logger } from "../config/winstonConfig";
 import User from "../models/User";
 import exceptionMessage from "../modules/exceptionMessage";
 import { authStrategy } from "./SocialAuthStrategy";
+import UserProfileDto from "../interface/UserProfile";
+import RestaurantService from "./RestaurantService";
+import { ScrapData } from "../interface/ScrapData";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
@@ -109,13 +112,40 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
   }
 };
 
+const getUserScrpaList = async (userId: string) => {
+  const user = await User.findById(userId);
+  const userScrap = user?.scrapRestaurants;
+
+  const scrapList: ScrapData[] = [];
+  if (userScrap !== undefined) {
+    const promise = userScrap.map(async (restaurantId) => {
+      const restaurant = await RestaurantService.getRestaurantSummary(
+        restaurantId,
+        userId,
+      );
+
+      const data: ScrapData = {
+        _id: restaurant._id,
+        name: restaurant.name as string,
+        logo: restaurant.logo as string,
+        score: restaurant.score as number,
+        category: restaurant.category as string,
+      };
+      scrapList.push(data);
+    });
+    await Promise.all(promise);
+  }
+
+  return scrapList;
+};
+
 const getUserProfile = async (userId: string) => {
   try {
     const user = await User.findById(userId);
 
-    const data = {
+    const data: UserProfileDto = {
       _id: userId,
-      name: user?.name,
+      name: user?.name as string,
     };
 
     return data;
@@ -127,15 +157,25 @@ const getUserProfile = async (userId: string) => {
 
 const updateUserProfile = async (userId: string, name: string) => {
   try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return null;
+    }
+
+    const userName = await User.findOne({ name: name });
+    if (userName) {
+      return exceptionMessage.DUPLICATE_NAME;
+    }
+
     await User.findByIdAndUpdate(userId, {
       $set: { name: name },
     });
 
-    const user = await User.findById(userId);
+    user = await User.findById(userId);
 
-    const data = {
+    const data: UserProfileDto = {
       _id: userId,
-      name: user?.name,
+      name: user?.name as string,
     };
 
     return data;
@@ -166,6 +206,7 @@ export default {
   updateRefreshToken,
   findUserByRfToken,
   scrapRestaurant,
+  getUserScrpaList,
   getUserProfile,
   updateUserProfile,
   destroyUser,

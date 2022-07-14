@@ -10,6 +10,7 @@ router.put(
   UserController.scrapRestaurant,
 );
 
+router.get("/:userId/scrapList", UserController.getUserScrpaList);
 router.get("/:userId/profile", auth, UserController.getUserProfile);
 
 router.put("/:userId/profile", auth, UserController.updateUserProfile);
