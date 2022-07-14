@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { setTimeout } from "timers/promises";
 import { logger } from "../config/winstonConfig";
 import { SocialUser } from "../interface/SocialUser";
-import User from "../models/User";
 import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
@@ -234,7 +232,7 @@ const updateUserProfile = async (req: Request, res: Response) => {
  * @desc User Withdrawal
  * @access Private
  */
-const destroyUser = async (req: Request, res: Response) => {
+const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
   if (!userId) {
@@ -273,5 +271,5 @@ export default {
   scrapRestaurant,
   getUserProfile,
   updateUserProfile,
-  destroyUser,
+  withdrawUser,
 };

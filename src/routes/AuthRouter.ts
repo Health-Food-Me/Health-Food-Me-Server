@@ -7,6 +7,6 @@ const router: Router = Router();
 
 router.post("/", UserController.getUser);
 router.get("/token", TokenController.getToken);
-router.delete("/withdrawal/:userId", auth, UserController.destroyUser);
+router.delete("/withdrawal/:userId", auth, UserController.withdrawUser);
 
 export default router;
