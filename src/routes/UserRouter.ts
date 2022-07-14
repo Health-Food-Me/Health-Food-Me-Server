@@ -10,4 +10,6 @@ router.put(
   UserController.scrapRestaurant,
 );
 
+router.get("/:userId/scrapList", UserController.getUserScrpaList);
+
 export default router;
