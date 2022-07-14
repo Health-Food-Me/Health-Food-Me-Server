@@ -1,6 +1,8 @@
 import { logger } from "../config/winstonConfig";
 import User from "../models/User";
+import exceptionMessage from "../modules/exceptionMessage";
 import { authStrategy } from "./SocialAuthStrategy";
+import UserProfileDto from "../interface/UserProfile";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
@@ -110,9 +112,9 @@ const getUserProfile = async (userId: string) => {
   try {
     const user = await User.findById(userId);
 
-    const data = {
+    const data: UserProfileDto = {
       _id: userId,
-      name: user?.name,
+      name: user?.name as string,
     };
 
     return data;
@@ -124,15 +126,25 @@ const getUserProfile = async (userId: string) => {
 
 const updateUserProfile = async (userId: string, name: string) => {
   try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return null;
+    }
+
+    const userName = await User.findOne({ name: name });
+    if (userName) {
+      return exceptionMessage.DUPLICATE_NAME;
+    }
+
     await User.findByIdAndUpdate(userId, {
       $set: { name: name },
     });
 
-    const user = await User.findById(userId);
+    user = await User.findById(userId);
 
-    const data = {
+    const data: UserProfileDto = {
       _id: userId,
-      name: user?.name,
+      name: user?.name as string,
     };
 
     return data;

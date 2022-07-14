@@ -36,6 +36,7 @@ const message = {
   // user
   READ_USER_PROFILE_SUCCESS: "유저 프로필 조회 성공",
   UPDATE_USER_PROFILE_SUCCESS: "유저 프로필 수정 성공",
+  DUPLICATE_USER_NAME: "동일한 유저 이름 존재",
 };
 
 export default message;

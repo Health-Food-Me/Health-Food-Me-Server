@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
 import { SocialUser } from "../interface/SocialUser";
 import BaseResponse from "../modules/BaseResponse";
+import exceptionMessage from "../modules/exceptionMessage";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
@@ -203,6 +204,17 @@ const updateUserProfile = async (req: Request, res: Response) => {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
+    if (user === exceptionMessage.DUPLICATE_NAME) {
+      return res
+        .status(statusCode.FORBIDDEN)
+        .send(
+          BaseResponse.failure(
+            statusCode.FORBIDDEN,
+            message.DUPLICATE_USER_NAME,
+          ),
+        );
     }
 
     return res
