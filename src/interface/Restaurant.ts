@@ -13,7 +13,7 @@ interface Restaurant {
   worktime: string[];
   contact: string;
   reviews: Types.ObjectId[];
-  menus: string[];
+  menus: Types.ObjectId[];
 }
 
 export default Restaurant;

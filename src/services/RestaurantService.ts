@@ -9,6 +9,7 @@ import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
+import IRestaurant from "../interface/Restaurant";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -63,8 +64,8 @@ const getMenuDetail = async (
     const restaurant = await Restaurant.findById(restaurantId);
     const category = await Category.findById(restaurant?.category);
     const menuIdArray = restaurant?.menus;
-    const restaurantLatitude = restaurant?.latitude;
-    const restaurantLongtitude = restaurant?.longitude;
+    const restaurantLatitude = restaurant?.location.coordinates.at(0);
+    const restaurantLongtitude = restaurant?.location.coordinates.at(1);
 
     const distance = await getDistance(
       latitude,
@@ -165,7 +166,9 @@ const getAroundRestaurants = async (
       return {
         _id: restaurant._id as string,
         name: restaurant.name,
-        longitude: restaurant.location.coordinates.at(1),
+        longitude: (
+          restaurant as unknown as IRestaurant
+        ).location.coordinates.at(1),
         latitude: restaurant.location.coordinates.at(0),
         isDietRestaurant: restaurant.category.isDiet,
       };

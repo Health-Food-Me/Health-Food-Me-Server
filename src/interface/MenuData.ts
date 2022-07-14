@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 interface MenuData {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   image: string;
   kcal: number;
