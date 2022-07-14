@@ -155,36 +155,44 @@ const getDistance = async (
 };
 
 const getMenuList = async (menuIdList: Types.ObjectId[]) => {
-  if (menuIdList == undefined) {
-    return [];
+  try {
+    if (menuIdList == undefined) {
+      return [];
+    }
+
+    if (menuIdList.length <= 0) {
+      return [];
+    }
+
+    const menuList: MenuData[] = [];
+
+    const promises = menuIdList.map(async (menuId) => {
+      const menu = await Menu.findById(menuId).populate<{
+        nutrient: INutrient;
+      }>("nutrient");
+
+      const menuData: MenuData = {
+        _id: menuId,
+        name: menu?.name as string,
+        image: menu?.image as string,
+        kcal: menu?.nutrient.kcal as number,
+        carbohydrate: menu?.nutrient.carbohydrate as number,
+        protein: menu?.nutrient.protein as number,
+        fat: menu?.nutrient.fat as number,
+        price: menu?.price as number,
+        isPick: menu?.isHelfoomePick as boolean,
+      };
+
+      menuList.push(menuData);
+    });
+    await Promise.all(promises);
+  } catch (error) {
+    logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
+    throw error;
   }
-
-  if (menuIdList.length <= 0) {
-    return [];
-  }
-
-  const menuList: MenuData[] = [];
-
-  const promises = menuIdList.map(async (menuId) => {
-    const menu = await Menu.findById(menuId).populate<{ nutrient: INutrient }>(
-      "nutrient",
-    );
-
-    const menuData: MenuData = {
-      _id: menuId,
-      name: menu?.name as string,
-      image: menu?.image as string,
-      kcal: menu?.nutrient.kcal as number,
-      carbohydrate: menu?.nutrient.carbohydrate as number,
-      protein: menu?.nutrient.protein as number,
-      fat: menu?.nutrient.fat as number,
-      price: menu?.price as number,
-      isPick: menu?.isHelfoomePick as boolean,
-    };
-
-    menuList.push(menuData);
-  });
-  await Promise.all(promises);
 };
 
 const getAroundRestaurants = async (
@@ -252,6 +260,9 @@ const getPrescription = async (restaurantId: string) => {
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
     throw error;
   }
 };
