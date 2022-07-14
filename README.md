@@ -23,7 +23,7 @@
 <summary>User</summary>   
 <div markdown="1">       
 
-```
+```typescript
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,7 +33,6 @@ const UserSchema = new mongoose.Schema({
   social: {
     type: String,
     required: true,
-    unique: true,
   },
   socialId: {
     type: String,
@@ -42,7 +41,6 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
   },
   scrapRestaurants: [
     {
@@ -65,7 +63,7 @@ const UserSchema = new mongoose.Schema({
 <summary>Restaurant</summary>   
 <div markdown="1">   
  
-```
+```typescript
 const ResaturantSchema = new mongoose.Schema({
   latitude: {
     type: Number,
@@ -86,8 +84,9 @@ const ResaturantSchema = new mongoose.Schema({
     unique: true,
   },
   category: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
+    ref: "Category",
   },
   hashtag: [
     {
@@ -130,7 +129,7 @@ const ResaturantSchema = new mongoose.Schema({
 <summary>Menu</summary>   
 <div markdown="1">  
  
-```
+```typescript
 const MenuSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -159,6 +158,7 @@ const MenuSchema = new mongoose.Schema({
     required: true,
   },
 });
+
 ```
 </div>
 </details>
@@ -167,7 +167,7 @@ const MenuSchema = new mongoose.Schema({
 <summary>Nutrient</summary>   
 <div markdown="1">  
  
-```
+```typescript
 const NutrientSchema = new mongoose.Schema({
   kcal: {
     type: Number,
@@ -199,7 +199,7 @@ const NutrientSchema = new mongoose.Schema({
 <summary>Review</summary>   
 <div markdown="1">  
  
-```
+```typescript
 const ReviewSchema = new mongoose.Schema({
   restaurantId: {
     type: mongoose.Types.ObjectId,
@@ -217,43 +217,51 @@ const ReviewSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
   },
-  image: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
-  reason: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
+  image: [{ type: String }],
+  reason: [{ type: String }],
 });
 ```
 </div>
 </details>
 
 <details>
-<summary>Dealing (외식대처법)</summary>   
+<summary>Prescription(외식대처법)</summary>   
 <div markdown="1">  
  
-```
-const DealingSchema = new mongoose.Schema({
+```typescript
+const PrescriptionSchema = new mongoose.Schema({
   category: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
+    ref: "Category",
   },
   content: {
     type: String,
     required: true,
   },
-  image: {
-    type: url,
+});
+```
+</div>
+</details>
+
+<details>
+<summary>Category</summary>   
+<div markdown="1">  
+ 
+```typescript
+const CategorySchema = new mongoose.Schema({
+  title: {
+    type: String,
     required: true,
   },
+  prescriptions: [
+    {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Prescription",
+    },
+  ],
 });
 ```
 </div>
