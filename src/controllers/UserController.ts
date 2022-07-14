@@ -5,8 +5,7 @@ import BaseResponse from "../modules/BaseResponse";
 import em from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
-import statusCode from "../modules/statusCode";
-import sc from "../modules/statusCode";
+import { default as sc, default as statusCode } from "../modules/statusCode";
 import UserService from "../services/UserService";
 
 /**
@@ -137,6 +136,51 @@ const scrapRestaurant = async (req: Request, res: Response) => {
 };
 
 /**
+ * @route GET /user/:userId/scraps
+ * @desc 유저 스크랩 모아보기
+ * @access Private
+ */
+const getUserScrpaList = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const scrapList = await UserService.getUserScrpaList(userId);
+
+    if (!scrapList) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.READ_SCRAP_LIST_SUCCESS,
+          scrapList,
+        ),
+      );
+  } catch (error) {
+    logger.e(error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
+/**
  * @route GET /user/:userId/profile
  * @desc Get User Profile
  * @access Private
@@ -184,5 +228,6 @@ const getUserProfile = async (req: Request, res: Response) => {
 export default {
   getUser,
   scrapRestaurant,
+  getUserScrpaList,
   getUserProfile,
 };
