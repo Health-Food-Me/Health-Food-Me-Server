@@ -4,12 +4,12 @@ import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantD
 import ICategory from "../interface/Category";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
-import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
 import Prescription from "../models/Prescription";
 import { Types } from "mongoose";
+import INutrient from "../interface/Nutrient";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -23,7 +23,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     }
 
     const reviewList = restaurant.reviews;
-    const score = getScore(reviewList);
+    const score = await getScore(reviewList);
     const scrapList = user?.scrapRestaurants;
 
     let isScrap = false;
@@ -71,6 +71,8 @@ const getScore = async (reviewList: Types.ObjectId[]) => {
   await Promise.all(promises);
 
   score = Number((score / reviewList.length).toFixed(1));
+
+  return score;
 };
 
 const getMenuDetail = async (
@@ -79,12 +81,16 @@ const getMenuDetail = async (
   longtitude: number,
 ) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    const category = await Category.findById(restaurant?.category);
-    const menuIdArray = restaurant?.menus;
-    const restaurantLatitude = restaurant?.location.coordinates.at(0);
-    const restaurantLongtitude = restaurant?.location.coordinates.at(1);
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory;
+    }>("category");
 
+    if (!restaurant) {
+      return null;
+    }
+
+    const restaurantLatitude = restaurant.location.coordinates.at(0);
+    const restaurantLongtitude = restaurant.location.coordinates.at(1);
     const distance = await getDistance(
       latitude,
       longtitude,
@@ -92,28 +98,8 @@ const getMenuDetail = async (
       restaurantLongtitude as number,
     );
 
-    const menus: MenuData[] = [];
-    if (menuIdArray !== undefined) {
-      const promise = menuIdArray?.map(async (menuId) => {
-        const menu = await Menu.findById(menuId);
-        const nutrient = await Nutrient.findById(menu?.nutrient);
-
-        const menuData: MenuData = {
-          _id: menuId,
-          name: menu?.name as string,
-          image: menu?.image as string,
-          kcal: nutrient?.kcal as number,
-          carbohydrate: nutrient?.carbohydrate as number,
-          protein: nutrient?.protein as number,
-          fat: nutrient?.fat as number,
-          price: menu?.price as number,
-          isPick: menu?.isHelfoomePick as boolean,
-        };
-
-        menus.push(menuData);
-      });
-      await Promise.all(promise);
-    }
+    const menuIdList = restaurant.menus;
+    const menuList = await getMenuList(menuIdList);
 
     const data = {
       restaurant: {
@@ -121,13 +107,13 @@ const getMenuDetail = async (
         distance: distance,
         name: restaurant?.name,
         logo: restaurant?.logo,
-        category: category?.title,
+        category: restaurant?.category.title,
         hashtag: restaurant?.hashtag,
         address: restaurant?.address,
         workTime: restaurant?.worktime,
         contact: restaurant?.contact,
       },
-      menu: menus,
+      menu: menuList,
     };
 
     return data;
@@ -163,6 +149,39 @@ const getDistance = async (
   else dist = Math.round(dist / 100) * 100;
 
   return dist;
+};
+
+const getMenuList = async (menuIdList: Types.ObjectId[]) => {
+  if (menuIdList == undefined) {
+    return [];
+  }
+
+  if (menuIdList.length <= 0) {
+    return [];
+  }
+
+  const menuList: MenuData[] = [];
+
+  const promises = menuIdList.map(async (menuId) => {
+    const menu = await Menu.findById(menuId).populate<{ nutrient: INutrient }>(
+      "nutrient",
+    );
+
+    const menuData: MenuData = {
+      _id: menuId,
+      name: menu?.name as string,
+      image: menu?.image as string,
+      kcal: menu?.nutrient.kcal as number,
+      carbohydrate: menu?.nutrient.carbohydrate as number,
+      protein: menu?.nutrient.protein as number,
+      fat: menu?.nutrient.fat as number,
+      price: menu?.price as number,
+      isPick: menu?.isHelfoomePick as boolean,
+    };
+
+    menuList.push(menuData);
+  });
+  await Promise.all(promises);
 };
 
 const getAroundRestaurants = async (
