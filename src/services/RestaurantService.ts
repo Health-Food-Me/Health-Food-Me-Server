@@ -119,6 +119,9 @@ const getMenuDetail = async (
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
     throw error;
   }
 };

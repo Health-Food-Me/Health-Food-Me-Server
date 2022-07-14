@@ -70,6 +70,12 @@ const getMenuDetail = async (req: Request, res: Response) => {
       Number(longtitude),
     );
 
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
     return res
       .status(statusCode.OK)
       .send(
