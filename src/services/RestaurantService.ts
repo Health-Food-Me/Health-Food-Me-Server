@@ -220,17 +220,33 @@ const getAroundRestaurants = async (
 
 const getPrescription = async (restaurantId: string) => {
   try {
-    const categoryId = (await Restaurant.findById(restaurantId))?.category;
-    const prescription = await Prescription.findOne({ category: categoryId });
-
-    if (!prescription) {
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (restaurant == undefined) {
       return null;
     }
 
+    const category = await Category.findById(restaurant.category);
+    if (category == undefined) {
+      throw new Error("no category");
+    }
+
+    if (category.prescription == undefined) {
+      const data = {
+        category: category.title,
+        content: null,
+      };
+      return data;
+    }
+
+    const prescription = await Prescription.findById(category.prescription);
+    const content = prescription?.content;
+    if (content == undefined) {
+      throw new Error("no content of the prescription");
+    }
+
     const data = {
-      _id: prescription._id,
-      category: (await Category.findById(categoryId))?.title,
-      content: prescription.content,
+      category: category.title,
+      content: content,
     };
 
     return data;

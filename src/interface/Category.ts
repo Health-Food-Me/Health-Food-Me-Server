@@ -1,6 +1,8 @@
+import { Types } from "mongoose";
+
 interface Category {
   title: string;
-  prescriptions: string[];
+  prescription: Types.ObjectId;
   isDiet: boolean;
 }
 
