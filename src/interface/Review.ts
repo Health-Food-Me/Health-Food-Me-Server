@@ -4,7 +4,10 @@ interface Review {
   score: number;
   content: string;
   image: string[];
-  reason: string[];
+  reason: {
+    taste: string;
+    good: string[];
+  };
 }
 
 export default Review;

@@ -21,7 +21,13 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
   },
   image: [{ type: String }],
-  reason: [{ type: String }],
+  reason: {
+    taste: {
+      type: String,
+      required: true,
+    },
+    good: [{ type: String }],
+  },
 });
 
 export default mongoose.model<MongoEntity<Review>>("Review", ReviewSchema);
