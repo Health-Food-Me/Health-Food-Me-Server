@@ -1,6 +1,9 @@
 interface Prescription {
   category: string;
-  content: string;
+  content: {
+    recommend: string[];
+    eating: string[];
+  };
 }
 
 export default Prescription;
