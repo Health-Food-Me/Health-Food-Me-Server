@@ -272,4 +272,5 @@ export default {
   getMenuDetail,
   getAroundRestaurants,
   getPrescription,
+  getScore,
 };
