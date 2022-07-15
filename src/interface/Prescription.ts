@@ -4,7 +4,7 @@ interface Prescription {
   category: Types.ObjectId;
   content: {
     recommend: string[];
-    eating: string[];
+    tip: string[];
   };
 }
 

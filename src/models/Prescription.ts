@@ -15,7 +15,7 @@ const PrescriptionSchema = new mongoose.Schema({
         required: true,
       },
     ],
-    eating: [
+    tip: [
       {
         type: String,
         require: true,
