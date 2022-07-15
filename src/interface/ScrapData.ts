@@ -4,4 +4,7 @@ export interface ScrapData {
   logo: string;
   score: number;
   category: string;
+  hashtag: string[];
+  latitude: number;
+  longtitude: number;
 }

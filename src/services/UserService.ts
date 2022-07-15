@@ -3,8 +3,11 @@ import User from "../models/User";
 import exceptionMessage from "../modules/exceptionMessage";
 import { authStrategy } from "./SocialAuthStrategy";
 import UserProfileDto from "../interface/UserProfile";
+import ICategory from "../interface/Category";
 import RestaurantService from "./RestaurantService";
 import { ScrapData } from "../interface/ScrapData";
+import Restaurant from "../models/Restaurant";
+import { Types } from "mongoose";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
@@ -130,9 +133,12 @@ const getUserScrpaList = async (userId: string) => {
     const scrapList: ScrapData[] = [];
     if (userScrap != undefined) {
       const promises = userScrap.map(async (restaurantId) => {
-        const restaurant = await RestaurantService.getRestaurantSummary(
-          restaurantId,
-          userId,
+        const restaurant = await Restaurant.findById(restaurantId).populate<{
+          category: ICategory;
+        }>("category");
+
+        const score = await RestaurantService.getScore(
+          restaurant?.reviews as Types.ObjectId[],
         );
 
         if (!restaurant) return null;
@@ -141,8 +147,11 @@ const getUserScrpaList = async (userId: string) => {
           _id: restaurant._id,
           name: restaurant.name as string,
           logo: restaurant.logo as string,
-          score: restaurant.score as number,
-          category: restaurant.category as string,
+          score: score,
+          category: restaurant.category.title,
+          hashtag: restaurant.hashtag,
+          latitude: restaurant.location.coordinates.at(0) as number,
+          longtitude: restaurant.location.coordinates.at(1) as number,
         };
         scrapList.push(data);
       });
