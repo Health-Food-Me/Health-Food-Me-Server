@@ -2,39 +2,32 @@ import { logger } from "../config/winstonConfig";
 import MenuData from "../interface/menuData";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
 import ICategory from "../interface/Category";
-import IReview from "../interface/Review";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
-import Nutrient from "../models/Nutrient";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
 import Prescription from "../models/Prescription";
+import { Types } from "mongoose";
+import INutrient from "../interface/Nutrient";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    const category = await Category.findById(restaurant?.category);
-    const reviews = restaurant?.reviews;
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory;
+    }>("category");
     const user = await User.findById(userId);
-    const scraps = user?.scrapRestaurants;
 
-    let score = 0;
-    let review;
-    if (reviews !== undefined) {
-      const promises = reviews.map(async (reviewId) => {
-        review = await Review.findById(reviewId);
-        score = score + (review as IReview).score;
-      });
-      await Promise.all(promises);
-
-      if (reviews.length > 0) {
-        score = Number((score / reviews.length).toFixed(1));
-      }
+    if (!restaurant || !user) {
+      return null;
     }
 
+    const reviewList = restaurant.reviews;
+    const score = await getScore(reviewList);
+    const scrapList = user?.scrapRestaurants;
+
     let isScrap = false;
-    if (scraps?.find((x) => x == restaurantId) !== undefined) {
+    if (scrapList?.find((x) => x == restaurantId) !== undefined) {
       isScrap = true;
     }
 
@@ -42,7 +35,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       _id: restaurantId,
       name: restaurant?.name,
       logo: restaurant?.logo,
-      category: category?.title,
+      category: restaurant?.category.title,
       hashtag: restaurant?.hashtag,
       score: score,
       isScrap: isScrap,
@@ -51,8 +44,35 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
     throw error;
   }
+};
+
+const getScore = async (reviewList: Types.ObjectId[]) => {
+  if (reviewList == undefined) {
+    return 0;
+  }
+
+  if (reviewList.length <= 0) {
+    return 0;
+  }
+
+  let score = 0;
+
+  const promises = reviewList.map(async (reviewId) => {
+    const review = await Review.findById(reviewId);
+    if (review != undefined) {
+      score = score + review?.score;
+    }
+  });
+  await Promise.all(promises);
+
+  score = Number((score / reviewList.length).toFixed(1));
+
+  return score;
 };
 
 const getMenuDetail = async (
@@ -61,12 +81,16 @@ const getMenuDetail = async (
   longtitude: number,
 ) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    const category = await Category.findById(restaurant?.category);
-    const menuIdArray = restaurant?.menus;
-    const restaurantLatitude = restaurant?.location.coordinates.at(0);
-    const restaurantLongtitude = restaurant?.location.coordinates.at(1);
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory;
+    }>("category");
 
+    if (!restaurant) {
+      return null;
+    }
+
+    const restaurantLatitude = restaurant.location.coordinates.at(0);
+    const restaurantLongtitude = restaurant.location.coordinates.at(1);
     const distance = await getDistance(
       latitude,
       longtitude,
@@ -74,28 +98,8 @@ const getMenuDetail = async (
       restaurantLongtitude as number,
     );
 
-    const menus: MenuData[] = [];
-    if (menuIdArray !== undefined) {
-      const promise = menuIdArray?.map(async (menuId) => {
-        const menu = await Menu.findById(menuId);
-        const nutrient = await Nutrient.findById(menu?.nutrient);
-
-        const menuData: MenuData = {
-          _id: menuId,
-          name: menu?.name as string,
-          image: menu?.image as string,
-          kcal: nutrient?.kcal as number,
-          carbohydrate: nutrient?.carbohydrate as number,
-          protein: nutrient?.protein as number,
-          fat: nutrient?.fat as number,
-          price: menu?.price as number,
-          isPick: menu?.isHelfoomePick as boolean,
-        };
-
-        menus.push(menuData);
-      });
-      await Promise.all(promise);
-    }
+    const menuIdList = restaurant.menus;
+    const menuList = await getMenuList(menuIdList);
 
     const data = {
       restaurant: {
@@ -103,18 +107,21 @@ const getMenuDetail = async (
         distance: distance,
         name: restaurant?.name,
         logo: restaurant?.logo,
-        category: category?.title,
+        category: restaurant?.category.title,
         hashtag: restaurant?.hashtag,
         address: restaurant?.address,
         workTime: restaurant?.worktime,
         contact: restaurant?.contact,
       },
-      menu: menus,
+      menu: menuList,
     };
 
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
     throw error;
   }
 };
@@ -145,6 +152,47 @@ const getDistance = async (
   else dist = Math.round(dist / 100) * 100;
 
   return dist;
+};
+
+const getMenuList = async (menuIdList: Types.ObjectId[]) => {
+  try {
+    if (menuIdList == undefined) {
+      return [];
+    }
+
+    if (menuIdList.length <= 0) {
+      return [];
+    }
+
+    const menuList: MenuData[] = [];
+
+    const promises = menuIdList.map(async (menuId) => {
+      const menu = await Menu.findById(menuId).populate<{
+        nutrient: INutrient;
+      }>("nutrient");
+
+      const menuData: MenuData = {
+        _id: menuId,
+        name: menu?.name as string,
+        image: menu?.image as string,
+        kcal: menu?.nutrient.kcal as number,
+        carbohydrate: menu?.nutrient.carbohydrate as number,
+        protein: menu?.nutrient.protein as number,
+        fat: menu?.nutrient.fat as number,
+        price: menu?.price as number,
+        isPick: menu?.isHelfoomePick as boolean,
+      };
+
+      menuList.push(menuData);
+    });
+    await Promise.all(promises);
+  } catch (error) {
+    logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
+    throw error;
+  }
 };
 
 const getAroundRestaurants = async (
@@ -180,22 +228,41 @@ const getAroundRestaurants = async (
 
 const getPrescription = async (restaurantId: string) => {
   try {
-    const categoryId = (await Restaurant.findById(restaurantId))?.category;
-    const prescription = await Prescription.findOne({ category: categoryId });
-
-    if (!prescription) {
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (restaurant == undefined) {
       return null;
     }
 
+    const category = await Category.findById(restaurant.category);
+    if (category == undefined) {
+      throw new Error("no category");
+    }
+
+    if (category.prescription == undefined) {
+      const data = {
+        category: category.title,
+        content: null,
+      };
+      return data;
+    }
+
+    const prescription = await Prescription.findById(category.prescription);
+    const content = prescription?.content;
+    if (content == undefined) {
+      throw new Error("no content of the prescription");
+    }
+
     const data = {
-      _id: prescription._id,
-      category: (await Category.findById(categoryId))?.title,
-      content: prescription.content,
+      category: category.title,
+      content: content,
     };
 
     return data;
   } catch (error) {
     logger.e(error);
+    if ((error as Error).name === "CastError") {
+      return null;
+    }
     throw error;
   }
 };

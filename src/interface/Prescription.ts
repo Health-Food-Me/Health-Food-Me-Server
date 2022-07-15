@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 interface Prescription {
-  category: string;
+  category: Types.ObjectId;
   content: string;
 }
 

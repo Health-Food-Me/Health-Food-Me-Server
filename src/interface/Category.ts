@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 
 interface Category {
   title: string;
-  prescriptions: Types.ObjectId;
+  prescription: Types.ObjectId;
   isDiet: boolean;
 }
 

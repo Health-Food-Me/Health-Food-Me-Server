@@ -7,9 +7,8 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  prescriptions: {
+  prescription: {
     type: mongoose.Types.ObjectId,
-    required: true,
     ref: "Prescription",
   },
   isDiet: {
