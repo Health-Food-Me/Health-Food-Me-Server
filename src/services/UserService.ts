@@ -150,8 +150,8 @@ const getUserScrpaList = async (userId: string) => {
           score: score,
           category: restaurant.category.title,
           hashtag: restaurant.hashtag,
-          latitude: restaurant.location.coordinates.at(0) as number,
-          longtitude: restaurant.location.coordinates.at(1) as number,
+          latitude: restaurant.location.coordinates.at(1) as number,
+          longtitude: restaurant.location.coordinates.at(0) as number,
         };
         scrapList.push(data);
       });
