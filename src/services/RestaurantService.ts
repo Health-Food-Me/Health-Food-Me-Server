@@ -102,6 +102,20 @@ const getMenuDetail = async (
     const menuIdList = restaurant.menus;
     const menuList = await getMenuList(menuIdList);
 
+    const time = restaurant.worktime;
+    let worktime;
+    if (time != undefined) {
+      worktime = [];
+      const promise = restaurant.worktime.map(async (data) => {
+        const timeData = data.split(" ");
+        // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
+        worktime.push(timeData[1]);
+      });
+      await Promise.all(promise);
+    } else {
+      worktime = null;
+    }
+
     const data = {
       restaurant: {
         _id: restaurantId,
@@ -111,7 +125,7 @@ const getMenuDetail = async (
         category: restaurant?.category.title,
         hashtag: restaurant?.hashtag,
         address: restaurant?.address,
-        workTime: restaurant?.worktime,
+        workTime: worktime,
         contact: restaurant?.contact,
       },
       menu: menuList,
