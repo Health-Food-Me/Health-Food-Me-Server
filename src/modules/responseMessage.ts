@@ -33,6 +33,7 @@ const message = {
   READ_RESTAURANT_SUMMARY_SUCCESS: "식당 요약 정보 조회 성공",
   READ_RESTAURANT_MENU_SUCCESS: "식당 상세 메뉴 정보 조회 성공",
   UPDATE_SCRAP_SUCCESS: "식당 스크랩 업데이트 성공",
+  SEARCH_RESTAURANT_CARD_SUCCESS: "식당 카드 검색 성공",
 
   // user
   READ_USER_PROFILE_SUCCESS: "유저 프로필 조회 성공",

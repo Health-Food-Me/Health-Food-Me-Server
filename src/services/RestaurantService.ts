@@ -200,9 +200,48 @@ const getPrescription = async (restaurantId: string) => {
   }
 };
 
+const getRestaurantCardList = async (
+  longtitude: number,
+  latitude: number,
+  zoom: number,
+  keyword: string,
+) => {
+  try {
+    const restaurantList = getAroundRestaurants(longtitude, latitude, zoom);
+
+    const searchList = (await restaurantList).filter((restaurant) =>
+      restaurant.name.includes(keyword),
+    );
+
+    const resultList: any[] = [];
+    const promises = searchList.map(async (data) => {
+      const restaurantId = data._id;
+      const restaurant = await Restaurant.findById(restaurantId).populate<{
+        category: ICategory;
+      }>("category");
+      // const score
+
+      const result = {
+        _id: restaurantId,
+        name: restaurant?.name,
+        category: restaurant?.category.title,
+      };
+
+      resultList.push(result);
+    });
+    await Promise.all(promises);
+
+    return resultList;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
   getPrescription,
+  getRestaurantCardList,
 };
