@@ -30,7 +30,7 @@ const getData = async (file_name: string) => {
         result.push(data);
       }
     }
-    console.log(result);
+
     return result;
   } catch (error) {
     console.log(error);
@@ -42,16 +42,20 @@ const addResstaurantData = async (req: Request, res: Response) => {
     const dataList = await getData("sampledata.csv");
     const result: any[] = [];
 
+    let i = 0;
+
     if (dataList != undefined) {
       const promises = dataList.map(async (data) => {
-        console.log(data.worktime);
-        // const worktime = data.split(",");
+        const worktime = data.worktime.split(",");
+        console.log(i);
 
-        /*
         const restaurant = new Restaurant({
-          location: [data.latitude, data.longtitude],
+          location: {
+            type: "Point",
+            coordinates: [Number(data.lontitude), Number(data.latitude)],
+          },
           name: data.name,
-          logo: "",
+          logo: `logo${data.name}`,
           category: "62d023eaf06f30da37ce0629",
           hashtag: [],
           address: data.address,
@@ -62,7 +66,8 @@ const addResstaurantData = async (req: Request, res: Response) => {
         });
 
         await restaurant.save();
-        */
+
+        i = i + 1;
       });
       await Promise.all(promises);
     }
