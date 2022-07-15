@@ -107,14 +107,14 @@ const scrapRestaurant = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const restaurantId = req.params.restaurantId;
 
-  if (!userId || !restaurantId) {
-    return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
-  }
-
   try {
     const isScrap = await UserService.scrapRestaurant(userId, restaurantId);
+
+    if (!isScrap) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     const data = { isScrap: isScrap };
 
@@ -143,12 +143,6 @@ const scrapRestaurant = async (req: Request, res: Response) => {
  */
 const getUserScrpaList = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-
-  if (!userId) {
-    return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
-  }
 
   try {
     const scrapList = await UserService.getUserScrpaList(userId);
@@ -188,12 +182,6 @@ const getUserScrpaList = async (req: Request, res: Response) => {
  */
 const getUserProfile = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-
-  if (!userId) {
-    return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
-  }
 
   try {
     const userProfile = await UserService.getUserProfile(userId);
@@ -290,12 +278,6 @@ const updateUserProfile = async (req: Request, res: Response) => {
  */
 const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
-
-  if (!userId) {
-    return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
-  }
 
   try {
     const result = await UserService.withdrawUser(userId);
