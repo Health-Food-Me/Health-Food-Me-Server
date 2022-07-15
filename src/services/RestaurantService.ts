@@ -9,7 +9,7 @@ import Review from "../models/Review";
 import User from "../models/User";
 import Prescription from "../models/Prescription";
 import { Types } from "mongoose";
-import INutrient from "../interface/Nutrient";
+//import INutrient from "../interface/Nutrient";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -167,18 +167,21 @@ const getMenuList = async (menuIdList: Types.ObjectId[]) => {
     const menuList: MenuData[] = [];
 
     const promises = menuIdList.map(async (menuId) => {
+      /*
       const menu = await Menu.findById(menuId).populate<{
         nutrient: INutrient;
       }>("nutrient");
+      */
+      const menu = await Menu.findById(menuId);
 
       const menuData: MenuData = {
         _id: menuId,
         name: menu?.name as string,
         image: menu?.image as string,
-        kcal: menu?.nutrient.kcal as number,
-        carbohydrate: menu?.nutrient.carbohydrate as number,
-        protein: menu?.nutrient.protein as number,
-        fat: menu?.nutrient.fat as number,
+        //kcal: menu?.nutrient.kcal as number,
+        //carbohydrate: menu?.nutrient.carbohydrate as number,
+        //protein: menu?.nutrient.protein as number,
+        //fat: menu?.nutrient.fat as number,
         price: menu?.price as number,
         isPick: menu?.isHelfoomePick as boolean,
       };
