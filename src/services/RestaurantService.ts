@@ -2,6 +2,7 @@ import { logger } from "../config/winstonConfig";
 import MenuData from "../interface/menuData";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
 import ICategory from "../interface/Category";
+import INutrient from "../interface/Nutrient";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Restaurant from "../models/Restaurant";
@@ -9,7 +10,7 @@ import Review from "../models/Review";
 import User from "../models/User";
 import Prescription from "../models/Prescription";
 import { Types } from "mongoose";
-import INutrient from "../interface/Nutrient";
+import RestaurantCard from "../interface/restaurantCard";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -267,10 +268,68 @@ const getPrescription = async (restaurantId: string) => {
   }
 };
 
+const getRestaurantCardList = async (
+  longtitude: number,
+  latitude: number,
+  zoom: number,
+  keyword: string,
+) => {
+  try {
+    const restaurantList = getAroundRestaurants(longtitude, latitude, zoom);
+
+    const searchList = (await restaurantList).filter((restaurant) =>
+      restaurant.name.includes(keyword),
+    );
+
+    const resultList: RestaurantCard[] = [];
+    const promises = searchList.map(async (data) => {
+      const restaurantId = data._id;
+      const restaurant = await Restaurant.findById(restaurantId).populate<{
+        category: ICategory;
+      }>("category");
+
+      if (restaurant != undefined) {
+        const reviewList = restaurant.reviews;
+        const score = await getScore(reviewList);
+        const restaurantLatitude = restaurant.location.coordinates.at(
+          0,
+        ) as number;
+        const restaurantLongtitude = restaurant.location.coordinates.at(
+          1,
+        ) as number;
+        const distance = await getDistance(
+          latitude,
+          longtitude,
+          restaurantLatitude,
+          restaurantLongtitude,
+        );
+
+        const result: RestaurantCard = {
+          _id: restaurant._id,
+          name: restaurant.name,
+          category: restaurant.category.title,
+          score: score,
+          distance: distance,
+          logo: restaurant.logo,
+        };
+
+        resultList.push(result);
+      }
+    });
+    await Promise.all(promises);
+
+    return resultList;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
   getPrescription,
+  getRestaurantCardList,
   getScore,
 };
