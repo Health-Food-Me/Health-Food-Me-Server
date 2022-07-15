@@ -90,8 +90,8 @@ const getMenuDetail = async (
       return null;
     }
 
-    const restaurantLatitude = restaurant.location.coordinates.at(0);
-    const restaurantLongtitude = restaurant.location.coordinates.at(1);
+    const restaurantLatitude = restaurant.location.coordinates.at(1);
+    const restaurantLongtitude = restaurant.location.coordinates.at(0);
     const distance = await getDistance(
       latitude,
       longtitude,
@@ -215,8 +215,8 @@ const getAroundRestaurants = async (
       return {
         _id: restaurant._id as string,
         name: restaurant.name,
-        longitude: restaurant.location.coordinates.at(1),
-        latitude: restaurant.location.coordinates.at(0),
+        longitude: restaurant.location.coordinates.at(0),
+        latitude: restaurant.location.coordinates.at(1),
         isDietRestaurant: restaurant.category.isDiet,
       };
     });
@@ -331,4 +331,5 @@ export default {
   getAroundRestaurants,
   getPrescription,
   getRestaurantCardList,
+  getScore,
 };
