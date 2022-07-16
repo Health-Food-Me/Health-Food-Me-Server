@@ -89,7 +89,7 @@ const deleteReview = async (req: Request, res: Response) => {
     await ReviewService.deleteReview(reviewId);
     return res
       .status(statusCode.OK)
-      .send(BaseResponse.success(statusCode.OK, message.READ_REVIEWS_BY_USER));
+      .send(BaseResponse.success(statusCode.OK, message.DELETE_REVIEW));
   } catch (error) {
     logger.e(`Review deleteReview ${error}`);
     return res
