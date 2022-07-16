@@ -43,6 +43,40 @@ const getReviewByRestaurant = async (req: Request, res: Response) => {
   }
 };
 
+const getReviewsByUser = async (req: Request, res: Response) => {
+  const userId: string = req.params.userId;
+
+  if (!userId) {
+    return res
+      .status(statusCode.NOT_FOUND)
+      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+  }
+
+  try {
+    const reviews = await ReviewService.getReviewsByUser(userId);
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.READ_REVIEWS_BY_USER,
+          reviews,
+        ),
+      );
+  } catch (error) {
+    logger.e(`Review getReviewByRestaurant ${error}`);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getReviewByRestaurant,
+  getReviewsByUser,
 };

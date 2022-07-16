@@ -46,6 +46,7 @@ const message = {
 
   // review
   READ_REVIEWS_BY_RESTAURANT: "식당 리뷰 조회 성공",
+  READ_REVIEWS_BY_USER: "내가 쓴 리뷰 조회 성공",
 
   // prescription
   READ_PRESCRIPTION_SUCCESS: "외식 대처법 조회 성공",
