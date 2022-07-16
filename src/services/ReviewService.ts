@@ -1,4 +1,6 @@
+import axios from "axios";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
+import { NaverBlogReviewResponse } from "../interface/Review";
 import IUser from "../interface/User";
 import Review from "../models/Review";
 
@@ -48,8 +50,27 @@ const deleteReview = async (id: string) => {
   await Review.deleteOne({ _id: id });
 };
 
+const getReviewsFromNaver = async (name: string) => {
+  const encodedName = encodeURI(name);
+  const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${encodedName}`;
+  const result = await axios.get<NaverBlogReviewResponse>(requestUrl, {
+    headers: {
+      "X-Naver-Client-Id": "SG2hLClLCFrOIl5uQh3y",
+      "X-Naver-Client-Secret": "xwsh8rft0T",
+    },
+  });
+
+  const blogReviews: NaverBlogReviewResponse = {
+    start: result.data.start,
+    display: result.data.display,
+    items: result.data.items,
+  };
+  return blogReviews;
+};
+
 export default {
   getReviewsByRestaurant,
   getReviewsByUser,
   deleteReview,
+  getReviewsFromNaver,
 };

@@ -11,5 +11,10 @@ router.get(
 );
 router.get("/user/:userId", auth, ReviewController.getReviewsByUser);
 router.delete("/:reviewId", auth, ReviewController.deleteReview);
+router.get(
+  "/restaurant/:name/blog",
+  auth,
+  ReviewController.getReviewsFromNaver,
+);
 
 export default router;
