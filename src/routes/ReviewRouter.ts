@@ -10,5 +10,6 @@ router.get(
   ReviewController.getReviewByRestaurant,
 );
 router.get("/user/:userId", auth, ReviewController.getReviewsByUser);
+router.delete("/:reviewId", auth, ReviewController.deleteReview);
 
 export default router;
