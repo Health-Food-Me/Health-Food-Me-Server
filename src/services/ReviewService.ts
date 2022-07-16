@@ -2,7 +2,6 @@ import { logger } from "../config/winstonConfig";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
 import axios from "axios";
-import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import { NaverBlogReviewResponse } from "../interface/Review";
 import IUser from "../interface/User";
 import Restaurant from "../models/Restaurant";
