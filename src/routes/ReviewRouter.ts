@@ -1,9 +1,7 @@
 import { Router } from "express";
-import { ReviewController } from "../controllers";
-import { body } from "express-validator/check";
-
-import auth from "../middleware/auth";
 import upload from "../config/multer";
+import { ReviewController } from "../controllers";
+import auth from "../middleware/auth";
 
 const router = Router();
 

@@ -1,7 +1,7 @@
+import axios from "axios";
 import { logger } from "../config/winstonConfig";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
-import axios from "axios";
 import { NaverBlogReviewResponse } from "../interface/Review";
 import IUser from "../interface/User";
 import Restaurant from "../models/Restaurant";
@@ -94,13 +94,13 @@ const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
     if (reviewList != undefined) {
       reviewList.push(data._id);
       await Restaurant.findByIdAndUpdate(reviewResponseDto.restaurantId, {
-        $set: { reviews: reviewList }
+        $set: { reviews: reviewList },
       });
     } else {
-        await Restaurant.findByIdAndUpdate(reviewResponseDto.restaurantId, {
-          $set: { reviews: [data._id] }
-        });
-      }
+      await Restaurant.findByIdAndUpdate(reviewResponseDto.restaurantId, {
+        $set: { reviews: [data._id] },
+      });
+    }
 
     return data;
   } catch (error) {

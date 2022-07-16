@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import "dotenv/config";

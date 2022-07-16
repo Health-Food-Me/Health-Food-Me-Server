@@ -1,7 +1,5 @@
-import e, { Request, Response } from "express";
-import { validationResult } from "express-validator";
+import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
-import Restaurant from "../models/Restaurant";
 import BaseResponse from "../modules/BaseResponse";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
@@ -45,7 +43,6 @@ const getReviewByRestaurant = async (req: Request, res: Response) => {
       );
   }
 };
-
 
 const getReviewsByUser = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
@@ -157,13 +154,15 @@ const createReview = async (req: Request, res: Response) => {
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
-  
+
   try {
     let imageList: string[];
     if (req.files) {
-      imageList = await Promise.all(images.map((image: Express.MulterS3.File) => {
-        return image.location
-      }));
+      imageList = await Promise.all(
+        images.map((image: Express.MulterS3.File) => {
+          return image.location;
+        }),
+      );
     } else {
       imageList = [];
     }
