@@ -44,6 +44,9 @@ const message = {
   READ_SCRAP_LIST_SUCCESS: "스크랩 식당 리스트 조회 성공",
   READ_AROUND_RESTAURANT_SUCCESS: "주변 식당 조회 성공",
 
+  // review
+  READ_REVIEWS_BY_RESTAURANT: "식당 리뷰 조회 성공",
+
   // prescription
   READ_PRESCRIPTION_SUCCESS: "외식 대처법 조회 성공",
 };
