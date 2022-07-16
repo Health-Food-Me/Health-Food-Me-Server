@@ -13,7 +13,27 @@ const getReviewsByRestaurant = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      reason: {
+      hashtag: {
+        taste: review.hashtag.taste,
+        good: review.hashtag.good,
+      },
+    };
+  });
+  return reviewDto;
+};
+
+const getReviewsByUser = async (id: string) => {
+  const reviews = await Review.find({
+    writer: id,
+  }).populate<{ writer: IUser }>("writer");
+
+  const reviewDto: GetReviewsDto[] = reviews.map((review) => {
+    return {
+      writer: review.writer,
+      score: review.score,
+      content: review.content,
+      image: review.image,
+      hashtag: {
         taste: review.hashtag.taste,
         good: review.hashtag.good,
       },
@@ -24,4 +44,5 @@ const getReviewsByRestaurant = async (id: string) => {
 
 export default {
   getReviewsByRestaurant,
+  getReviewsByUser,
 };

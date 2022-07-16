@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 interface Review {
-  restaurantId: string;
+  restaurant: mongoose.Types.ObjectId;
   writer: mongoose.Types.ObjectId;
   score: number;
   content: string;
   image: string[];
-  reason: {
+  hashtag: {
     taste: string;
     good: string[];
   };
