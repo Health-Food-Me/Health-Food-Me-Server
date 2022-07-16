@@ -1,16 +1,19 @@
+import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import MenuData from "../interface/menuData";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
 import ICategory from "../interface/Category";
+import MenuData from "../interface/menuData";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
+import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-import Prescription from "../models/Prescription";
-import { Types } from "mongoose";
 //import INutrient from "../interface/Nutrient";
+import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import RestaurantCard from "../interface/restaurantCard";
+
+export const DietCategory = ["샐러드", "포케", "키토김밥"];
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -342,6 +345,28 @@ const getRestaurantCardList = async (
   }
 };
 
+const getSearchAutoCompleteResult = async (query: string) => {
+  const result = await Restaurant.find({
+    name: { $regex: query },
+  }).populate<{ category: ICategory }>("category");
+
+  const dietCategories = await Category.find({ isDiet: true });
+
+  const dietCategoryTitles = dietCategories.map((category) => {
+    return category.title;
+  });
+
+  const data: AutoCompleteSearchDto[] = result.map((restaurant) => {
+    return {
+      _id: restaurant._id,
+      name: restaurant.name,
+      isDietRestaurant: dietCategoryTitles.includes(restaurant.category.title),
+    };
+  });
+
+  return data;
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
@@ -349,4 +374,5 @@ export default {
   getPrescription,
   getRestaurantCardList,
   getScore,
+  getSearchAutoCompleteResult,
 };

@@ -18,5 +18,9 @@ router.get(
   auth,
   RestaurantController.getRestaurantSummary,
 );
-
+router.get(
+  "/search/auto",
+  auth,
+  RestaurantController.getSearchAutoCompleteResult,
+);
 export default router;
