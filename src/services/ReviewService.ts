@@ -9,6 +9,7 @@ const getReviewsByRestaurant = async (id: string) => {
 
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
+      id: review._id,
       writer: review.writer,
       score: review.score,
       content: review.content,
@@ -29,6 +30,7 @@ const getReviewsByUser = async (id: string) => {
 
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
+      id: review._id,
       writer: review.writer,
       score: review.score,
       content: review.content,
@@ -42,7 +44,12 @@ const getReviewsByUser = async (id: string) => {
   return reviewDto;
 };
 
+const deleteReview = async (id: string) => {
+  await Review.deleteOne({ _id: id });
+};
+
 export default {
   getReviewsByRestaurant,
   getReviewsByUser,
+  deleteReview,
 };
