@@ -38,11 +38,16 @@ const getReviewsByUser = async (id: string) => {
         good: review.hashtag.good,
       },
     };
-  });
+  });(
   return reviewDto;
+};
+
+const deleteReview = async (id: string) => {
+  await Review.deleteOne({ _id: id })
 };
 
 export default {
   getReviewsByRestaurant,
   getReviewsByUser,
+  deleteReview,
 };
