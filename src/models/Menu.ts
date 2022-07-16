@@ -16,6 +16,12 @@ const MenuSchema = new mongoose.Schema({
     //required: true,
     ref: "Nutrient",
   },
+  kcal: {
+    type: Number,
+  },
+  per: {
+    type: Number,
+  },
   price: {
     type: Number,
     required: true,
