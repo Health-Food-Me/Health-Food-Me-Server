@@ -47,6 +47,7 @@ const message = {
   // review
   READ_REVIEWS_BY_RESTAURANT: "식당 리뷰 조회 성공",
   READ_REVIEWS_BY_USER: "내가 쓴 리뷰 조회 성공",
+  READ_REVIEWS_FROM_NAVER: "네이버 블로그 리뷰 조회 성공",
   DELETE_REVIEW: "리뷰 삭제 성공",
 
   // prescription
