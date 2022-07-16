@@ -26,4 +26,10 @@ export default {
    */
   jwtSecret: process.env.JWT_SECRET as string,
   jwtAlgo: process.env.JWT_ALGORITHM as string,
+
+  /**
+   * Naver
+   */
+  naverClientId: process.env.NAVER_CLIENT_ID as string,
+  naverClientSecret: process.env.NAVER_CLIENT_SECRET as string,
 };
