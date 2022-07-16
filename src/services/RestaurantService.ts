@@ -350,11 +350,17 @@ const getSearchAutoCompleteResult = async (query: string) => {
     name: { $regex: query },
   }).populate<{ category: ICategory }>("category");
 
+  const dietCategories = await Category.find({ isDiet: true });
+
+  const dietCategoryTitles = dietCategories.map((category) => {
+    return category.title;
+  });
+
   const data: AutoCompleteSearchDto[] = result.map((restaurant) => {
     return {
       _id: restaurant._id,
       name: restaurant.name,
-      isDietRestaurant: DietCategory.includes(restaurant.category.title),
+      isDietRestaurant: dietCategoryTitles.includes(restaurant.category.title),
     };
   });
 
