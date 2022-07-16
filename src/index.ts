@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
+import multer from "multer";
 import nunjucks from "nunjucks";
 import config from "./config";
 import configMongoose from "./config/mongooseConfig";
@@ -29,13 +31,13 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "html");
+app.use(routes); //라우터
 nunjucks.configure("views", {
   express: app,
   watch: true,
 });
 
 app.use(morgan(morganFormat, { stream: logStream }));
-app.use(routes); //라우터
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 app.use(Sentry.Handlers.errorHandler());
@@ -50,15 +52,21 @@ app.use(function (
   err: ErrorType,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) {
+  if (err instanceof multer.MulterError) {
+    return res.json({
+      success: 0,
+      message: err.message,
+    });
+  }
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "production" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
+  res.send(err);
 });
 
 app
