@@ -5,6 +5,8 @@ import statusCode from "../modules/statusCode";
 import pathL = require("path");
 import fsL = require("fs");
 import Restaurant from "../models/Restaurant";
+import Prescription from "../models/Prescription";
+import Category from "../models/Category";
 
 const getData = async (file_name: string) => {
   try {
@@ -15,11 +17,13 @@ const getData = async (file_name: string) => {
     const result = [];
 
     let data = fs.readFileSync(filePath, "utf-8");
-    const rows = data.split("\n").join(",").split("\r");
-    console.log(rows);
+    console.log(data);
+    const rows = data.split("\n");
+    //console.log(rows);
 
     for (const rowIndex in rows) {
-      const row = rows[rowIndex].split(":");
+      const row = rows[rowIndex].split(",");
+      //console.log(row);
       if (rowIndex === "0") {
         var columns = row;
       } else {
@@ -31,6 +35,7 @@ const getData = async (file_name: string) => {
         result.push(data);
       }
     }
+    //console.log(result);
 
     return result;
   } catch (error) {
@@ -40,24 +45,26 @@ const getData = async (file_name: string) => {
 
 const addResstaurantData = async (req: Request, res: Response) => {
   try {
-    const dataList = await getData("sampledata.csv");
+    const dataList = await getData("restaurant_data.csv");
     const result: any[] = [];
 
-    let i = 0;
+    //console.log(dataList);
+
 
     if (dataList != undefined) {
       const promises = dataList.map(async (data) => {
-        const worktime = data.worktime.split(",");
-        console.log(i);
+        const worktime = data.time.split("/");
+
+        const category = await Category.findOne({ title: data.category });
 
         const restaurant = new Restaurant({
           location: {
             type: "Point",
-            coordinates: [Number(data.lontitude), Number(data.latitude)],
+            coordinates: [Number(data.longtitude), Number(data.latitude)],
           },
           name: data.name,
           logo: `logo${data.name}`,
-          category: "62d023eaf06f30da37ce0629",
+          category: category?._id,
           hashtag: [],
           address: data.address,
           worktime: worktime,
@@ -67,11 +74,10 @@ const addResstaurantData = async (req: Request, res: Response) => {
         });
 
         await restaurant.save();
-
-        i = i + 1;
       });
       await Promise.all(promises);
     }
+
 
     return res
       .status(statusCode.OK)
@@ -93,7 +99,32 @@ const addCategoryData = async (req: Request, res: Response) => {
   try {
     const dataList = await getData("category_data.csv");
 
-    //console.log(dataList);
+    if (dataList != undefined) {
+      const promises = dataList.map(async (data) => {
+        const prescription = new Prescription({
+          category: "62d023eaf06f30da37ce0629",
+          content: {
+            recommend: data.recommend.split("/"),
+            tip: data.tip.split("/"),
+          },
+        });
+
+        const newPrescription = await prescription.save();
+
+        const category = new Category({
+          title: data.category,
+          prescription: newPrescription._id,
+          isDiet: data.isDiet,
+        });
+
+        const newCategory = await category.save();
+
+        await Prescription.findByIdAndUpdate(newPrescription._id, {
+          $set: { category: newCategory._id },
+        });
+      });
+      await Promise.all(promises);
+    }
 
     return res
       .status(statusCode.OK)

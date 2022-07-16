@@ -3,6 +3,6 @@ import DataConroller from "../data/DataConroller";
 
 const router: Router = Router();
 
-router.get("/", DataConroller.addCategoryData);
+router.get("/", DataConroller.addResstaurantData);
 
 export default router;
