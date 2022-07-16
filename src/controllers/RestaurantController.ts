@@ -242,10 +242,52 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /restaurant/search/auto?query=<검색어>
+ * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
+ * @access Private
+ */
+const getSearchAutoCompleteResult = async (req: Request, res: Response) => {
+  const query = req.query.query;
+
+  if (!query) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const data = await RestaurantService.getSearchAutoCompleteResult(
+      query as string,
+    );
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.AUTO_KEYWORD_SEARCH_RESTAURANT_SUCCESS,
+          data,
+        ),
+      );
+  } catch (error) {
+    logger.e("RestaurantController.getSearchAutoCompleteResult error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
   getPrescription,
   searchRestaurantCardList,
+  getSearchAutoCompleteResult,
 };
