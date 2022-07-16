@@ -13,8 +13,6 @@ import User from "../models/User";
 import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import RestaurantCard from "../interface/restaurantCard";
 
-export const DietCategory = ["샐러드", "포케", "키토김밥"];
-
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
     const restaurant = await Restaurant.findById(restaurantId).populate<{

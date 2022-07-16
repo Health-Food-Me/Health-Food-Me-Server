@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
 import { SocialUser } from "../interface/SocialUser";
 import BaseResponse from "../modules/BaseResponse";
-import exceptionMessage from "../modules/exceptionMessage";
-import em from "../modules/exceptionMessage";
+import {
+  default as em,
+  default as exceptionMessage,
+} from "../modules/exceptionMessage";
 import jwt from "../modules/jwtHandler";
 import message from "../modules/responseMessage";
 import { default as sc, default as statusCode } from "../modules/statusCode";

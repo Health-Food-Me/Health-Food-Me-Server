@@ -12,4 +12,19 @@ interface Review {
   };
 }
 
+export interface NaverBlogReviewResponse {
+  start: number;
+  display: number;
+  items: BlogReviewContent[];
+}
+
+export interface BlogReviewContent {
+  title: string;
+  link: string;
+  description: string;
+  bloggername: string;
+  bloggerlink: string;
+  postdate: string;
+}
+
 export default Review;
