@@ -1,10 +1,10 @@
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import config from "../config";
 import { logger } from "../config/winstonConfig";
 import em from "./exceptionMessage";
 
-const sign = (userId: mongoose.Schema.Types.ObjectId, email: string) => {
+const sign = (userId: Types.ObjectId, email: string) => {
   const payload = {
     id: userId,
     email: email,
