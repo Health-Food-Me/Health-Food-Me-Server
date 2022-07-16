@@ -2,12 +2,10 @@ import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
-import morgan from "morgan";
-import nunjucks from "nunjucks";
 import config from "./config";
 import configMongoose from "./config/mongooseConfig";
-import { logStream } from "./config/winstonConfig";
 import routes from "./routes";
+import multer from "multer";
 
 const app = express();
 
@@ -22,19 +20,11 @@ Sentry.init({
 
 configMongoose();
 
-const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
-
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "html");
-nunjucks.configure("views", {
-  express: app,
-  watch: true,
-});
-
-app.use(morgan(morganFormat, { stream: logStream }));
 app.use(routes); //라우터
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -46,19 +36,20 @@ interface ErrorType {
 }
 
 // 모든 에러
-app.use(function (
-  err: ErrorType,
-  req: Request,
-  res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction,
-) {
+app.use(function (err: ErrorType, req: Request, res: Response, next: NextFunction) {
+  if (err instanceof multer.MulterError) {
+    return res.json({
+      success: 0,
+      message: err.message
+    })
+  }
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "production" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
+  res.send(err)
 });
 
 app

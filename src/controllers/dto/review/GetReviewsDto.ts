@@ -5,7 +5,7 @@ interface GetReviewsDto {
   score: number;
   content: string;
   image: string[];
-  reason: ReviewTagDto;
+  hashtag: ReviewTagDto;
 }
 
 export interface ReviewTagDto {
