@@ -5,7 +5,6 @@ interface Menu {
   kcal: number;
   per: number;
   price: number;
-  from: string;
   isHelfoomePick: boolean;
 }
 
