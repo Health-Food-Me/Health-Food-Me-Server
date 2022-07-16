@@ -15,10 +15,11 @@ const getData = async (file_name: string) => {
     const result = [];
 
     let data = fs.readFileSync(filePath, "utf-8");
-    const rows = data.split("\n");
+    const rows = data.split("\n").join(",").split("\r");
+    console.log(rows);
 
     for (const rowIndex in rows) {
-      const row = rows[rowIndex].split("\t");
+      const row = rows[rowIndex].split(":");
       if (rowIndex === "0") {
         var columns = row;
       } else {
@@ -88,6 +89,29 @@ const addResstaurantData = async (req: Request, res: Response) => {
   }
 };
 
+const addCategoryData = async (req: Request, res: Response) => {
+  try {
+    const dataList = await getData("category_data.csv");
+
+    //console.log(dataList);
+
+    return res
+      .status(statusCode.OK)
+      .send(BaseResponse.success(statusCode.OK, message.CREATE_FEED_SUCCESS, dataList));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.success(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   addResstaurantData,
+  addCategoryData,
 };
