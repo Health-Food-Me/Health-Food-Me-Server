@@ -4,18 +4,18 @@ import Review from "../models/Review";
 
 const getReviewsByRestaurant = async (id: string) => {
   const reviews = await Review.find({
-    restaurantId: id,
-  }).populate<{ writerId: IUser }>("writerId");
+    restaurant: id,
+  }).populate<{ writer: IUser }>("writer");
 
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
-      writer: review.writerId,
+      writer: review.writer,
       score: review.score,
       content: review.content,
       image: review.image,
       reason: {
-        taste: review.reason.taste,
-        good: review.reason.good,
+        taste: review.hashtag.taste,
+        good: review.hashtag.good,
       },
     };
   });

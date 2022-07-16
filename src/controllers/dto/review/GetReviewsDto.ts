@@ -10,7 +10,7 @@ interface GetReviewsDto {
 
 export interface ReviewTagDto {
   taste: string;
-  good: string[] | null;
+  good: string[];
 }
 
 export default GetReviewsDto;

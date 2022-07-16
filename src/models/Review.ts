@@ -3,12 +3,12 @@ import Review from "../interface/Review";
 import { MongoEntity } from "./Model";
 
 const ReviewSchema = new mongoose.Schema({
-  restaurantId: {
+  restaurant: {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: "Restaurant",
   },
-  writerId: {
+  writer: {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: "User",
@@ -21,7 +21,7 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
   },
   image: [{ type: String }],
-  reason: {
+  hashtag: {
     taste: {
       type: String,
       required: true,
