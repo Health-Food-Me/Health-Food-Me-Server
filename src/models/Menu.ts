@@ -26,11 +26,6 @@ const MenuSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  from: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Restaurant",
-  },
   isHelfoomePick: {
     type: Boolean,
     required: true,
