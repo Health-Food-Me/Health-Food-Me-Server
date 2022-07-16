@@ -6,21 +6,12 @@ import statusCode from "../modules/statusCode";
 import RestaurantService from "../services/RestaurantService";
 
 /**
- * @route GET /restaurant/:restaurantId
+ * @route GET /restaurant/:restaurantId/:userId
  * @desc 식당 카드의 요약 정보를 호출
  * @access Private
  */
 const getRestaurantSummary = async (req: Request, res: Response) => {
-  const restaurantId = req.params.restaurantId;
-  const userId = req.params.userId;
-
-  if (!restaurantId || !userId) {
-    res
-      .status(statusCode.BAD_REQUEST)
-      .send(
-        BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE_PARAM),
-      );
-  }
+  const { restaurantId, userId } = req.params;
 
   try {
     const restaurant = await RestaurantService.getRestaurantSummary(
@@ -30,13 +21,8 @@ const getRestaurantSummary = async (req: Request, res: Response) => {
 
     if (!restaurant) {
       return res
-        .status(statusCode.NO_CONTENT)
-        .send(
-          BaseResponse.success(
-            statusCode.NO_CONTENT,
-            message.READ_RESTAURANT_SUMMARY_SUCCESS,
-          ),
-        );
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
     }
 
     return res
@@ -71,7 +57,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
   const latitude = req.query.latitude;
   const longtitude = req.query.longtitude;
 
-  if (!restaurantId) {
+  if (!latitude || !longtitude) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
@@ -83,6 +69,12 @@ const getMenuDetail = async (req: Request, res: Response) => {
       Number(latitude),
       Number(longtitude),
     );
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
@@ -172,12 +164,6 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
 const getPrescription = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
 
-  if (!restaurantId) {
-    return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
-  }
-
   try {
     const prescription = await RestaurantService.getPrescription(restaurantId);
 
@@ -209,9 +195,57 @@ const getPrescription = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /restaurant/search/card?longtitude=<경도>&latitude=<위도>&zoom=<반경범위>&keyword=<검색어>
+ * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
+ * @access Private
+ */
+const searchRestaurantCardList = async (req: Request, res: Response) => {
+  const longtitude = req.query.longtitude;
+  const latitude = req.query.latitude;
+  const zoom = req.query.zoom;
+  const keyword = req.query.keyword;
+
+  if (!longtitude || !latitude || !zoom || !keyword) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const data = await RestaurantService.getRestaurantCardList(
+      Number(longtitude),
+      Number(latitude),
+      Number(zoom),
+      keyword as string,
+    );
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.SEARCH_RESTAURANT_CARD_SUCCESS,
+          data,
+        ),
+      );
+  } catch (error) {
+    logger.e("RestaurantController.searchRestaurantCardList error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
   getAroundRestaurants,
   getPrescription,
+  searchRestaurantCardList,
 };

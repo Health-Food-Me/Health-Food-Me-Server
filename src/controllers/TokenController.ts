@@ -61,6 +61,17 @@ const getToken = async (req: Request, res: Response) => {
       }
 
       const user = await UserService.findUserByRfToken(refreshToken as string);
+      if (!user) {
+        return res
+          .status(statusCode.UNAUTHORIZED)
+          .send(
+            BaseResponse.failure(
+              statusCode.UNAUTHORIZED,
+              message.INVALID_TOKEN,
+            ),
+          );
+      }
+
       const data = {
         accessToken: jwt.sign(user?._id, user?.email as string),
         refreshToken: refreshToken,

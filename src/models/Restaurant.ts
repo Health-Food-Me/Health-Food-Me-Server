@@ -27,7 +27,6 @@ const ResaturantSchema = new mongoose.Schema({
   logo: {
     type: String,
     required: true,
-    unique: true,
   },
   category: {
     type: mongoose.Types.ObjectId,

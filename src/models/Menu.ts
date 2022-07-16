@@ -13,8 +13,14 @@ const MenuSchema = new mongoose.Schema({
   },
   nutrient: {
     type: mongoose.Types.ObjectId,
-    required: true,
+    //required: true,
     ref: "Nutrient",
+  },
+  kcal: {
+    type: Number,
+  },
+  per: {
+    type: Number,
   },
   price: {
     type: Number,
