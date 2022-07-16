@@ -5,7 +5,10 @@ interface Review {
   writer: mongoose.Types.ObjectId;
   score: number;
   content: string;
-  image: string[];
+  image: {
+    name: string;
+    url: string;
+  }[];
   hashtag: {
     taste: string;
     good: string[];

@@ -11,9 +11,21 @@ const upload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: "public-read",
     key: function (req: Express.Request, file: Express.MulterS3.File, cb) {
-      cb(null, `${Date.now()}_${file.originalname}`);
+      file.originalname = `${Date.now()}_${file.originalname}`;
+      cb(null, file.originalname);
     },
   }),
 });
 
-export default upload;
+const s3Delete = async (location: string) => {
+  console.log(location);
+  s3.deleteObject({
+    Bucket: config.bucketName,
+    Key: location
+  })
+};
+
+export default {
+  upload,
+  s3Delete,
+}
