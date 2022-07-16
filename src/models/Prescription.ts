@@ -9,8 +9,18 @@ const PrescriptionSchema = new mongoose.Schema({
     ref: "Category",
   },
   content: {
-    type: String,
-    required: true,
+    recommend: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    tip: [
+      {
+        type: String,
+        require: true,
+      },
+    ],
   },
 });
 
