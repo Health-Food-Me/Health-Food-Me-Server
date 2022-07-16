@@ -1,4 +1,4 @@
-export interface User {
+interface User {
   name: string;
   social: string;
   socialId: string;
@@ -6,3 +6,5 @@ export interface User {
   scrapRestaurants: string[];
   refreshToken: string;
 }
+
+export default User;
