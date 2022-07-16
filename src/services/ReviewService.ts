@@ -51,14 +51,21 @@ const deleteReview = async (id: string) => {
 };
 
 const getReviewsFromNaver = async (name: string) => {
-  const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${name}`;
+  const encodedName = encodeURI(name);
+  const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${encodedName}`;
   const result = await axios.get<NaverBlogReviewResponse>(requestUrl, {
     headers: {
       "X-Naver-Client-Id": "SG2hLClLCFrOIl5uQh3y",
       "X-Naver-Client-Secret": "xwsh8rft0T",
     },
   });
-  return result;
+
+  const blogReviews: NaverBlogReviewResponse = {
+    start: result.data.start,
+    display: result.data.display,
+    items: result.data.items,
+  };
+  return blogReviews;
 };
 
 export default {
