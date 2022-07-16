@@ -64,7 +64,7 @@ const getReviewsByUser = async (req: Request, res: Response) => {
         ),
       );
   } catch (error) {
-    logger.e(`Review getReviewByRestaurant ${error}`);
+    logger.e(`Review getReviewsByUser ${error}`);
     return res
       .status(statusCode.INTERNAL_SERVER_ERROR)
       .send(

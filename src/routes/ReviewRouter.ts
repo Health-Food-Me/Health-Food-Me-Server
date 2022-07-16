@@ -9,5 +9,6 @@ router.get(
   auth,
   ReviewController.getReviewByRestaurant,
 );
+router.get("/user/:userId", auth, ReviewController.getReviewsByUser);
 
 export default router;
