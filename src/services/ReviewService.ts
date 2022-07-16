@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Types } from "mongoose";
 import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
@@ -57,15 +58,16 @@ const deleteReview = async (id: string, restaurantId: string) => {
 
   let reviewList = restaurant.reviews;
   console.log(reviewList);
-  reviewList = reviewList.filter((review) => { review != id });
-  console.log(reviewList);
-  
-  await Restaurant.findByIdAndUpdate(restaurantId, {
-    $set: { reviews: reviewList }
+  reviewList = reviewList.filter((review) => {
+    review != (id as unknown as Types.ObjectId);
   });
-/*
+  console.log(reviewList);
+
+  await Restaurant.findByIdAndUpdate(restaurantId, {
+    $set: { reviews: reviewList },
+  });
+
   await Review.deleteOne({ _id: id });
-  */
 };
 
 const getReviewsFromNaver = async (name: string) => {
@@ -132,8 +134,8 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     if (review == undefined) return null;
 
     const imageFileList = review.image;
-    let imageList: { name: string, url: string }[] = [];
-    
+    const imageList: { name: string; url: string }[] = [];
+
     const promises = imageFileList.map(async (file) => {
       if (reviewResponseDto.nameList.includes(file.name)) {
         imageList.push(file);
@@ -144,7 +146,7 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     await Promise.all(promises);
 
     const promiseMerge = reviewResponseDto.image.map(async (image) => {
-      imageList.push(image)
+      imageList.push(image);
     });
     await Promise.all(promiseMerge);
 
@@ -156,18 +158,17 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
         hashtag: reviewResponseDto.hashtag,
         content: reviewResponseDto.content,
         image: imageList,
-      }
+      },
     });
 
     const result = await Review.findById(reviewId);
-    
-    return result;
 
+    return result;
   } catch (error) {
     logger.e(error);
     throw error;
   }
-}
+};
 
 export default {
   getReviewsByRestaurant,

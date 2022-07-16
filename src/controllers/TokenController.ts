@@ -73,7 +73,7 @@ const getToken = async (req: Request, res: Response) => {
       }
 
       const data = {
-        accessToken: jwt.sign(user?._id, user?.email as string),
+        accessToken: jwt.sign(user._id, user.email),
         refreshToken: refreshToken,
       };
 
