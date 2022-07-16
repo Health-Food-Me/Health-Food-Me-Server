@@ -32,7 +32,7 @@ const getReviewByRestaurant = async (req: Request, res: Response) => {
       );
   } catch (error) {
     logger.e(`Review getReviewByRestaurant ${error}`);
-    return res  
+    return res
       .status(statusCode.INTERNAL_SERVER_ERROR)
       .send(
         BaseResponse.failure(
