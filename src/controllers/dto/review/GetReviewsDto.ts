@@ -6,7 +6,10 @@ interface GetReviewsDto {
   writer: User;
   score: number;
   content: string;
-  image: string[];
+  image: {
+    name: string;
+    url: string;
+  }[];
   hashtag: ReviewTagDto;
 }
 

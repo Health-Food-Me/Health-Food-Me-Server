@@ -21,7 +21,16 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: [{ type: String }],
+  image: [{
+      name: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      }
+    }],
   hashtag: {
     taste: {
       type: String,

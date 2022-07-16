@@ -1,4 +1,5 @@
 import axios from "axios";
+import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
@@ -49,8 +50,22 @@ const getReviewsByUser = async (id: string) => {
   return reviewDto;
 };
 
-const deleteReview = async (id: string) => {
+const deleteReview = async (id: string, restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
+
+  if (restaurant == undefined) return null;
+
+  let reviewList = restaurant.reviews;
+  console.log(reviewList);
+  reviewList = reviewList.filter((review) => { review != id });
+  console.log(reviewList);
+  
+  await Restaurant.findByIdAndUpdate(restaurantId, {
+    $set: { reviews: reviewList }
+  });
+/*
   await Review.deleteOne({ _id: id });
+  */
 };
 
 const getReviewsFromNaver = async (name: string) => {
@@ -109,10 +124,56 @@ const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
   }
 };
 
+const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
+  try {
+    const reviewId = reviewResponseDto.reviewId;
+    const review = await Review.findById(reviewId);
+
+    if (review == undefined) return null;
+
+    const imageFileList = review.image;
+    let imageList: { name: string, url: string }[] = [];
+    
+    const promises = imageFileList.map(async (file) => {
+      if (reviewResponseDto.nameList.includes(file.name)) {
+        imageList.push(file);
+      } else {
+        await multer.s3Delete(file.url);
+      }
+    });
+    await Promise.all(promises);
+
+    const promiseMerge = reviewResponseDto.image.map(async (image) => {
+      imageList.push(image)
+    });
+    await Promise.all(promiseMerge);
+
+    console.log(imageList);
+
+    await Review.findByIdAndUpdate(reviewResponseDto.reviewId, {
+      $set: {
+        score: reviewResponseDto.score,
+        hashtag: reviewResponseDto.hashtag,
+        content: reviewResponseDto.content,
+        image: imageList,
+      }
+    });
+
+    const result = await Review.findById(reviewId);
+    
+    return result;
+
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+}
+
 export default {
   getReviewsByRestaurant,
   createReview,
   getReviewsByUser,
   deleteReview,
   getReviewsFromNaver,
+  updateReview,
 };
