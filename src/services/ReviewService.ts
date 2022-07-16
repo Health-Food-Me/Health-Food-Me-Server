@@ -13,7 +13,7 @@ const getReviewsByRestaurant = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      reason: {
+      hashtag: {
         taste: review.hashtag.taste,
         good: review.hashtag.good,
       },
@@ -33,7 +33,7 @@ const getReviewsByUser = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      reason: {
+      hashtag: {
         taste: review.hashtag.taste,
         good: review.hashtag.good,
       },
