@@ -21,7 +21,8 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image: [{
+  image: [
+    {
       name: {
         type: String,
         required: true,
@@ -29,8 +30,9 @@ const ReviewSchema = new mongoose.Schema({
       url: {
         type: String,
         required: true,
-      }
-    }],
+      },
+    },
+  ],
   hashtag: {
     taste: {
       type: String,

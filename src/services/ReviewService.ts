@@ -56,17 +56,26 @@ const deleteReview = async (id: string, restaurantId: string) => {
 
   if (restaurant == undefined) return null;
 
-  let reviewList = restaurant.reviews;
-  console.log(reviewList);
-  reviewList = reviewList.filter((review) => {
+  // 식당 리뷰 id 배열에서 삭제
+  const reviewList = restaurant.reviews;
+  const updateList = reviewList.filter((review) => {
     review != (id as unknown as Types.ObjectId);
   });
-  console.log(reviewList);
 
   await Restaurant.findByIdAndUpdate(restaurantId, {
-    $set: { reviews: reviewList },
+    $set: { reviews: updateList },
   });
 
+  // aws 버킷에서 이미지 파일 삭제
+  const review = await Review.findById(id);
+  if (review == undefined) return null;
+
+  const promises = review.image.map(async (data) => {
+    await multer.s3Delete(data.name);
+  });
+  await Promise.all(promises);
+
+  // 데이터 삭제
   await Review.deleteOne({ _id: id });
 };
 
@@ -140,7 +149,7 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
       if (reviewResponseDto.nameList.includes(file.name)) {
         imageList.push(file);
       } else {
-        await multer.s3Delete(file.url);
+        await multer.s3Delete(file.name);
       }
     });
     await Promise.all(promises);
@@ -149,8 +158,6 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
       imageList.push(image);
     });
     await Promise.all(promiseMerge);
-
-    console.log(imageList);
 
     await Review.findByIdAndUpdate(reviewResponseDto.reviewId, {
       $set: {
