@@ -1,6 +1,6 @@
-import config from ".";
 import multer from "multer";
 import multerS3 from "multer-s3";
+import config from ".";
 import s3 from "./s3Config";
 
 // 미들웨어로 사용할 multer 생성
@@ -21,11 +21,11 @@ const s3Delete = async (location: string) => {
   console.log(location);
   s3.deleteObject({
     Bucket: config.bucketName,
-    Key: location
-  })
+    Key: location,
+  });
 };
 
 export default {
   upload,
   s3Delete,
-}
+};
