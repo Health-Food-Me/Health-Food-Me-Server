@@ -1,6 +1,6 @@
-import config from ".";
 import multer from "multer";
 import multerS3 from "multer-s3";
+import config from ".";
 import s3 from "./s3Config";
 import { logger } from "./winstonConfig";
 
