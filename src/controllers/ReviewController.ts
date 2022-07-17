@@ -90,6 +90,7 @@ const deleteReview = async (req: Request, res: Response) => {
 
   try {
     await ReviewService.deleteReview(reviewId, restaurantId);
+
     return res
       .status(statusCode.OK)
       .send(BaseResponse.success(statusCode.OK, message.DELETE_REVIEW));
@@ -159,13 +160,13 @@ const createReview = async (req: Request, res: Response) => {
 
   try {
     let imageList: {
-      name: string,
-      url: string
+      name: string;
+      url: string;
     }[];
     if (req.files) {
       imageList = await Promise.all(
         images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location }
+          return { name: image.originalname, url: image.location };
         }),
       );
     } else {
@@ -236,13 +237,13 @@ const updateReview = async (req: Request, res: Response) => {
 
   try {
     let imageList: {
-      name: string,
-      url: string
+      name: string;
+      url: string;
     }[];
     if (req.files) {
       imageList = await Promise.all(
         images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location }
+          return { name: image.originalname, url: image.location };
         }),
       );
     } else {
@@ -272,14 +273,14 @@ const updateReview = async (req: Request, res: Response) => {
     }
 
     return res
-    .status(statusCode.OK)
-    .send(
-      BaseResponse.success(
-        statusCode.OK,
-        message.UPDATE_REVIEW_SUCCESS,
-        data,
-      ),
-    );
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.UPDATE_REVIEW_SUCCESS,
+          data,
+        ),
+      );
   } catch (error) {
     logger.e("ReviewController.updateReview error", error);
     return res
@@ -291,7 +292,7 @@ const updateReview = async (req: Request, res: Response) => {
         ),
       );
   }
-}
+};
 
 export default {
   getReviewByRestaurant,

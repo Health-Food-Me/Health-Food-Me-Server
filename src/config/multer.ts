@@ -17,15 +17,20 @@ const upload = multer({
   }),
 });
 
-const s3Delete = async (location: string) => {
-  console.log(location);
-  s3.deleteObject({
-    Bucket: config.bucketName,
-    Key: location
-  })
+const s3Delete = async (key: string) => {
+  s3.deleteObject(
+    {
+      Bucket: config.bucketName,
+      Key: key,
+    },
+    (err) => {
+      if (err) throw err;
+      console.log(err);
+    },
+  );
 };
 
 export default {
   upload,
   s3Delete,
-}
+};
