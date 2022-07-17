@@ -32,14 +32,13 @@
     "http"
   ],
   "paths": {
-    "/auth/{social}": {
+    "/auth": {
       "post": {
         "tags": [
           "auth"
         ],
         "summary": "소셜로그인",
         "description": "Naver/Kakao/Apple 로그인",
-        "operationId": "addPet",
         "consumes": [
           "application/json"
         ],
@@ -48,23 +47,13 @@
         ],
         "parameters": [
           {
-            "name": "token",
-            "in": "header",
-            "description": "소셜 플랫폼에서 받아온 Access Token",
+            "in": "body",
+            "name": "body",
+            "description": "social: 소셜 플랫폼(naver/kakao/apple)\ntoken: 소셜 플랫폼에서 발급받은 access token",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "social",
-            "in": "path",
-            "description": "kakao/naver/apple중 하나를 적어야 함(소문자만)",
-            "required": true,
-            "type": "string",
-            "enum": [
-              "naver",
-              "apple",
-              "kakao"
-            ]
+            "schema": {
+              "$ref": "#/definitions/CreateUserDto"
+            }
           }
         ],
         "responses": {
@@ -82,6 +71,63 @@
           },
           "400": {
             "description": "Social 또는 Token이 들어오지 않은 경우/해당하는 소셜 유저가 없는 경우",
+            "schema": {
+              "$ref": "#/definitions/BadRequestDto"
+            }
+          },
+          "401": {
+            "description": "Token이 유효하지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/NonAutorizedDto"
+            }
+          },
+          "500": {
+            "description": "서버 내부 에러",
+            "schema": {
+              "$ref": "#/definitions/InternalServerErrorDto"
+            }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "토큰 재발급",
+        "description": "RefreshToken 활용하여 토큰 재발급",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accessToken",
+            "description": "만료된 AccessToken",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "refreshToken",
+            "description": "발급받은 refreshToken",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "토큰 재발급 성공",
+            "schema": {
+              "$ref": "#/definitions/PublishNewTokensDto"
+            }
+          },
+          "400": {
+            "description": "Token이 들어오지 않은 경우/AccessToken이 유효한 경우",
             "schema": {
               "$ref": "#/definitions/BadRequestDto"
             }
@@ -830,6 +876,17 @@
     }
   },
   "definitions": {
+    "CreateUserDto": {
+      "type": "object",
+      "properties": {
+        "social": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
     "SocialLoginDto": {
       "type": "object",
       "properties": {
@@ -995,6 +1052,35 @@
         "message": {
           "type": "string",
           "example": "서버 내부 오류"
+        }
+      }
+    },
+    "PublishNewTokensDto": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200,
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "토큰 재발급 성공"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "accessToken": {
+              "type": "string"
+            },
+            "refreshToken": {
+              "type": "string"
+            }
+          }
         }
       }
     },
