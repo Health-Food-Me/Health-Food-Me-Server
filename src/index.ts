@@ -6,6 +6,8 @@ import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import multer from "multer";
 import nunjucks from "nunjucks";
+import swaggerUi from "swagger-ui-express";
+import swaggerJson from "../swaggerJson.json";
 import config from "./config";
 import configMongoose from "./config/mongooseConfig";
 import { logStream } from "./config/winstonConfig";
@@ -39,6 +41,7 @@ nunjucks.configure("views", {
 
 app.use(morgan(morganFormat, { stream: logStream }));
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 app.use(Sentry.Handlers.errorHandler());
 
