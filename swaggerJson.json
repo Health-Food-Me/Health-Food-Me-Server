@@ -147,6 +147,57 @@
         }
       }
     },
+    "/auth/withdrawl/{userId}": {
+      "delete": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "유저 탈퇴",
+        "description": "유저 탈퇴",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "token",
+            "description": "발급받은 AccessToken",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "유저 Id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "토큰 재발급 성공",
+            "schema": {
+              "$ref": "#/definitions/EmptyDataDto"
+            }
+          },
+          "401": {
+            "description": "Token이 유효하지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/NonAutorizedDto"
+            }
+          },
+          "500": {
+            "description": "서버 내부 에러",
+            "schema": {
+              "$ref": "#/definitions/InternalServerErrorDto"
+            }
+          }
+        }
+      }
+    },
     "/pet/findByStatus": {
       "get": {
         "tags": [
@@ -876,6 +927,23 @@
     }
   },
   "definitions": {
+    "EmptyDataDto": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200,
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string",
+          "example": "Any Messages In Here"
+        }
+      }
+    },
     "CreateUserDto": {
       "type": "object",
       "properties": {
