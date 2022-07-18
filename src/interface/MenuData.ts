@@ -4,10 +4,11 @@ interface MenuData {
   _id: Types.ObjectId;
   name: string;
   image: string;
-  //kcal: number;
+  kcal: number;
   //carbohydrate: number;
   //protein: number;
   //fat: number;
+  per: number;
   price: number;
   isPick: boolean;
 }

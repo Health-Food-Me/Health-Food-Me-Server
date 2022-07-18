@@ -17,7 +17,7 @@ const getReviewsByRestaurant = async (id: string) => {
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
       id: review._id,
-      writer: review.writer,
+      writer: review.writer.name,
       score: review.score,
       content: review.content,
       image: review.image,
@@ -38,7 +38,7 @@ const getReviewsByUser = async (id: string) => {
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
       id: review._id,
-      writer: review.writer,
+      writer: review.writer.name,
       score: review.score,
       content: review.content,
       image: review.image,

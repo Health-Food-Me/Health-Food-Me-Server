@@ -9,7 +9,6 @@ import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-//import INutrient from "../interface/Nutrient";
 import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import RestaurantCard from "../interface/restaurantCard";
 
@@ -194,7 +193,8 @@ const getMenuList = async (menuIdList: Types.ObjectId[]) => {
         _id: menuId,
         name: menu?.name as string,
         image: menu?.image as string,
-        //kcal: menu?.nutrient.kcal as number,
+        kcal: menu?.kcal as number,
+        per: menu?.per as number,
         //carbohydrate: menu?.nutrient.carbohydrate as number,
         //protein: menu?.nutrient.protein as number,
         //fat: menu?.nutrient.fat as number,
@@ -205,6 +205,8 @@ const getMenuList = async (menuIdList: Types.ObjectId[]) => {
       menuList.push(menuData);
     });
     await Promise.all(promises);
+
+    return menuList;
   } catch (error) {
     logger.e(error);
     if ((error as Error).name === "CastError") {
@@ -266,10 +268,9 @@ const getPrescription = async (restaurantId: string) => {
     }
 
     const prescription = await Prescription.findById(category.prescription);
-    const content = prescription?.content;
-    if (content == undefined) {
-      throw new Error("no content of the prescription");
-    }
+    let content = prescription?.content;
+
+    if (prescription == undefined) content = { recommend: [], tip: [] };
 
     const data = {
       category: category.title,
