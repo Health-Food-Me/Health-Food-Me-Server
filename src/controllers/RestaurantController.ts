@@ -56,9 +56,9 @@ const getMenuDetail = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
   const userId = req.params.userId;
   const latitude = req.query.latitude;
-  const longtitude = req.query.longtitude;
+  const longitude = req.query.longitude;
 
-  if (!latitude || !longtitude) {
+  if (!latitude || !longitude) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
@@ -69,7 +69,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
       restaurantId,
       userId,
       Number(latitude),
-      Number(longtitude),
+      Number(longitude),
     );
 
     if (!data) {
@@ -200,12 +200,12 @@ const getPrescription = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant/search/card?longtitude=<경도>&latitude=<위도>&zoom=<반경범위>&keyword=<검색어>
+ * @route GET /restaurant/search/card?longitude=<경도>&latitude=<위도>&zoom=<반경범위>&keyword=<검색어>
  * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
  * @access Private
  */
 const searchRestaurantCardList = async (req: Request, res: Response) => {
-  const longitude = req.query.longtitude;
+  const longitude = req.query.longitude;
   const latitude = req.query.latitude;
   const keyword = req.query.keyword;
 
