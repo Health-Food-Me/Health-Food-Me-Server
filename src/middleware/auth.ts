@@ -30,18 +30,18 @@ export default (req: Request, res: Response, next: NextFunction) => {
     }
     if (decoded === exceptionMessage.TOKEN_INVALID) {
       return res
-        .status(statusCode.UNAUTHORIZED)
+        .status(statusCode.FORBIDDEN)
         .send(
-          BaseResponse.failure(statusCode.UNAUTHORIZED, message.INVALID_TOKEN),
+          BaseResponse.failure(statusCode.FORBIDDEN, message.INVALID_TOKEN),
         );
     }
 
     const userId = (decoded as JwtPayload).id;
     if (!userId) {
       return res
-        .status(statusCode.UNAUTHORIZED)
+        .status(statusCode.FORBIDDEN)
         .send(
-          BaseResponse.failure(statusCode.UNAUTHORIZED, message.INVALID_TOKEN),
+          BaseResponse.failure(statusCode.FORBIDDEN, message.INVALID_TOKEN),
         );
     }
     const user = User.findById(userId);
