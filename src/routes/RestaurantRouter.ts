@@ -11,7 +11,12 @@ router.get(
 );
 
 router.get("/search/card", auth, RestaurantController.searchRestaurantCardList);
-router.get("/:restaurantId/menus", auth, RestaurantController.getMenuDetail);
+router.get(
+  "/:restaurantId/:userId/menus",
+  auth,
+  RestaurantController.getMenuDetail,
+);
+
 router.get("/", auth, RestaurantController.getAroundRestaurants);
 router.get(
   "/:restaurantId/prescription",
