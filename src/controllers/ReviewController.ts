@@ -154,7 +154,6 @@ type S3ImageInfo = {
 const createReview = async (req: Request, res: Response) => {
   const score = req.body.score;
   const taste = req.body.taste;
-  const good = req.body.good;
   const content = req.body.content;
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
