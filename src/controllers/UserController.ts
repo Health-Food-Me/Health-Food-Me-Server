@@ -308,6 +308,40 @@ const withdrawUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /review/check/:userId/:restaurantId
+ * @desc 해당 식당에 해당 유저가 리뷰를 남긴 적이 있는가
+ * @access Private
+ */
+const getHasReviewed = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const restaurantId = req.params.restaurantId;
+
+  try {
+    const hasReview = await UserService.hasReviewed(userId, restaurantId);
+
+    const data = {
+      hasReview: hasReview,
+    };
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(statusCode.OK, message.CHECK_REVIEW_SUCCESS, data),
+      );
+  } catch (error) {
+    logger.e("UserController.getHasReviewed", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getUser,
   scrapRestaurant,
@@ -315,4 +349,5 @@ export default {
   getUserProfile,
   updateUserProfile,
   withdrawUser,
+  getHasReviewed,
 };
