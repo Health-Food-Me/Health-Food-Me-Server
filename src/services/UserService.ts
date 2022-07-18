@@ -152,6 +152,7 @@ const getUserScrpaList = async (userId: string) => {
           hashtag: restaurant.hashtag,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
+          address: restaurant.address as string,
         };
         scrapList.push(data);
       });
