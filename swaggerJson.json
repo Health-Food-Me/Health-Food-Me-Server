@@ -497,7 +497,7 @@
         ],
         "responses": {
           "200": {
-            "description": "식당 카드 검색 조회 성공",
+            "description": "메뉴 상세 정보 조회 성공",
             "schema": {
               "$ref": "#/definitions/GetMenuDetailDto"
             }
@@ -528,45 +528,59 @@
         ]
       }
     },
-    "/pet/findByTags": {
+    "/restaurant/{restaurantId}/prescription": {
       "get": {
         "tags": [
-          "pet"
+          "restaurant"
         ],
-        "summary": "Finds Pets by tags",
-        "description": "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing.",
-        "operationId": "findPetsByTags",
+        "summary": "외식 대처법 조회",
+        "description": "외식 대처법 조회",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
-          "application/xml",
           "application/json"
         ],
         "parameters": [
           {
-            "name": "tags",
-            "in": "query",
-            "description": "Tags to filter by",
+            "in": "path",
+            "name": "restaurantId",
+            "description": "식당 Id(식당 이름 보내면 안됨)",
             "required": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "successful operation",
+            "description": "식당 카드 검색 조회 성공",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Pet"
-              }
+              "$ref": "#/definitions/GetPrescriptionDto"
             }
           },
           "400": {
-            "description": "Invalid tag value"
+            "description": "longtitude, latitude가 들어오지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/BadRequestDto"
+            }
+          },
+          "401": {
+            "description": "Token이 유효하지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/NonAutorizedDto"
+            }
+          },
+          "500": {
+            "description": "서버 내부 에러",
+            "schema": {
+              "$ref": "#/definitions/InternalServerErrorDto"
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
       }
     },
     "/pet/{petId}": {
@@ -1569,7 +1583,7 @@
         },
         "message": {
           "type": "string",
-          "example": "식당 카드 검색 성공"
+          "example": "식당 상세 메뉴 정보 조회 성공"
         },
         "data": {
           "type": "object",
@@ -1637,6 +1651,49 @@
                   },
                   "isPick": {
                     "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "GetPrescriptionDto": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200,
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "외식 대처법 조회 성공"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "recommend": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "tip": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
               }
