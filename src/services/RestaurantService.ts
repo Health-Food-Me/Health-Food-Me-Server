@@ -315,53 +315,53 @@ const getPrescription = async (restaurantId: string) => {
 };
 
 const getRestaurantCardList = async (
-  longitude: number,
+  longtitude: number,
   latitude: number,
   keyword: string,
 ) => {
   try {
-    const restaurants = await Restaurant.find({
-      $nearSphere: {
-        $geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude],
-        },
-        $maxDistance: 5000,
-      },
-    })
-      .populate<{
-        category: ICategory;
-      }>("category")
-      .populate<{ reviews: IReview[] }>("reviews");
+    const restaurantList = getAroundRestaurants(longtitude, latitude, 3000);
 
-    const searchList = restaurants.filter((restaurant) =>
+    const searchList = (await restaurantList).filter((restaurant) =>
       restaurant.name.includes(keyword),
     );
 
-    const resultList = searchList.map(async (data) => {
-      const reviewList = data.reviews;
-      const score = getReviewScore(reviewList);
-      const restaurantLatitude = data.location.coordinates.at(0) as number;
-      const restaurantLongtitude = data.location.coordinates.at(1) as number;
-      const distance = await getDistance(
-        latitude,
-        longitude,
-        restaurantLatitude,
-        restaurantLongtitude,
-      );
+    const resultList: RestaurantCard[] = [];
+    const promises = searchList.map(async (data) => {
+      const restaurantId = data._id;
+      const restaurant = await Restaurant.findById(restaurantId).populate<{
+        category: ICategory;
+      }>("category");
 
-      const result: RestaurantCard = {
-        _id: data._id,
-        name: data.name,
-        category: data.category.title,
-        score: score,
-        distance: distance,
-        logo: data.logo,
-      };
+      if (restaurant != undefined) {
+        const reviewList = restaurant.reviews;
+        const score = await getScore(reviewList);
+        const restaurantLatitude = restaurant.location.coordinates.at(
+          0,
+        ) as number;
+        const restaurantLongtitude = restaurant.location.coordinates.at(
+          1,
+        ) as number;
+        const distance = await getDistance(
+          latitude,
+          longtitude,
+          restaurantLatitude,
+          restaurantLongtitude,
+        );
 
-      return result;
+        const result: RestaurantCard = {
+          _id: restaurant._id,
+          name: restaurant.name,
+          category: restaurant.category.title,
+          score: score,
+          distance: distance,
+          logo: restaurant.logo,
+        };
+
+        resultList.push(result);
+      }
     });
-    await Promise.all(resultList);
+    await Promise.all(promises);
 
     return resultList;
   } catch (error) {
