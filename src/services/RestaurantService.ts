@@ -86,8 +86,9 @@ const getMenuDetail = async (
     const restaurant = await Restaurant.findById(restaurantId).populate<{
       category: ICategory;
     }>("category");
+    const user = await User.findById(userId);
 
-    if (!restaurant) {
+    if (!restaurant || !user) {
       return null;
     }
 
@@ -117,6 +118,10 @@ const getMenuDetail = async (
       worktime = null;
     }
 
+    const scrapList = user.scrapRestaurants;
+    let isScrap = false;
+    if (scrapList?.find((x) => x == restaurantId) !== undefined) isScrap = true;
+
     const data = {
       restaurant: {
         _id: restaurantId,
@@ -128,6 +133,7 @@ const getMenuDetail = async (
         address: restaurant?.address,
         workTime: worktime,
         contact: restaurant?.contact,
+        isScrap: isScrap,
       },
       menu: menuList,
     };
