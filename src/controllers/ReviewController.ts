@@ -153,11 +153,11 @@ type S3ImageInfo = {
  */
 const createReview = async (req: Request, res: Response) => {
   const score = req.body.score;
-  const hashtag = req.body.hashtag;
+  const taste = req.body.taste;
   const content = req.body.content;
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
-  if (!score || !hashtag || !content) {
+  if (!score || !taste || !content) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
@@ -180,7 +180,8 @@ const createReview = async (req: Request, res: Response) => {
       writerId: req.params.userId,
       reviewId: "",
       score: req.body.score,
-      hashtag: req.body.hashtag,
+      taste: req.body.taste,
+      good: req.body.good,
       content: req.body.content,
       image: imageList,
       nameList: [],
@@ -227,11 +228,11 @@ const updateReview = async (req: Request, res: Response) => {
   if (review == undefined) return null;
 
   const score = req.body.score;
-  const hashtag = req.body.hashtag;
+  const taste = req.body.taste;
   const content = req.body.content;
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
-  if (!score || !hashtag || !content) {
+  if (!score || !taste || !content) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
@@ -260,7 +261,8 @@ const updateReview = async (req: Request, res: Response) => {
       writerId: "",
       reviewId: reviewId,
       score: req.body.score,
-      hashtag: req.body.hashtag,
+      taste: taste,
+      good: req.body.good,
       content: req.body.content,
       image: imageList,
       nameList: nameList,

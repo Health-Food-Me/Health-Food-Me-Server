@@ -33,13 +33,11 @@ const ReviewSchema = new mongoose.Schema({
       },
     },
   ],
-  hashtag: {
-    taste: {
-      type: String,
-      required: true,
-    },
-    good: [{ type: String }],
+  taste: {
+    type: String,
+    required: true,
   },
+  good: [{ type: String }],
 });
 
 export default mongoose.model<MongoEntity<Review>>("Review", ReviewSchema);

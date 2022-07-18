@@ -21,10 +21,8 @@ const getReviewsByRestaurant = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      hashtag: {
-        taste: review.hashtag.taste,
-        good: review.hashtag.good,
-      },
+      taste: review.taste,
+      good: review.good,
     };
   });
   return reviewDto;
@@ -42,10 +40,8 @@ const getReviewsByUser = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      hashtag: {
-        taste: review.hashtag.taste,
-        good: review.hashtag.good,
-      },
+      taste: review.taste,
+      good: review.good,
     };
   });
   return reviewDto;
@@ -99,14 +95,27 @@ const getReviewsFromNaver = async (name: string) => {
 
 const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
   try {
-    const review = new Review({
-      restaurant: reviewResponseDto.restaurantId,
-      writer: reviewResponseDto.writerId,
-      score: reviewResponseDto.score,
-      content: reviewResponseDto.content,
-      image: reviewResponseDto.image,
-      hashtag: reviewResponseDto.hashtag,
-    });
+    let review;
+    if (reviewResponseDto.good) {
+      review = new Review({
+        restaurant: reviewResponseDto.restaurantId,
+        writer: reviewResponseDto.writerId,
+        score: reviewResponseDto.score,
+        content: reviewResponseDto.content,
+        image: reviewResponseDto.image,
+        taste: reviewResponseDto.taste,
+        good: reviewResponseDto.good,
+      });
+    } else {
+      review = new Review({
+        restaurant: reviewResponseDto.restaurantId,
+        writer: reviewResponseDto.writerId,
+        score: reviewResponseDto.score,
+        content: reviewResponseDto.content,
+        image: reviewResponseDto.image,
+        taste: reviewResponseDto.taste,
+      });
+    }
 
     const data = await review.save();
 
@@ -162,7 +171,8 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     await Review.findByIdAndUpdate(reviewResponseDto.reviewId, {
       $set: {
         score: reviewResponseDto.score,
-        hashtag: reviewResponseDto.hashtag,
+        taste: reviewResponseDto.taste,
+        good: reviewResponseDto.good,
         content: reviewResponseDto.content,
         image: imageList,
       },
