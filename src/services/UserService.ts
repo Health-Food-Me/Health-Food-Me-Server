@@ -8,6 +8,7 @@ import RestaurantService from "./RestaurantService";
 import { ScrapData } from "../interface/ScrapData";
 import Restaurant from "../models/Restaurant";
 import { Types } from "mongoose";
+import Review from "../models/Review";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
@@ -228,6 +229,23 @@ const withdrawUser = async (userId: string) => {
   }
 };
 
+const hasReviewed = async (userId: string, restaurantId: string) => {
+  try {
+    const review = await Review.findOne({
+      writer: userId,
+      restaurant: restaurantId,
+    });
+
+    console.log(review);
+
+    if (review) return true;
+    else return false;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -239,4 +257,5 @@ export default {
   getUserProfile,
   updateUserProfile,
   withdrawUser,
+  hasReviewed,
 };

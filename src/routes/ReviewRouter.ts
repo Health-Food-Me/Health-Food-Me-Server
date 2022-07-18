@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "../config/multer";
-import { ReviewController } from "../controllers";
+import { ReviewController, UserController } from "../controllers";
 import auth from "../middleware/auth";
 
 const router = Router();
@@ -31,5 +31,7 @@ router.put(
   multer.upload.array("image"),
   ReviewController.updateReview,
 );
+
+router.get("/check/:userId/:restaurantId", auth, UserController.getHasReviewed);
 
 export default router;
