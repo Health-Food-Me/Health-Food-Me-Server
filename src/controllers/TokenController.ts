@@ -26,7 +26,6 @@ const getToken = async (req: Request, res: Response) => {
 
   try {
     const access = jwt.verify(accessToken as string);
-    let data;
 
     if (access === exceptionMessage.TOKEN_INVALID) {
       return res
@@ -36,58 +35,38 @@ const getToken = async (req: Request, res: Response) => {
         );
     }
 
-    if (access === exceptionMessage.TOKEN_EXPIRED) {
-      const refresh = jwt.verify(refreshToken as string);
+    const refresh = jwt.verify(refreshToken as string);
 
-      if (refresh === exceptionMessage.TOKEN_INVALID) {
-        return res
-          .status(statusCode.UNAUTHORIZED)
-          .send(
-            BaseResponse.failure(
-              statusCode.UNAUTHORIZED,
-              message.INVALID_TOKEN,
-            ),
-          );
-      }
-
-      if (refresh === exceptionMessage.TOKEN_EXPIRED) {
-        return res
-          .status(statusCode.UNAUTHORIZED)
-          .send(
-            BaseResponse.failure(
-              statusCode.UNAUTHORIZED,
-              message.EXPIRED_TOKEN,
-            ),
-          );
-      }
-
-      const user = await UserService.findUserByRfToken(refreshToken as string);
-      if (!user) {
-        return res
-          .status(statusCode.UNAUTHORIZED)
-          .send(
-            BaseResponse.failure(
-              statusCode.UNAUTHORIZED,
-              message.INVALID_TOKEN,
-            ),
-          );
-      }
-
-      data = {
-        accessToken: jwt.sign(user._id, user.email),
-        refreshToken: refreshToken,
-      };
-
+    if (refresh === exceptionMessage.TOKEN_INVALID) {
       return res
-        .status(statusCode.OK)
+        .status(statusCode.UNAUTHORIZED)
         .send(
-          BaseResponse.success(
-            statusCode.OK,
-            message.CREATE_TOKEN_SUCCESS,
-            data,
-          ),
+          BaseResponse.failure(statusCode.UNAUTHORIZED, message.INVALID_TOKEN),
         );
     }
+
+    if (refresh === exceptionMessage.TOKEN_EXPIRED) {
+      return res
+        .status(statusCode.UNAUTHORIZED)
+        .send(
+          BaseResponse.failure(statusCode.UNAUTHORIZED, message.EXPIRED_TOKEN),
+        );
+    }
+
+    const user = await UserService.findUserByRfToken(refreshToken as string);
+    if (!user) {
+      return res
+        .status(statusCode.UNAUTHORIZED)
+        .send(
+          BaseResponse.failure(statusCode.UNAUTHORIZED, message.INVALID_TOKEN),
+        );
+    }
+
+    const data = {
+      accessToken: jwt.sign(user._id, user.email),
+      refreshToken: refreshToken,
+    };
+
     return res
       .status(statusCode.OK)
       .send(
