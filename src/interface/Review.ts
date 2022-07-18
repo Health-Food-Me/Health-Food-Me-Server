@@ -9,10 +9,8 @@ interface Review {
     name: string;
     url: string;
   }[];
-  hashtag: {
-    taste: string;
-    good: string[];
-  };
+  taste: string;
+  good: string[];
 }
 
 export interface NaverBlogReviewResponse {
