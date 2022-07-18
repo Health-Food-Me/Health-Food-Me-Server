@@ -21,10 +21,8 @@ const getReviewsByRestaurant = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      hashtag: {
-        taste: review.hashtag.taste,
-        good: review.hashtag.good,
-      },
+      taste: review.taste,
+      good: review.good,
     };
   });
   return reviewDto;
@@ -42,10 +40,8 @@ const getReviewsByUser = async (id: string) => {
       score: review.score,
       content: review.content,
       image: review.image,
-      hashtag: {
-        taste: review.hashtag.taste,
-        good: review.hashtag.good,
-      },
+      taste: review.taste,
+      good: review.good,
     };
   });
   return reviewDto;
@@ -175,7 +171,8 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     await Review.findByIdAndUpdate(reviewResponseDto.reviewId, {
       $set: {
         score: reviewResponseDto.score,
-        hashtag: reviewResponseDto.hashtag,
+        taste: reviewResponseDto.taste,
+        good: reviewResponseDto.good,
         content: reviewResponseDto.content,
         image: imageList,
       },

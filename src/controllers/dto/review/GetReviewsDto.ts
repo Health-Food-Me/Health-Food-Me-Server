@@ -9,10 +9,6 @@ interface GetReviewsDto {
     name: string;
     url: string;
   }[];
-  hashtag: ReviewTagDto;
-}
-
-export interface ReviewTagDto {
   taste: string;
   good: string[];
 }
