@@ -421,9 +421,85 @@
         ],
         "responses": {
           "200": {
-            "description": "자동 검색 성공",
+            "description": "식당 카드 검색 조회 성공",
             "schema": {
               "$ref": "#/definitions/GetRestaurantCardsDto"
+            }
+          },
+          "400": {
+            "description": "longtitude, latitude가 들어오지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/BadRequestDto"
+            }
+          },
+          "401": {
+            "description": "Token이 유효하지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/NonAutorizedDto"
+            }
+          },
+          "500": {
+            "description": "서버 내부 에러",
+            "schema": {
+              "$ref": "#/definitions/InternalServerErrorDto"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/restaurant/{restaurantId}/{userId}/menus": {
+      "get": {
+        "tags": [
+          "restaurant"
+        ],
+        "summary": "메뉴 상세 정보",
+        "description": "메뉴 상세 정보",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restaurantId",
+            "description": "식당 Id(식당 이름 보내면 안됨)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "유저 Id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "longitude",
+            "description": "중앙점의 경도",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "in": "query",
+            "name": "latitude",
+            "description": "중앙점의 위도",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "식당 카드 검색 조회 성공",
+            "schema": {
+              "$ref": "#/definitions/GetMenuDetailDto"
             }
           },
           "400": {
@@ -1473,6 +1549,96 @@
               },
               "distance": {
                 "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "GetMenuDetailDto": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200,
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "식당 카드 검색 성공"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "restaurant": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "distance": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "logo": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "hashtag": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "workTime": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "contact": {
+                  "type": "string"
+                },
+                "isScrap": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "menu": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string"
+                  },
+                  "kcal": {
+                    "type": "number"
+                  },
+                  "per": {
+                    "type": "number"
+                  },
+                  "price": {
+                    "type": "number"
+                  },
+                  "isPick": {
+                    "type": "boolean"
+                  }
+                }
               }
             }
           }

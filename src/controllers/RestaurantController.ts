@@ -200,7 +200,7 @@ const getPrescription = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant/search/card?longitude=<경도>&latitude=<위도>&zoom=<반경범위>&keyword=<검색어>
+ * @route GET /restaurant/search/card?longitude=<경도>&latitude=<위도>&keyword=<검색어>
  * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
  * @access Private
  */
