@@ -236,8 +236,6 @@ const hasReviewed = async (userId: string, restaurantId: string) => {
       restaurant: restaurantId,
     });
 
-    console.log(review);
-
     if (review) return true;
     else return false;
   } catch (error) {

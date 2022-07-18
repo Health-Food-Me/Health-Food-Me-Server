@@ -208,8 +208,8 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
   const longitude = req.query.longitude;
   const latitude = req.query.latitude;
   const keyword = req.query.keyword;
-
-  if (!longitude || !latitude || !keyword) {
+  
+  if (!longtitude || !latitude || !keyword) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
