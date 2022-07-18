@@ -1,16 +1,17 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
+import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import ICategory from "../interface/Category";
 import MenuData from "../interface/menuData";
+import RestaurantCard from "../interface/restaurantCard";
+import IReview from "../interface/Review";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
-import RestaurantCard from "../interface/restaurantCard";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -57,22 +58,27 @@ const getScore = async (reviewList: Types.ObjectId[]) => {
     return 0;
   }
 
-  if (reviewList.length <= 0) {
-    return 0;
-  }
-
   let score = 0;
-
   const promises = reviewList.map(async (reviewId) => {
     const review = await Review.findById(reviewId);
-    if (review != undefined) {
-      score = score + review?.score;
+    if (review) {
+      score = score + review.score;
     }
   });
   await Promise.all(promises);
 
-  score = Number((score / reviewList.length).toFixed(1));
+  return score;
+};
 
+const getReviewScore = (reviewList: IReview[]) => {
+  if (reviewList.length <= 0) {
+    return 0;
+  }
+  let score = 0;
+  reviewList.forEach((review) => {
+    score += review.score;
+  });
+  score = Number((score / reviewList.length).toFixed(1));
   return score;
 };
 
@@ -227,17 +233,31 @@ const getAroundRestaurants = async (
   longitude: number,
   latitude: number,
   zoom: number,
+  categoryId?: string,
 ) => {
   try {
-    const restaurants = await Restaurant.find({
-      $nearSphere: {
-        $geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude],
+    const query: any[] = [
+      {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: zoom,
         },
-        $maxDistance: zoom,
       },
-    }).populate<{ category: ICategory }>("category");
+    ];
+    if (categoryId) {
+      query.push({
+        category: { $eq: categoryId },
+      });
+    }
+
+    const restaurants = await Restaurant.find({
+      $and: query,
+    }).populate<{
+      category: ICategory;
+    }>("category");
     const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
@@ -295,54 +315,53 @@ const getPrescription = async (restaurantId: string) => {
 };
 
 const getRestaurantCardList = async (
-  longtitude: number,
+  longitude: number,
   latitude: number,
-  zoom: number,
   keyword: string,
 ) => {
   try {
-    const restaurantList = getAroundRestaurants(longtitude, latitude, zoom);
+    const restaurants = await Restaurant.find({
+      $nearSphere: {
+        $geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+        $maxDistance: 5000,
+      },
+    })
+      .populate<{
+        category: ICategory;
+      }>("category")
+      .populate<{ reviews: IReview[] }>("reviews");
 
-    const searchList = (await restaurantList).filter((restaurant) =>
+    const searchList = restaurants.filter((restaurant) =>
       restaurant.name.includes(keyword),
     );
 
-    const resultList: RestaurantCard[] = [];
-    const promises = searchList.map(async (data) => {
-      const restaurantId = data._id;
-      const restaurant = await Restaurant.findById(restaurantId).populate<{
-        category: ICategory;
-      }>("category");
+    const resultList = searchList.map(async (data) => {
+      const reviewList = data.reviews;
+      const score = getReviewScore(reviewList);
+      const restaurantLatitude = data.location.coordinates.at(0) as number;
+      const restaurantLongtitude = data.location.coordinates.at(1) as number;
+      const distance = await getDistance(
+        latitude,
+        longitude,
+        restaurantLatitude,
+        restaurantLongtitude,
+      );
 
-      if (restaurant != undefined) {
-        const reviewList = restaurant.reviews;
-        const score = await getScore(reviewList);
-        const restaurantLatitude = restaurant.location.coordinates.at(
-          0,
-        ) as number;
-        const restaurantLongtitude = restaurant.location.coordinates.at(
-          1,
-        ) as number;
-        const distance = await getDistance(
-          latitude,
-          longtitude,
-          restaurantLatitude,
-          restaurantLongtitude,
-        );
+      const result: RestaurantCard = {
+        _id: data._id,
+        name: data.name,
+        category: data.category.title,
+        score: score,
+        distance: distance,
+        logo: data.logo,
+      };
 
-        const result: RestaurantCard = {
-          _id: restaurant._id,
-          name: restaurant.name,
-          category: restaurant.category.title,
-          score: score,
-          distance: distance,
-          logo: restaurant.logo,
-        };
-
-        resultList.push(result);
-      }
+      return result;
     });
-    await Promise.all(promises);
+    await Promise.all(resultList);
 
     return resultList;
   } catch (error) {
