@@ -227,17 +227,31 @@ const getAroundRestaurants = async (
   longitude: number,
   latitude: number,
   zoom: number,
+  categoryId?: string,
 ) => {
   try {
-    const restaurants = await Restaurant.find({
-      $nearSphere: {
-        $geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude],
+    const query: any[] = [
+      {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: zoom,
         },
-        $maxDistance: zoom,
       },
-    }).populate<{ category: ICategory }>("category");
+    ];
+    if (categoryId) {
+      query.push({
+        category: { $eq: categoryId },
+      });
+    }
+
+    const restaurants = await Restaurant.find({
+      $and: query,
+    }).populate<{
+      category: ICategory;
+    }>("category");
     const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
