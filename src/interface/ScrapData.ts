@@ -7,4 +7,5 @@ export interface ScrapData {
   hashtag: string[];
   latitude: number;
   longtitude: number;
+  address: string;
 }

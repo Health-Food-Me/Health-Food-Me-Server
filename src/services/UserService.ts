@@ -143,6 +143,8 @@ const getUserScrpaList = async (userId: string) => {
 
         if (!restaurant) return null;
 
+        const address = (restaurant.address as string).split(" ");
+
         const data: ScrapData = {
           _id: restaurant._id,
           name: restaurant.name as string,
@@ -152,6 +154,7 @@ const getUserScrpaList = async (userId: string) => {
           hashtag: restaurant.hashtag,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
+          address: `${address[0]} ${address[1]}`,
         };
         scrapList.push(data);
       });
