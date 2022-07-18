@@ -25,7 +25,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     }
 
     const reviewList = restaurant.reviews;
-    const score = getScore(reviewList);
+    const score = await getScore(reviewList);
     const scrapList = user?.scrapRestaurants;
 
     let isScrap = false;
