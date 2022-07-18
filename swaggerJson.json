@@ -384,6 +384,74 @@
         ]
       }
     },
+    "/restaurant/search/card": {
+      "get": {
+        "tags": [
+          "restaurant"
+        ],
+        "summary": "식당 검색 및 카드 리스트 조회",
+        "description": "식당 검색 및 카드 리스트 조회",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "longitude",
+            "description": "중앙점의 경도",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "in": "query",
+            "name": "latitude",
+            "description": "중앙점의 위도",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "in": "query",
+            "name": "categoryId",
+            "description": "식당 카테고리 Id(이름 보내면 안됨)",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "자동 검색 성공",
+            "schema": {
+              "$ref": "#/definitions/GetRestaurantCardsDto"
+            }
+          },
+          "400": {
+            "description": "longtitude, latitude가 들어오지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/BadRequestDto"
+            }
+          },
+          "401": {
+            "description": "Token이 유효하지 않은 경우",
+            "schema": {
+              "$ref": "#/definitions/NonAutorizedDto"
+            }
+          },
+          "500": {
+            "description": "서버 내부 에러",
+            "schema": {
+              "$ref": "#/definitions/InternalServerErrorDto"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/pet/findByTags": {
       "get": {
         "tags": [
@@ -1190,7 +1258,7 @@
         },
         "message": {
           "type": "string",
-          "example": "서버 내부 오류"
+          "example": "필요한 값이 없습니다"
         }
       }
     },
@@ -1361,6 +1429,50 @@
               },
               "isScrap": {
                 "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "GetRestaurantCardsDto": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200,
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "message": {
+          "type": "string",
+          "example": "식당 카드 검색 성공"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "logo": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "score": {
+                "type": "number"
+              },
+              "distance": {
+                "type": "number"
               }
             }
           }
