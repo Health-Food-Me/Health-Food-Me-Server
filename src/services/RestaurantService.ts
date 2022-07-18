@@ -78,6 +78,7 @@ const getScore = async (reviewList: Types.ObjectId[]) => {
 
 const getMenuDetail = async (
   restaurantId: string,
+  userId: string,
   latitude: number,
   longtitude: number,
 ) => {
