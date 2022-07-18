@@ -114,7 +114,7 @@ const scrapRestaurant = async (req: Request, res: Response) => {
   try {
     const isScrap = await UserService.scrapRestaurant(userId, restaurantId);
 
-    if (!isScrap) {
+    if (isScrap === null) {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));

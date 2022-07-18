@@ -4,8 +4,14 @@ import auth from "../middleware/auth";
 
 const router = Router();
 
-router.get("/:restaurantId/menus", auth, RestaurantController.getMenuDetail);
+router.get(
+  "/search/auto",
+  auth,
+  RestaurantController.getSearchAutoCompleteResult,
+);
+
 router.get("/search/card", auth, RestaurantController.searchRestaurantCardList);
+router.get("/:restaurantId/menus", auth, RestaurantController.getMenuDetail);
 router.get("/", auth, RestaurantController.getAroundRestaurants);
 router.get(
   "/:restaurantId/prescription",
@@ -18,9 +24,5 @@ router.get(
   auth,
   RestaurantController.getRestaurantSummary,
 );
-router.get(
-  "/search/auto",
-  auth,
-  RestaurantController.getSearchAutoCompleteResult,
-);
+
 export default router;

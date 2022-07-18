@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import User from "../../../interface/User";
 
 interface GetReviewsDto {
   id: string | mongoose.Types.ObjectId;
-  writer: User;
+  writer: string;
   score: number;
   content: string;
   image: {
