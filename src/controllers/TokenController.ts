@@ -26,6 +26,7 @@ const getToken = async (req: Request, res: Response) => {
 
   try {
     const access = jwt.verify(accessToken as string);
+    let data;
 
     if (access === exceptionMessage.TOKEN_INVALID) {
       return res
@@ -72,7 +73,7 @@ const getToken = async (req: Request, res: Response) => {
           );
       }
 
-      const data = {
+      data = {
         accessToken: jwt.sign(user._id, user.email),
         refreshToken: refreshToken,
       };
@@ -88,8 +89,10 @@ const getToken = async (req: Request, res: Response) => {
         );
     }
     return res
-      .status(statusCode.BAD_REQUEST)
-      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.VALID_TOKEN));
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(statusCode.OK, message.CREATE_TOKEN_SUCCESS, data),
+      );
   } catch (error) {
     logger.e("TokenController getToken error: ", error);
     return res
