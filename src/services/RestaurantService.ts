@@ -297,11 +297,10 @@ const getPrescription = async (restaurantId: string) => {
 const getRestaurantCardList = async (
   longtitude: number,
   latitude: number,
-  zoom: number,
   keyword: string,
 ) => {
   try {
-    const restaurantList = getAroundRestaurants(longtitude, latitude, zoom);
+    const restaurantList = getAroundRestaurants(longtitude, latitude, 3000);
 
     const searchList = (await restaurantList).filter((restaurant) =>
       restaurant.name.includes(keyword),

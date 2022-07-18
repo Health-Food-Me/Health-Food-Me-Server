@@ -218,7 +218,6 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
     const data = await RestaurantService.getRestaurantCardList(
       Number(longtitude),
       Number(latitude),
-      Number(zoom),
       keyword as string,
     );
 
