@@ -205,12 +205,11 @@ const getPrescription = async (req: Request, res: Response) => {
  * @access Private
  */
 const searchRestaurantCardList = async (req: Request, res: Response) => {
-  const longtitude = req.query.longtitude;
+  const longitude = req.query.longtitude;
   const latitude = req.query.latitude;
-  const zoom = req.query.zoom;
   const keyword = req.query.keyword;
 
-  if (!longtitude || !latitude || !zoom || !keyword) {
+  if (!longitude || !latitude || !keyword) {
     return res
       .status(statusCode.BAD_REQUEST)
       .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
@@ -218,9 +217,8 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
 
   try {
     const data = await RestaurantService.getRestaurantCardList(
-      Number(longtitude),
+      Number(longitude),
       Number(latitude),
-      Number(zoom),
       keyword as string,
     );
 
