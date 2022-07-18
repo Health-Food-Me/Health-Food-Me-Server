@@ -54,6 +54,7 @@ const getRestaurantSummary = async (req: Request, res: Response) => {
  */
 const getMenuDetail = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
+  const userId = req.params.userId;
   const latitude = req.query.latitude;
   const longtitude = req.query.longtitude;
 
@@ -66,6 +67,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
   try {
     const data = await RestaurantService.getMenuDetail(
       restaurantId,
+      userId,
       Number(latitude),
       Number(longtitude),
     );
