@@ -99,14 +99,27 @@ const getReviewsFromNaver = async (name: string) => {
 
 const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
   try {
-    const review = new Review({
-      restaurant: reviewResponseDto.restaurantId,
-      writer: reviewResponseDto.writerId,
-      score: reviewResponseDto.score,
-      content: reviewResponseDto.content,
-      image: reviewResponseDto.image,
-      hashtag: reviewResponseDto.hashtag,
-    });
+    let review;
+    if (reviewResponseDto.good) {
+      review = new Review({
+        restaurant: reviewResponseDto.restaurantId,
+        writer: reviewResponseDto.writerId,
+        score: reviewResponseDto.score,
+        content: reviewResponseDto.content,
+        image: reviewResponseDto.image,
+        taste: reviewResponseDto.taste,
+        good: reviewResponseDto.good,
+      });
+    } else {
+      review = new Review({
+        restaurant: reviewResponseDto.restaurantId,
+        writer: reviewResponseDto.writerId,
+        score: reviewResponseDto.score,
+        content: reviewResponseDto.content,
+        image: reviewResponseDto.image,
+        taste: reviewResponseDto.taste,
+      });
+    }
 
     const data = await review.save();
 
