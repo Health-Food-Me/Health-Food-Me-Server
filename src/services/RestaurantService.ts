@@ -1,16 +1,16 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
+import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import ICategory from "../interface/Category";
 import MenuData from "../interface/menuData";
+import RestaurantCard from "../interface/restaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
-import RestaurantCard from "../interface/restaurantCard";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -227,17 +227,31 @@ const getAroundRestaurants = async (
   longitude: number,
   latitude: number,
   zoom: number,
+  categoryId?: string,
 ) => {
   try {
-    const restaurants = await Restaurant.find({
-      $nearSphere: {
-        $geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude],
+    const query: any[] = [
+      {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: zoom,
         },
-        $maxDistance: zoom,
       },
-    }).populate<{ category: ICategory }>("category");
+    ];
+    if (categoryId) {
+      query.push({
+        category: { $eq: categoryId },
+      });
+    }
+
+    const restaurants = await Restaurant.find({
+      $and: query,
+    }).populate<{
+      category: ICategory;
+    }>("category");
     const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
