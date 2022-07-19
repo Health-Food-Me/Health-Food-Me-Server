@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 interface GetReviewsDto {
   id: string | mongoose.Types.ObjectId;
-  writer: string;
+  writer?: string;
+  restaurant?: string;
   score: number;
   content: string;
   image: {
