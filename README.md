@@ -274,22 +274,22 @@ const CategorySchema = new mongoose.Schema({
 | :---: | :---: | :---: | :---: |
 |소셜 로그인|[POST] /auth|`김소현`|✅|
 |토큰 재발급|[GET] /auth/token|`김소현`|✅|
-|메인 지도 뷰|[GET] /restaurant?longtitude={위도}&latitude={위도}&zoom={반경범위}|`이현우`|
-|식당 검색|[GET] /restaurant?query={검색어}|`이현우`|
-|식당 간략 정보|[GET] /restaurant/:restaurantId|`김소현`|
-|메뉴 상세 정보|[GET] /restaurant/:restaurantId/menus|`김소현`|
-|외식 대처법|[GET] /restaurant/:restaurantId/dealing|`김소현`|
-|헬푸미 리뷰|[GET] /restaurant/:restaurantId/reviews|`이현우`|
-|블로그 리뷰|[GET] /restaurant/:restaurantId/reviews/blog|`이현우`|
-|리뷰 작성|[POST] /user/:userId/:restaurantId/review|`이현우`|
-|리뷰 삭제|[DELETE] /user/:reviewId|`이현우`|
-|리뷰 수정|[PUT] /user/:userId/:restaurantId/review|`이현우`|
-|리뷰 모아보기|[GET] /user/:userId/reviews|`이현우`|
-|식당 스크랩 업데이트|[PUT] /user/:userId/scrap/:restaurantId|`김소현`|
-|식당 스크랩 모아보기|[GET] /user/:userId/scraps|`김소현`|
-|유저 프로필 보기|[GET] /user/:userId/profile|`김소현`|
-|유저 프로필 변경|[PUT] /user/:userId/profile|`김소현`|
-|회원탈퇴|[DELETE] /user/:userId/withdrawal|`김소현`|
+|메인 지도 뷰|[GET] /restaurant?longtitude={위도}&latitude={위도}&zoom={반경범위}|`이현우`|✅|
+|식당 검색|[GET] /restaurant?query={검색어}|`이현우`|✅|
+|식당 간략 정보|[GET] /restaurant/:restaurantId|`김소현`|✅|
+|메뉴 상세 정보|[GET] /restaurant/:restaurantId/menus|`김소현`|✅|
+|외식 대처법|[GET] /restaurant/:restaurantId/dealing|`김소현`|✅|
+|헬푸미 리뷰|[GET] /restaurant/:restaurantId/reviews|`이현우`|✅|
+|블로그 리뷰|[GET] /restaurant/:restaurantId/reviews/blog|`이현우`|✅|
+|리뷰 작성|[POST] /user/:userId/:restaurantId/review|`김소현`|✅|
+|리뷰 삭제|[DELETE] /user/:reviewId|`이현우`|✅|
+|리뷰 수정|[PUT] /user/:userId/:restaurantId/review|`김소현`|✅|
+|리뷰 모아보기|[GET] /user/:userId/reviews|`이현우`|✅|
+|식당 스크랩 업데이트|[PUT] /user/:userId/scrap/:restaurantId|`김소현`|✅|
+|식당 스크랩 모아보기|[GET] /user/:userId/scraps|`김소현`|✅|
+|유저 프로필 보기|[GET] /user/:userId/profile|`김소현`|✅|
+|유저 프로필 변경|[PUT] /user/:userId/profile|`김소현`|✅|
+|회원탈퇴|[DELETE] /user/:userId/withdrawal|`김소현`|✅|
 
 <br/>
 
