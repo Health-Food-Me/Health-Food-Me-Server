@@ -205,6 +205,7 @@ const updateUserProfile = async (userId: string, name: string) => {
     const data: UserProfileDto = {
       _id: userId,
       name: user?.name as string,
+      scrapRestaurants: user?.scrapRestaurants,
     };
 
     return data;
