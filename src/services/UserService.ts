@@ -1,14 +1,14 @@
+import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
+import ICategory from "../interface/Category";
+import { ScrapData } from "../interface/ScrapData";
+import UserProfileDto from "../interface/UserProfile";
+import Restaurant from "../models/Restaurant";
+import Review from "../models/Review";
 import User from "../models/User";
 import exceptionMessage from "../modules/exceptionMessage";
-import { authStrategy } from "./SocialAuthStrategy";
-import UserProfileDto from "../interface/UserProfile";
-import ICategory from "../interface/Category";
 import RestaurantService from "./RestaurantService";
-import { ScrapData } from "../interface/ScrapData";
-import Restaurant from "../models/Restaurant";
-import { Types } from "mongoose";
-import Review from "../models/Review";
+import { authStrategy } from "./SocialAuthStrategy";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
 
@@ -124,7 +124,7 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
   }
 };
 
-const getUserScrpaList = async (userId: string) => {
+const getUserScrapList = async (userId: string) => {
   try {
     const user = await User.findById(userId);
     if (user == undefined) return null;
@@ -251,7 +251,7 @@ export default {
   updateRefreshToken,
   findUserByRfToken,
   scrapRestaurant,
-  getUserScrpaList,
+  getUserScrapList,
   getUserProfile,
   updateUserProfile,
   withdrawUser,

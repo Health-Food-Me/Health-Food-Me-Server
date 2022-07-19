@@ -145,11 +145,11 @@ const scrapRestaurant = async (req: Request, res: Response) => {
  * @desc 유저 스크랩 모아보기
  * @access Private
  */
-const getUserScrpaList = async (req: Request, res: Response) => {
+const getUserScrapList = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
   try {
-    const scrapList = await UserService.getUserScrpaList(userId);
+    const scrapList = await UserService.getUserScrapList(userId);
 
     if (!scrapList) {
       return res
@@ -345,7 +345,7 @@ const getHasReviewed = async (req: Request, res: Response) => {
 export default {
   getUser,
   scrapRestaurant,
-  getUserScrpaList,
+  getUserScrapList,
   getUserProfile,
   updateUserProfile,
   withdrawUser,
