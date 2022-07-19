@@ -8,7 +8,9 @@
         "build": "tsc",
         "reset": "rm -rf node_modules && rm -rf dist && yarn install",
         "lint": "./node_modules/.bin/eslint .",
-        "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --config jest.config.js --detectOpenHandles --forceExit"
+        "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --config jest.config.js --detectOpenHandles --forceExit",
+        "lint-staged": "lint-staged",
+        "prepare": "husky install"
     },
     "author": "thguss <thgus345@naver.com>",
     "contributors": [
@@ -34,7 +36,9 @@
         "eslint": "^8.19.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
+        "husky": "^8.0.1",
         "jest": "^28.1.2",
+        "lint-staged": "^13.0.3",
         "n": "^9.0.0",
         "nodemon": "^2.0.18",
         "prettier": "^2.7.1",
@@ -66,6 +70,11 @@
         "swagger-cli": "^4.0.4",
         "swagger-ui-express": "^4.5.0",
         "winston": "^3.8.1"
+    },
+    "lint-staged": {
+        "**/*.ts": [
+            "eslint --fix"
+        ]
     },
     "repository": "https://github.com/Health-Food-Me/Health-Food-Me-Server.git"
 }
