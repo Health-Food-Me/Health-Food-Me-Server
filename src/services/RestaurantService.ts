@@ -1,16 +1,16 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
+import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import ICategory from "../interface/Category";
 import MenuData from "../interface/menuData";
+import RestaurantCard from "../interface/restaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
-import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
-import RestaurantCard from "../interface/restaurantCard";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -227,7 +227,7 @@ const getAroundRestaurants = async (
   longitude: number,
   latitude: number,
   zoom: number,
-  categoryId?: string,
+  category?: string,
 ) => {
   try {
     const query: any[] = [
@@ -241,10 +241,17 @@ const getAroundRestaurants = async (
         },
       },
     ];
-    if (categoryId) {
-      query.push({
-        category: { $eq: categoryId },
-      });
+    if (category) {
+      try {
+        const result = await Category.findOne({ title: { $eq: category } });
+        if (result) {
+          query.push({
+            category: { $eq: result._id },
+          });
+        }
+      } catch (error) {
+        throw new Error(`There's no category: ${category}`);
+      }
     }
 
     const restaurants = await Restaurant.find({

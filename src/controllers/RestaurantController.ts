@@ -101,7 +101,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant?longitude=number&latitude=number&zoom=number&categoryId=string
+ * @route GET /restaurant?longitude=number&latitude=number&zoom=number&category=string
  * @desc 식당 카드의 요약 정보를 호출
  * @access Private
  */
@@ -109,7 +109,7 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
   const longitude = req.query.longitude;
   const latitude = req.query.latitude;
   const zoom = req.query.zoom;
-  const categoryId = req.query.category as string | undefined;
+  const category = req.query.category as string | undefined;
 
   if (!longitude && !latitude && !zoom) {
     res
@@ -124,7 +124,7 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
       Number(longitude),
       Number(latitude),
       Number(zoom),
-      categoryId,
+      category,
     );
 
     if (!restaurants) {
