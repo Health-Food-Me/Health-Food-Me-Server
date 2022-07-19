@@ -109,13 +109,13 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
       await User.findByIdAndUpdate(userId, {
         $set: { scrapRestaurants: scraps },
       });
-      return false;
+      return scraps;
     } else {
       scraps?.push(restaurantId);
       await User.findByIdAndUpdate(userId, {
         $set: { scrapRestaurants: scraps },
       });
-      return true;
+      return scraps;
     }
   } catch (error) {
     logger.e(error);
