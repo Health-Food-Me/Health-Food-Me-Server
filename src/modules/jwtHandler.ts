@@ -10,7 +10,13 @@ const sign = (userId: Types.ObjectId, email: string) => {
     email: email,
   };
 
-  const accessToken = jwt.sign(payload, config.jwtSecret, { expiresIn: "1h" });
+  let validityDate = "3d";
+  if (process.env.NODE_ENV === "production") {
+    validityDate = "1h";
+  }
+  const accessToken = jwt.sign(payload, config.jwtSecret, {
+    expiresIn: validityDate,
+  });
   return accessToken;
 };
 
