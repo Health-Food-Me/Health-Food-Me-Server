@@ -6,6 +6,7 @@ import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
 import { NaverBlogReviewResponse } from "../interface/Review";
 import IUser from "../interface/User";
+import IRestaurant from "../interface/Restaurant";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 
@@ -31,12 +32,12 @@ const getReviewsByRestaurant = async (id: string) => {
 const getReviewsByUser = async (id: string) => {
   const reviews = await Review.find({
     writer: id,
-  }).populate<{ writer: IUser }>("writer");
+  }).populate<{ restaurant: IRestaurant }>("restaurant");
 
   const reviewDto: GetReviewsDto[] = reviews.map((review) => {
     return {
       id: review._id,
-      writer: review.writer.name,
+      restaurant: review.restaurant.name,
       score: review.score,
       content: review.content,
       image: review.image,
