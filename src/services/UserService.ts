@@ -178,6 +178,7 @@ const getUserProfile = async (userId: string) => {
     const data: UserProfileDto = {
       _id: userId,
       name: user.name,
+      scrapRestaurants: user.scrapRestaurants,
     };
 
     return data;

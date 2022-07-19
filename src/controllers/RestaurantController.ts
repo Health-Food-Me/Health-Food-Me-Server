@@ -101,7 +101,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant/{userID}?longitude=number&latitude=number&zoom=number&category=string&isScrap=boolean
+ * @route GET /restaurant?longitude=number&latitude=number&zoom=number&category=string
  * @desc 식당 카드의 요약 정보를 호출
  * @access Private
  */
