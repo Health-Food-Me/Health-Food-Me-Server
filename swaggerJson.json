@@ -238,8 +238,8 @@
           },
           {
             "in": "query",
-            "name": "categoryId",
-            "description": "식당 카테고리 Id(이름 보내면 안됨)",
+            "name": "category",
+            "description": "카테고리 이름",
             "type": "string"
           }
         ],
