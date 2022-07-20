@@ -80,7 +80,6 @@ const getReviewsByUser = async (req: Request, res: Response) => {
 
 const deleteReview = async (req: Request, res: Response) => {
   const reviewId = req.params.reviewId;
-  const restaurantId = req.params.restaurantId;
 
   if (!reviewId) {
     return res
