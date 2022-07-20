@@ -205,7 +205,7 @@ const getPrescription = async (req: Request, res: Response) => {
  * @access Private
  */
 const searchRestaurantCardList = async (req: Request, res: Response) => {
-  const longtitude = req.query.longtitude;
+  const longtitude = req.query.longitude;
   const latitude = req.query.latitude;
   const keyword = req.query.keyword;
 
