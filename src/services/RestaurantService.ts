@@ -122,6 +122,9 @@ const getMenuDetail = async (
     let isScrap = false;
     if (scrapList?.find((x) => x == restaurantId) !== undefined) isScrap = true;
 
+    const reviewList = restaurant.reviews;
+    const score = await getScore(reviewList);
+
     const data = {
       restaurant: {
         _id: restaurantId,
@@ -134,6 +137,7 @@ const getMenuDetail = async (
         workTime: worktime,
         contact: restaurant?.contact,
         isScrap: isScrap,
+        score: score,
       },
       menu: menuList,
     };
