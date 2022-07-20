@@ -4,9 +4,9 @@ import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
 import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
 import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
+import IRestaurant from "../interface/Restaurant";
 import { NaverBlogReviewResponse } from "../interface/Review";
 import IUser from "../interface/User";
-import IRestaurant from "../interface/Restaurant";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 
@@ -38,6 +38,7 @@ const getReviewsByUser = async (id: string) => {
     return {
       id: review._id,
       restaurant: review.restaurant.name,
+      restaurantId: review.restaurant._id,
       score: review.score,
       content: review.content,
       image: review.image,
@@ -48,24 +49,26 @@ const getReviewsByUser = async (id: string) => {
   return reviewDto;
 };
 
-const deleteReview = async (id: string, restaurantId: string) => {
-  const restaurant = await Restaurant.findById(restaurantId);
-
-  if (restaurant == undefined) return null;
-
-  // 식당 리뷰 id 배열에서 삭제
-  const reviewList = restaurant.reviews;
-  const updateList = reviewList.filter((review) => {
-    review != (id as unknown as Types.ObjectId);
+const deleteReview = async (id: string) => {
+  const restaurant = await Restaurant.findOne({
+    reviews: id,
   });
 
-  await Restaurant.findByIdAndUpdate(restaurantId, {
+  if (!restaurant) return null;
+
+  // 식당 리뷰 id 배열에서 삭제
+  const reviewList = restaurant?.reviews;
+  const updateList = reviewList.filter((review) => {
+    review !== (id as unknown as Types.ObjectId);
+  });
+
+  await Restaurant.findByIdAndUpdate(restaurant._id, {
     $set: { reviews: updateList },
   });
 
   // aws 버킷에서 이미지 파일 삭제
   const review = await Review.findById(id);
-  if (review == undefined) return null;
+  if (!review) return null;
 
   const promises = review.image.map(async (data) => {
     await multer.s3Delete(data.name);
