@@ -89,7 +89,7 @@ const deleteReview = async (req: Request, res: Response) => {
   }
 
   try {
-    await ReviewService.deleteReview(reviewId, restaurantId);
+    await ReviewService.deleteReview(reviewId);
 
     return res
       .status(statusCode.OK)
