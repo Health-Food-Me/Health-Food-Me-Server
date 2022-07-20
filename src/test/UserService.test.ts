@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import configMongoose from "../config/mongooseConfig";
 import UserService from "../services/UserService";
 
