@@ -105,7 +105,7 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
 
     let scraps = user.scrapRestaurants;
     if (scraps?.find((x) => x == restaurantId)) {
-      scraps = scraps.filter((restaurantId) => restaurantId !== restaurantId);
+      scraps = scraps.filter((y) => y != restaurantId);
       await User.findByIdAndUpdate(userId, {
         $set: { scrapRestaurants: scraps },
       });
