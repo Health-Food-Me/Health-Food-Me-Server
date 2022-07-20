@@ -29,7 +29,10 @@ describe("유저 프로필 수정 테스트", () => {
 describe("유저 식당 스크랩 테스트", () => {
   test("PUT user/:userId/scrap/:restaurantId", async () => {
     configMongoose();
-    const scrapList = await UserService.scrapRestaurant("62d1c081c4beaf1e397b5d40", "62d26c9bd11146a81ef18ea6");
+    const scrapList = await UserService.scrapRestaurant(
+      "62d1c081c4beaf1e397b5d40",
+      "62d26c9bd11146a81ef18ea6",
+    );
     if (scrapList != undefined) scrapList[0] = scrapList[0].toString();
     console.log(scrapList);
     expect(scrapList).toBeTruthy();
@@ -39,8 +42,12 @@ describe("유저 식당 스크랩 테스트", () => {
 describe("유저 스크랩한 식당 리스트 조회", () => {
   test("GET user/:userId/scrapList", async () => {
     configMongoose();
-    const restaurantList = await UserService.getUserScrapList("62d1c081c4beaf1e397b5d40");
-    if(restaurantList!=undefined) restaurantList[0]._id = restaurantList[0]._id.toString();
+    const restaurantList = await UserService.getUserScrapList(
+      "62d1c081c4beaf1e397b5d40",
+    );
+    if (restaurantList != undefined) {
+      restaurantList[0]._id = restaurantList[0]._id.toString();
+    }
     const result = [
       {
         _id: "62d26c9bd11146a81ef18ea6",
