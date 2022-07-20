@@ -62,5 +62,5 @@ describe("유저 스크랩한 식당 리스트 조회", () => {
       },
     ];
     expect(restaurantList).toStrictEqual(result);
-  })
-})
+  });
+});
