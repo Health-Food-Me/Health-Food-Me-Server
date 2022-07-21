@@ -235,8 +235,38 @@ const getAroundRestaurants = async (
   category?: string,
 ) => {
   try {
-    const query: any[] = [
-      {
+    if (category) {
+      const result = await Category.findOne({ title: { $eq: category } });
+      const restaurants = await Restaurant.find({
+        $and: [
+          {
+            $nearSphere: {
+              $geometry: {
+                type: "Point",
+                coordinates: [longitude, latitude],
+              },
+              $maxDistance: zoom,
+            },
+          },
+          {
+            category: { $eq: result?._id },
+          },
+        ],
+      }).populate<{
+        category: ICategory;
+      }>("category");
+      const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
+        return {
+          _id: restaurant._id as string,
+          name: restaurant.name,
+          longitude: restaurant.location.coordinates.at(0),
+          latitude: restaurant.location.coordinates.at(1),
+          isDietRestaurant: restaurant.category.isDiet,
+        };
+      });
+      return results;
+    } else {
+      const restaurants = await Restaurant.find({
         $nearSphere: {
           $geometry: {
             type: "Point",
@@ -244,36 +274,20 @@ const getAroundRestaurants = async (
           },
           $maxDistance: zoom,
         },
-      },
-    ];
-    if (category) {
-      try {
-        const result = await Category.findOne({ title: { $eq: category } });
-        if (result) {
-          query.push({
-            category: { $eq: result._id },
-          });
-        }
-      } catch (error) {
-        throw new Error(`There's no category: ${category}`);
-      }
+      }).populate<{
+        category: ICategory;
+      }>("category");
+      const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
+        return {
+          _id: restaurant._id as string,
+          name: restaurant.name,
+          longitude: restaurant.location.coordinates.at(0),
+          latitude: restaurant.location.coordinates.at(1),
+          isDietRestaurant: restaurant.category.isDiet,
+        };
+      });
+      return results;
     }
-
-    const restaurants = await Restaurant.find({
-      $and: query,
-    }).populate<{
-      category: ICategory;
-    }>("category");
-    const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
-      return {
-        _id: restaurant._id as string,
-        name: restaurant.name,
-        longitude: restaurant.location.coordinates.at(0),
-        latitude: restaurant.location.coordinates.at(1),
-        isDietRestaurant: restaurant.category.isDiet,
-      };
-    });
-    return results;
   } catch (error) {
     logger.e(error);
     throw error;
