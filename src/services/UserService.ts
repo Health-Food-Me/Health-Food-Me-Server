@@ -147,22 +147,13 @@ const getUserScrapList = async (userId: string) => {
 
         const address = (restaurant.address as string).split(" ");
 
-        let hashtag: string[] = [];
-        const promises = restaurant.menus.map(async (menuId) => {
-          const menu = await Menu.findById(menuId);
-          if (menu && menu.isHelfoomePick) hashtag.push(menu.name);
-        });
-        await Promise.all(promises);
-
-        if (hashtag.length > 2) hashtag = hashtag.slice(0, 2);
-
         const data: ScrapData = {
           _id: restaurant._id,
           name: restaurant.name as string,
           logo: restaurant.logo as string,
           score: score,
           category: restaurant.category.title,
-          hashtag: hashtag,
+          hashtag: restaurant.hashtag,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
           address: `${address[0]} ${address[1]}`,
