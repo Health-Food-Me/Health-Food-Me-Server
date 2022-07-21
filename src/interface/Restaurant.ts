@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 
 interface Restaurant {
+  _id: Types.ObjectId;
   location: {
     type: { type: string };
     coordinates: number[];
