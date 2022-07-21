@@ -38,7 +38,7 @@ const getReviewsByUser = async (id: string) => {
     return {
       id: review._id,
       restaurant: review.restaurant.name,
-      restaurnatId: review.restaurant._id,
+      restaurantId: review.restaurant._id,
       score: review.score,
       content: review.content,
       image: review.image,
