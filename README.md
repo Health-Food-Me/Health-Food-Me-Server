@@ -1,5 +1,6 @@
 # TEAM Health-Food-Me
-헬푸미 - "다이어터들의 외식 부담감 해결소 헬푸미"
+![앱 소개 페이지](https://user-images.githubusercontent.com/55437339/180312067-e4a2ea70-59d9-4a98-8095-5e685115b0db.png)
+
 <br/>
 
 ### ⚒️ Used Stacks
@@ -294,7 +295,7 @@ const CategorySchema = new mongoose.Schema({
 <br/>
 
 ### 📝 API Specification
-[API 명세서](https://chipped-hamburger-edb.notion.site/d615e5d9237c46f1861a4274c0379576?v=1201e0a5ad1f4caaa115b36c5766ecc5)
+[최종 API 명세서](https://github.com/Health-Food-Me/Health-Food-Me-Server/wiki/API-명세서)
 
 <br/>
 
