@@ -32,24 +32,13 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       isScrap = true;
     }
 
-    let hashtag: string[] = [];
-    const promises = restaurant.menus.map(async (menuId) => {
-      const menu = await Menu.findById(menuId);
-      if (menu && menu.isHelfoomePick === true) {
-        hashtag.push(menu.name);
-      }
-    });
-    await Promise.all(promises);
-
-    if (hashtag.length > 2) hashtag = hashtag.slice(0, 2);
-
     const data = {
       _id: restaurantId,
       name: restaurant?.name,
       logo: restaurant?.logo,
       category: restaurant?.category.title,
       workTime: restaurant?.workTime,
-      hashtag: hashtag,
+      hashtag: restaurant.hashtag,
       score: score,
       isScrap: isScrap,
     };
@@ -115,12 +104,6 @@ const getMenuDetail = async (
 
     const menuIdList = restaurant.menus;
     const menuList = await getMenuList(menuIdList);
-    let hashtag: string[] = [];
-    menuList?.map((menu) => {
-      if (menu && menu.isPick) hashtag.push(menu.name);
-    });
-
-    if (hashtag.length > 2) hashtag = hashtag.slice(0, 2);
 
     const time = restaurant.workTime;
     let worktime;
@@ -150,7 +133,7 @@ const getMenuDetail = async (
         name: restaurant?.name,
         logo: restaurant?.logo,
         category: restaurant?.category.title,
-        hashtag: hashtag,
+        hashtag: restaurant.hashtag,
         address: restaurant?.address,
         workTime: worktime,
         contact: restaurant?.contact,
