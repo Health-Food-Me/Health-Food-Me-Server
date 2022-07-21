@@ -42,7 +42,7 @@ const getReviewsByUser = (id) => __awaiter(void 0, void 0, void 0, function* () 
         return {
             id: review._id,
             restaurant: review.restaurant.name,
-            restaurnatId: review.restaurant._id,
+            restaurantId: review.restaurant._id,
             score: review.score,
             content: review.content,
             image: review.image,

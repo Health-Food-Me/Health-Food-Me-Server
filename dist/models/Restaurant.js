@@ -34,12 +34,6 @@ const ResaturantSchema = new mongoose_1.default.Schema({
         required: true,
         ref: "Category",
     },
-    hashtag: [
-        {
-            type: String,
-            required: true,
-        },
-    ],
     address: {
         type: String,
         required: true,

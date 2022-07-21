@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const winstonConfig_1 = require("../config/winstonConfig");
+const Menu_1 = __importDefault(require("../models/Menu"));
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const Review_1 = __importDefault(require("../models/Review"));
 const User_1 = __importDefault(require("../models/User"));
@@ -141,13 +142,22 @@ const getUserScrapList = (userId) => __awaiter(void 0, void 0, void 0, function*
                 if (!restaurant)
                     return null;
                 const address = restaurant.address.split(" ");
+                let hashtag = [];
+                const promises = restaurant.menus.map((menuId) => __awaiter(void 0, void 0, void 0, function* () {
+                    const menu = yield Menu_1.default.findById(menuId);
+                    if (menu && menu.isHelfoomePick)
+                        hashtag.push(menu.name);
+                }));
+                yield Promise.all(promises);
+                if (hashtag.length > 2)
+                    hashtag = hashtag.slice(0, 2);
                 const data = {
                     _id: restaurant._id,
                     name: restaurant.name,
                     logo: restaurant.logo,
                     score: score,
                     category: restaurant.category.title,
-                    hashtag: restaurant.hashtag,
+                    hashtag: hashtag,
                     latitude: restaurant.location.coordinates.at(1),
                     longtitude: restaurant.location.coordinates.at(0),
                     address: `${address[0]} ${address[1]}`,

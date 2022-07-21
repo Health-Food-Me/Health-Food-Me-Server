@@ -33,13 +33,23 @@ const getRestaurantSummary = (restaurantId, userId) => __awaiter(void 0, void 0,
         if ((scrapList === null || scrapList === void 0 ? void 0 : scrapList.find((x) => x == restaurantId)) !== undefined) {
             isScrap = true;
         }
+        let hashtag = [];
+        const promises = restaurant.menus.map((menuId) => __awaiter(void 0, void 0, void 0, function* () {
+            const menu = yield Menu_1.default.findById(menuId);
+            if (menu && menu.isHelfoomePick === true) {
+                hashtag.push(menu.name);
+            }
+        }));
+        yield Promise.all(promises);
+        if (hashtag.length > 2)
+            hashtag = hashtag.slice(0, 2);
         const data = {
             _id: restaurantId,
             name: restaurant === null || restaurant === void 0 ? void 0 : restaurant.name,
             logo: restaurant === null || restaurant === void 0 ? void 0 : restaurant.logo,
             category: restaurant === null || restaurant === void 0 ? void 0 : restaurant.category.title,
             workTime: restaurant === null || restaurant === void 0 ? void 0 : restaurant.workTime,
-            hashtag: restaurant === null || restaurant === void 0 ? void 0 : restaurant.hashtag,
+            hashtag: hashtag,
             score: score,
             isScrap: isScrap,
         };
@@ -83,11 +93,17 @@ const getMenuDetail = (restaurantId, userId, latitude, longtitude) => __awaiter(
         const distance = yield getDistance(latitude, longtitude, restaurantLatitude, restaurantLongtitude);
         const menuIdList = restaurant.menus;
         const menuList = yield getMenuList(menuIdList);
+        let hashtag = [];
+        menuList === null || menuList === void 0 ? void 0 : menuList.map((menu) => {
+            if (menu && menu.isPick)
+                hashtag.push(menu.name);
+        });
+        if (hashtag.length > 2)
+            hashtag = hashtag.slice(0, 2);
         const time = restaurant.workTime;
         let worktime;
         if (time != undefined) {
             worktime = [];
-            console.log(restaurant.workTime);
             const promise = restaurant.workTime.map((data) => __awaiter(void 0, void 0, void 0, function* () {
                 const timeData = data.split(" ");
                 // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
@@ -111,7 +127,7 @@ const getMenuDetail = (restaurantId, userId, latitude, longtitude) => __awaiter(
                 name: restaurant === null || restaurant === void 0 ? void 0 : restaurant.name,
                 logo: restaurant === null || restaurant === void 0 ? void 0 : restaurant.logo,
                 category: restaurant === null || restaurant === void 0 ? void 0 : restaurant.category.title,
-                hashtag: restaurant === null || restaurant === void 0 ? void 0 : restaurant.hashtag,
+                hashtag: hashtag,
                 address: restaurant === null || restaurant === void 0 ? void 0 : restaurant.address,
                 workTime: worktime,
                 contact: restaurant === null || restaurant === void 0 ? void 0 : restaurant.contact,
