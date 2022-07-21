@@ -4,6 +4,7 @@ interface GetReviewsDto {
   id: string | mongoose.Types.ObjectId;
   writer?: string;
   restaurant?: string;
+  restaurantId?: mongoose.Types.ObjectId;
   score: number;
   content: string;
   image: {
