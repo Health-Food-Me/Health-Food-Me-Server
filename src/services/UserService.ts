@@ -3,6 +3,7 @@ import { logger } from "../config/winstonConfig";
 import ICategory from "../interface/Category";
 import { ScrapData } from "../interface/ScrapData";
 import UserProfileDto from "../interface/UserProfile";
+import Menu from "../models/Menu";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -146,13 +147,22 @@ const getUserScrapList = async (userId: string) => {
 
         const address = (restaurant.address as string).split(" ");
 
+        let hashtag: string[] = [];
+        const promises = restaurant.menus.map(async (menuId) => {
+          const menu = await Menu.findById(menuId);
+          if (menu && menu.isHelfoomePick) hashtag.push(menu.name);
+        });
+        await Promise.all(promises);
+
+        if (hashtag.length > 2) hashtag = hashtag.slice(0, 2);
+
         const data: ScrapData = {
           _id: restaurant._id,
           name: restaurant.name as string,
           logo: restaurant.logo as string,
           score: score,
           category: restaurant.category.title,
-          hashtag: restaurant.hashtag,
+          hashtag: hashtag,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
           address: `${address[0]} ${address[1]}`,
