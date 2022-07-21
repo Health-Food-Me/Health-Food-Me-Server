@@ -37,7 +37,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       name: restaurant?.name,
       logo: restaurant?.logo,
       category: restaurant?.category.title,
-      workTime: restaurant?.worktime,
+      workTime: restaurant?.workTime,
       hashtag: restaurant?.hashtag,
       score: score,
       isScrap: isScrap,
@@ -105,11 +105,12 @@ const getMenuDetail = async (
     const menuIdList = restaurant.menus;
     const menuList = await getMenuList(menuIdList);
 
-    const time = restaurant.worktime;
+    const time = restaurant.workTime;
     let worktime;
     if (time != undefined) {
       worktime = [];
-      const promise = restaurant.worktime.map(async (data) => {
+      console.log(restaurant.workTime);
+      const promise = restaurant.workTime.map(async (data) => {
         const timeData = data.split(" ");
         // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
         worktime.push(timeData[1]);
