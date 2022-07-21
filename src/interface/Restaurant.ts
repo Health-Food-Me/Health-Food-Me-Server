@@ -9,7 +9,6 @@ interface Restaurant {
   name: string;
   logo: string;
   category: Types.ObjectId;
-  hashtag: string[];
   address: string;
   workTime: string[];
   contact: string;
