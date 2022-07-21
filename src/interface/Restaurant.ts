@@ -11,7 +11,7 @@ interface Restaurant {
   category: Types.ObjectId;
   hashtag: string[];
   address: string;
-  worktime: string[];
+  workTime: string[];
   contact: string;
   reviews: Types.ObjectId[];
   menus: Types.ObjectId[];

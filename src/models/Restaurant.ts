@@ -43,7 +43,7 @@ const ResaturantSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  worktime: [
+  workTime: [
     {
       type: String,
     },

@@ -38,7 +38,7 @@ const getRestaurantSummary = (restaurantId, userId) => __awaiter(void 0, void 0,
             name: restaurant === null || restaurant === void 0 ? void 0 : restaurant.name,
             logo: restaurant === null || restaurant === void 0 ? void 0 : restaurant.logo,
             category: restaurant === null || restaurant === void 0 ? void 0 : restaurant.category.title,
-            workTime: restaurant === null || restaurant === void 0 ? void 0 : restaurant.worktime,
+            workTime: restaurant === null || restaurant === void 0 ? void 0 : restaurant.workTime,
             hashtag: restaurant === null || restaurant === void 0 ? void 0 : restaurant.hashtag,
             score: score,
             isScrap: isScrap,
@@ -83,11 +83,12 @@ const getMenuDetail = (restaurantId, userId, latitude, longtitude) => __awaiter(
         const distance = yield getDistance(latitude, longtitude, restaurantLatitude, restaurantLongtitude);
         const menuIdList = restaurant.menus;
         const menuList = yield getMenuList(menuIdList);
-        const time = restaurant.worktime;
+        const time = restaurant.workTime;
         let worktime;
         if (time != undefined) {
             worktime = [];
-            const promise = restaurant.worktime.map((data) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log(restaurant.workTime);
+            const promise = restaurant.workTime.map((data) => __awaiter(void 0, void 0, void 0, function* () {
                 const timeData = data.split(" ");
                 // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
                 worktime.push(timeData[1]);
