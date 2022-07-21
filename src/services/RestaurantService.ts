@@ -37,6 +37,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
       name: restaurant?.name,
       logo: restaurant?.logo,
       category: restaurant?.category.title,
+      workTime: restaurant?.worktime,
       hashtag: restaurant?.hashtag,
       score: score,
       isScrap: isScrap,
