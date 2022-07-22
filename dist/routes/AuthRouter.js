@@ -9,7 +9,7 @@ const UserController_1 = __importDefault(require("../controllers/UserController"
 const auth_1 = __importDefault(require("../middleware/auth"));
 const router = (0, express_1.Router)();
 router.post("/", UserController_1.default.getUser);
-router.get("/token", controllers_1.TokenController.getToken);
+router.get("/token", auth_1.default, controllers_1.TokenController.getToken);
 router.delete("/withdrawal/:userId", auth_1.default, UserController_1.default.withdrawUser);
 exports.default = router;
 //# sourceMappingURL=AuthRouter.js.map
