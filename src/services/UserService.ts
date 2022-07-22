@@ -3,7 +3,6 @@ import { logger } from "../config/winstonConfig";
 import ICategory from "../interface/Category";
 import { ScrapData } from "../interface/ScrapData";
 import UserProfileDto from "../interface/UserProfile";
-import Menu from "../models/Menu";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";

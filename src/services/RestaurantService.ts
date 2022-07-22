@@ -235,6 +235,7 @@ const getAroundRestaurants = async (
   category?: string,
 ) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any[] = [
       {
         $nearSphere: {
