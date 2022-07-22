@@ -17,6 +17,7 @@ const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const Review_1 = __importDefault(require("../models/Review"));
 const User_1 = __importDefault(require("../models/User"));
 const exceptionMessage_1 = __importDefault(require("../modules/exceptionMessage"));
+const randomName_1 = __importDefault(require("../modules/randomName"));
 const RestaurantService_1 = __importDefault(require("./RestaurantService"));
 const SocialAuthStrategy_1 = require("./SocialAuthStrategy");
 const getUser = (social, accessToken) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,26 +47,22 @@ const findUserById = (userId, social) => __awaiter(void 0, void 0, void 0, funct
 });
 const signUpUser = (social, socialId, email, refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let user;
-        if (!email) {
-            user = new User_1.default({
-                name: `헬푸미${socialId}`,
-                social: social,
-                socialId: socialId,
-                scrapRestaurants: [],
-                refreshToken: refreshToken,
-            });
-        }
-        else {
-            user = new User_1.default({
-                name: `헬푸미${socialId}`,
-                social: social,
-                socialId: socialId,
-                email: email,
-                scrapRestaurants: [],
-                refreshToken: refreshToken,
-            });
-        }
+        let nickname = (yield randomName_1.default.createRandomName()).toString();
+        const existName = yield User_1.default.find({
+            name: {
+                $regex: `.*${nickname}.*`,
+            },
+        });
+        if (existName.length > 0)
+            nickname = `${nickname}${existName.length + 1}`;
+        const user = new User_1.default({
+            name: nickname,
+            social: social,
+            socialId: socialId,
+            email: email ? email : null,
+            scrapRestaurants: [],
+            refreshToken: refreshToken,
+        });
         yield user.save();
         return user;
     }
