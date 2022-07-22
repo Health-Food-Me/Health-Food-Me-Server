@@ -474,4 +474,5 @@ issue tracker: 이슈 번호 (option)
 - 데이터베이스 : MongoDB, AWS S3
 - 서버 환경 : AWS EC2, PM2
 
-<img src="https://user-images.githubusercontent.com/55437339/180410160-4770a4b0-b616-4739-b469-315059a11e06.png" style="width:600px;"/>
+<img src="https://user-images.githubusercontent.com/55437339/180410559-71ba8ab6-d671-40a8-8e5b-c8eb07ea2884.png" style="width:600px;"/>
+
