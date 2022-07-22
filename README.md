@@ -466,3 +466,12 @@ issue tracker: 이슈 번호 (option)
 ```
 </div>
 </details>
+
+<br/>
+
+### Server Architecture
+- 개발 환경 : Typescript, Express(Node.js)
+- 데이터베이스 : MongoDB, AWS S3
+- 서버 환경 : AWS EC2, PM2
+
+<img src="https://user-images.githubusercontent.com/55437339/180410160-4770a4b0-b616-4739-b469-315059a11e06.png" style="width:600px;"/>
