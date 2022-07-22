@@ -469,7 +469,7 @@ issue tracker: 이슈 번호 (option)
 
 <br/>
 
-### Server Architecture
+### 📌 Server Architecture
 - 개발 환경 : Typescript, Express(Node.js)
 - 데이터베이스 : MongoDB, AWS S3
 - 서버 환경 : AWS EC2, PM2
