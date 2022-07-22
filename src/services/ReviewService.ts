@@ -188,6 +188,8 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
   } catch (error) {
     logger.e(error);
     throw error;
+
+    
   }
 };
 
