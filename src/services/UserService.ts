@@ -7,6 +7,7 @@ import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
 import exceptionMessage from "../modules/exceptionMessage";
+import randomName from "../modules/randomName";
 import RestaurantService from "./RestaurantService";
 import { authStrategy } from "./SocialAuthStrategy";
 
@@ -43,25 +44,22 @@ const signUpUser = async (
   refreshToken: string,
 ) => {
   try {
-    let user;
-    if (!email) {
-      user = new User({
-        name: `헬푸미${socialId}`,
-        social: social,
-        socialId: socialId,
-        scrapRestaurants: [],
-        refreshToken: refreshToken,
-      });
-    } else {
-      user = new User({
-        name: `헬푸미${socialId}`,
-        social: social,
-        socialId: socialId,
-        email: email,
-        scrapRestaurants: [],
-        refreshToken: refreshToken,
-      });
-    }
+    let nickname = (await randomName.createRandomName()).toString();
+    const existName = await User.find({
+      name: {
+        $regex: `.*${nickname}.*`,
+      },
+    });
+    if (existName.length > 0) nickname = `${nickname}${existName.length + 1}`;
+
+    const user = new User({
+      name: nickname,
+      social: social,
+      socialId: socialId,
+      email: email ? email : null,
+      scrapRestaurants: [],
+      refreshToken: refreshToken,
+    });
 
     await user.save();
 
