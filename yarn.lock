@@ -1271,9 +1271,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 aws-sdk@^2.1140.0, aws-sdk@^2.814.0:
-  version "2.1176.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1176.0.tgz#f3524433a60857a8fcd21722251f2b1f19d72008"
-  integrity sha512-jinSKjACYHIkkz0UlFwQXwz8HAHZIeJg5wOnZoMTKU3/WM6Vh26hZJJ6XkwDAfBmyWp3V9qFdQoSAiO8SeXKjw==
+  version "2.1180.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1180.0.tgz#01c5a5c845bea6676421cbb8fb162c4df8b719d5"
+  integrity sha512-QyQ+Zxb+AowFHb9N6qrmpA+LVZxUlBCfqEsRUAss+0y+QbEwfh4o+AxP6V0xz+m+UlBNxBkqJLx8UPoVk387LQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3668,9 +3668,9 @@ mongodb@4.7.0:
     saslprep "^1.0.3"
 
 mongoose@*, mongoose@^6.3.1:
-  version "6.4.4"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-6.4.4.tgz#4e22a36373d8a867ee8f73063d8b31f1e451316d"
-  integrity sha512-r6sp96veRNhNIWFtHHe4Lqak+ilgiExYnnMLhYTGdzjIMR90G1ayx0JKFVdHuC6dKNHGFX0ETJGbf36N8Romjg==
+  version "6.4.6"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-6.4.6.tgz#57bc7ae68de56abcc5e890284f2d10acac863aa2"
+  integrity sha512-ZAfNCWgXhwev6k/+rMzjHIJ/+wLkundQU/i+aUTqmCgGoYqc+B5e4EC4Y3E1XaLzNXiWID1/vocSM6zs5IAGvA==
   dependencies:
     bson "^4.6.2"
     kareem "2.4.1"
@@ -4761,9 +4761,9 @@ triple-beam@^1.3.0:
   integrity sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==
 
 ts-jest@^28.0.5:
-  version "28.0.6"
-  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.6.tgz#d63df9a9908044cd891e066ad869b1a432e70d67"
-  integrity sha512-yLAWoaSJ6c9o+IT7+nyutp5uvwGzhMYb/LD5WEQAi2tBq4ZSAPay4Lf69pP/IU+GFYg87pdg5eADSzuNAFSK4g==
+  version "28.0.7"
+  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.7.tgz#e18757a9e44693da9980a79127e5df5a98b37ac6"
+  integrity sha512-wWXCSmTwBVmdvWrOpYhal79bDpioDy4rTT+0vyUnE3ZzM7LOAAGG9NXwzkEL/a516rQEgnMmS/WKP9jBPCVJyA==
   dependencies:
     bs-logger "0.x"
     fast-json-stable-stringify "2.x"
