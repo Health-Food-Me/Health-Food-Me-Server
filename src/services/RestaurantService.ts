@@ -116,7 +116,7 @@ const getMenuDetail = async (
       });
       await Promise.all(promise);
     } else {
-      worktime = null;
+      worktime = [""];
     }
 
     const scrapList = user.scrapRestaurants;

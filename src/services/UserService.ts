@@ -220,6 +220,13 @@ const withdrawUser = async (userId: string) => {
   try {
     const user = await User.findById(userId);
     if (user == undefined) return null;
+    const reviewIds = await Review.find({
+      writer: userId,
+    });
+    const deleteReviews = reviewIds.map(async (id) => {
+      await Review.findByIdAndDelete(id);
+    });
+    await Promise.all(deleteReviews);
 
     await User.findByIdAndDelete(userId);
 
