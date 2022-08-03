@@ -659,23 +659,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@sentry/core@7.7.0":
-  version "7.7.0"
-  resolved "https://registry.npmjs.org/@sentry/core/-/core-7.7.0.tgz"
-  integrity sha512-Z15ACiuiFINFcK4gbMrnejLn4AVjKBPJOWKrrmpIe8mh+Y9diOuswt5mMUABs+jhpZvqht3PBLLGBL0WMsYMYA==
+"@sentry/core@7.8.1":
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.8.1.tgz#d11ba7c97766d1e47edf697dbfd47fe4041477d9"
+  integrity sha512-PRivbdIzApi/gSixAxozhOBTylSVdw/9VxaStYHd7JJGhs36KXkV8ylpbCmYO4ap7/Ue9/slzwpvPOJJzmzAgA==
   dependencies:
-    "@sentry/hub" "7.7.0"
-    "@sentry/types" "7.7.0"
-    "@sentry/utils" "7.7.0"
-    tslib "^1.9.3"
-
-"@sentry/hub@7.7.0":
-  version "7.7.0"
-  resolved "https://registry.npmjs.org/@sentry/hub/-/hub-7.7.0.tgz"
-  integrity sha512-6gydK234+a0nKhBRDdIJ7Dp42CaiW2juTiHegUVDq+482balVzbZyEAmESCmuzKJhx5BhlCElVxs/cci1NjMpg==
-  dependencies:
-    "@sentry/types" "7.7.0"
-    "@sentry/utils" "7.7.0"
+    "@sentry/hub" "7.8.1"
+    "@sentry/types" "7.8.1"
+    "@sentry/utils" "7.8.1"
     tslib "^1.9.3"
 
 "@sentry/hub@7.8.1":
@@ -688,14 +679,14 @@
     tslib "^1.9.3"
 
 "@sentry/node@^7.7.0":
-  version "7.7.0"
-  resolved "https://registry.npmjs.org/@sentry/node/-/node-7.7.0.tgz"
-  integrity sha512-i62x23NHEhLe6CJ6l9E30uRCUMm0VMz9aUmmrjW+9uxS1mZhHTG2kpbU16ozyh9KTLswKDOSE75Z+MzQpGSQ/Q==
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.8.1.tgz#9dca7afee2d9ad38fd9756e13439ce09d2f01934"
+  integrity sha512-gQHeIip7QudeK1YWrLyZPc7nfirhbVDJ3gfCfL9mLT724Sk8gKd1kcpU1niI+wwIwY7SOpJqX4Oh/F0lRKjzDQ==
   dependencies:
-    "@sentry/core" "7.7.0"
-    "@sentry/hub" "7.7.0"
-    "@sentry/types" "7.7.0"
-    "@sentry/utils" "7.7.0"
+    "@sentry/core" "7.8.1"
+    "@sentry/hub" "7.8.1"
+    "@sentry/types" "7.8.1"
+    "@sentry/utils" "7.8.1"
     cookie "^0.4.1"
     https-proxy-agent "^5.0.0"
     lru_map "^0.3.3"
@@ -711,23 +702,10 @@
     "@sentry/utils" "7.8.1"
     tslib "^1.9.3"
 
-"@sentry/types@7.7.0":
-  version "7.7.0"
-  resolved "https://registry.npmjs.org/@sentry/types/-/types-7.7.0.tgz"
-  integrity sha512-4x8O7uerSGLnYC10krHl9t8h7xXHn5FextqKYbTCXCnx2hC8D+9lz8wcbQAFo0d97wiUYqI8opmEgFVGx7c5hQ==
-
 "@sentry/types@7.8.1":
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.8.1.tgz#c00a1ed02ad8f69d3b94fcda91e2d24e0bb3492a"
   integrity sha512-LOoaeBXVI23Kh5SpIbxSRiJ6+eYZXVOFyPFH1T1mGBj95LPwRMqOdg0lUTmFJGBKbDGDB/YNjNnu1kQ7GrXBXw==
-
-"@sentry/utils@7.7.0":
-  version "7.7.0"
-  resolved "https://registry.npmjs.org/@sentry/utils/-/utils-7.7.0.tgz"
-  integrity sha512-fD+ROSFpeJlK7bEvUT2LOW7QqgjBpXJwVISKZ0P2fuzclRC3KoB2pbZgBM4PXMMTiSzRGWhvfRRjBiBvQJBBJQ==
-  dependencies:
-    "@sentry/types" "7.7.0"
-    tslib "^1.9.3"
 
 "@sentry/utils@7.8.1":
   version "7.8.1"
@@ -941,9 +919,9 @@
     "@types/express" "*"
 
 "@types/node@*", "@types/node@^18.0.5":
-  version "18.6.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.6.2.tgz#ffc5f0f099d27887c8d9067b54e55090fcd54126"
-  integrity sha512-KcfkBq9H4PI6Vpu5B/KoPeuVDAbmi+2mDBqGPGUgoL7yXQtcWGu2vJWmmRkneWK3Rh0nIAX192Aa87AqKHYChQ==
+  version "18.6.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.6.3.tgz#4e4a95b6fe44014563ceb514b2598b3e623d1c98"
+  integrity sha512-6qKpDtoaYLM+5+AFChLhHermMQxc3TOEFIDzrZLPRGHPrLEwqFkkT5Kx3ju05g6X7uDPazz3jHbKPX0KzCjntg==
 
 "@types/nunjucks@^3.2.1":
   version "3.2.1"
@@ -1293,9 +1271,9 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 aws-sdk@^2.1140.0, aws-sdk@^2.814.0:
-  version "2.1185.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1185.0.tgz#157c6a900a9449cb36b37493337cae418e01210d"
-  integrity sha512-viFlYC6RAKOqBRM4gIB4rE80KMFNVvEkQpNmpd3PqCOemGPETDxCVHS0oqZ26qM278sZVHt+oAjPy5HmZasskg==
+  version "2.1187.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1187.0.tgz#eb928d64305630f53b8f6dad5c7b91fec8f04622"
+  integrity sha512-QcxQ3asIhH9QQnN/5JO3MaHRjwcy3/AsBzcAjPU+lHZGV0drnuDmg3ZkZuAa/mOgQ3MEi68G3gYD+481QJgnMg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
