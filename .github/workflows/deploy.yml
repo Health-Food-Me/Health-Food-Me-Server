@@ -38,10 +38,15 @@ jobs:
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
           echo JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }} >> .env
           echo SENTRY_DSN=${{ secrets.SENTRY_DSN }} >> .env
+          echo BUCKET_NAME=${{ secrets.BUCKET_NAME }} >> .env
+          echo NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} >> .env
+          echo NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} >> .env
+          echo S3_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
+          echo S3_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
           cat .env
 
       - name: build server files
         working-directory: ./
         run: |
-          yarn reset
-          yarn build
+          yarn 
+          yarn run build
