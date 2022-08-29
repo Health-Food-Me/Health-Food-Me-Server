@@ -64,7 +64,11 @@ const getUser = async (req: Request, res: Response) => {
     await UserService.updateRefreshToken(existUser._id, refreshToken);
 
     const data = {
-      user: existUser,
+      user: {
+        _id: existUser._id,
+        name: existUser.name,
+        email: existUser.email,
+      },
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
