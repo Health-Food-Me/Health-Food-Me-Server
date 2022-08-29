@@ -15,6 +15,7 @@ const message = {
   VALID_TOKEN: "유효한 토큰",
   CREATE_TOKEN_SUCCESS: "토큰 재발급 성공",
   EXPIRED_TOKEN: "만료된 토큰",
+  EXPIRED_REFRESH_TOKEN: "만료된 토큰. 재로그인이 필요합니다.",
 
   // social
   UNAUTHORIZED_SOCIAL_USER: "유효하지 않은 소셜 유저",
