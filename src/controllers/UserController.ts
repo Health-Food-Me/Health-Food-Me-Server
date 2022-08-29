@@ -100,7 +100,11 @@ async function createUser(social: string, user: SocialUser) {
   const accessToken = jwt.sign(newUser._id, newUser.email);
 
   return {
-    user: newUser,
+    user: {
+      _id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+    },
     accessToken: accessToken,
     refreshToken: refreshToken,
   };
