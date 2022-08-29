@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwt from "jsonwebtoken";
-import { SocialUser } from "../interface/SocialUser";
+import { SocialUser } from "../interface/auth/SocialUser";
 import execptionMessage from "../modules/exceptionMessage";
 import { logger } from "./winstonConfig";
 
@@ -19,6 +19,7 @@ const naverAuth = async (naverAccessToken: string) => {
     if (!userId) return execptionMessage.INVALID_USER;
 
     if (!user.data.response.email) {
+      // email : null -> 데이터 형식 통일 필요
       return {
         userId: userId,
         email: null,

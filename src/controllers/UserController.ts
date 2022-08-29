@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
-import { SocialUser } from "../interface/SocialUser";
+import { SocialUser } from "../interface/auth/SocialUser";
 import BaseResponse from "../modules/BaseResponse";
 import {
   default as em,
