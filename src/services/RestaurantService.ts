@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
+import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
 import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
 import ICategory from "../interface/Category";
 import MenuData from "../interface/MenuData";
