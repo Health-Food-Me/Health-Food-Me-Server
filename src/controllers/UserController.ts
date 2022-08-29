@@ -22,9 +22,10 @@ const getUser = async (req: Request, res: Response) => {
 
   if (!social || !token) {
     return res
-      .status(sc.UNAUTHORIZED)
-      .send(BaseResponse.failure(sc.UNAUTHORIZED, message.NULL_VALUE_TOKEN));
+      .status(sc.BAD_REQUEST)
+      .send(BaseResponse.failure(sc.BAD_REQUEST, message.NULL_VALUE));
   }
+
   try {
     const user = await UserService.getUser(social, token);
 
