@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import ICategory from "../interface/Category";
-import { ScrapData } from "../interface/ScrapData";
-import UserProfileDto from "../interface/UserProfile";
+import ICategory from "../interface/restaurant/Category";
+import { ScrapData } from "../interface/restaurant/ScrapData";
+import UserProfileDto from "../interface/user/UserProfile";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -52,6 +52,7 @@ const signUpUser = async (
     });
     if (existName.length > 0) nickname = `${nickname}${existName.length + 1}`;
 
+    // email: null -> 데이터 형식 통일 필요
     const user = new User({
       name: nickname,
       social: social,

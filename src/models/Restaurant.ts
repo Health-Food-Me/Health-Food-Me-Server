@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Restaurant from "../interface/Restaurant";
+import Restaurant from "../interface/restaurant/Restaurant";
 import { MongoEntity } from "./Model";
 
 const pointSchema = new mongoose.Schema({
