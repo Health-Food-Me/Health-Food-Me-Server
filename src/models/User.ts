@@ -32,6 +32,16 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  userAgent: {
+    type: String,
+    required: true,
+  },
+  reviews: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
 });
 
 export default mongoose.model<MongoEntity<User>>("User", UserSchema);
