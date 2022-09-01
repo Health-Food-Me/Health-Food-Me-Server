@@ -49,7 +49,10 @@ const getToken = async (req: Request, res: Response) => {
       return res
         .status(statusCode.UNAUTHORIZED)
         .send(
-          BaseResponse.failure(statusCode.UNAUTHORIZED, message.EXPIRED_TOKEN),
+          BaseResponse.failure(
+            statusCode.UNAUTHORIZED,
+            message.EXPIRED_REFRESH_TOKEN,
+          ),
         );
     }
 

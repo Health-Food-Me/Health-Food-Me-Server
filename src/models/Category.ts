@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Category from "../interface/Category";
+import Category from "../interface/restaurant/Category";
 import { MongoEntity } from "./Model";
 
 const CategorySchema = new mongoose.Schema({

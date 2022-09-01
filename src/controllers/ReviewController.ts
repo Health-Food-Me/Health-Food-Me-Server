@@ -5,7 +5,7 @@ import BaseResponse from "../modules/BaseResponse";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import ReviewService from "../services/ReviewService";
-import ReveiwResponseDto from "./dto/review/ReviewResponseDto";
+import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
 
 /**
  * @route GET /review/restaurant/:restaurantId

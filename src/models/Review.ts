@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Review from "../interface/Review";
+import Review from "../interface/review/Review";
 import { MongoEntity } from "./Model";
 
 const ReviewSchema = new mongoose.Schema({

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Menu from "../interface/Menu";
+import Menu from "../interface/restaurant/Menu";
 import { MongoEntity } from "./Model";
 
 const MenuSchema = new mongoose.Schema({

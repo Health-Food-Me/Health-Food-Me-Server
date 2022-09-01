@@ -5,18 +5,10 @@ import auth from "../middleware/auth";
 
 const router = Router();
 
-router.get(
-  "/restaurant/:restaurantId",
-  auth,
-  ReviewController.getReviewByRestaurant,
-);
+router.get("/restaurant/:restaurantId", ReviewController.getReviewByRestaurant);
 router.get("/user/:userId", auth, ReviewController.getReviewsByUser);
 router.delete("/:reviewId", auth, ReviewController.deleteReview);
-router.get(
-  "/restaurant/:name/blog",
-  auth,
-  ReviewController.getReviewsFromNaver,
-);
+router.get("/restaurant/:name/blog", ReviewController.getReviewsFromNaver);
 
 router.post(
   "/user/:userId/restaurant/:restaurantId",

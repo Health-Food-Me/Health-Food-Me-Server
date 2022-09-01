@@ -2,11 +2,11 @@ import axios from "axios";
 import { Types } from "mongoose";
 import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
-import GetReviewsDto from "../controllers/dto/review/GetReviewsDto";
-import ReveiwResponseDto from "../controllers/dto/review/ReviewResponseDto";
-import IRestaurant from "../interface/Restaurant";
-import { NaverBlogReviewResponse } from "../interface/Review";
-import IUser from "../interface/User";
+import GetReviewsDto from "../interface/review/GetReviewsDto";
+import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
+import IRestaurant from "../interface/restaurant/Restaurant";
+import { NaverBlogReviewResponse } from "../interface/review/Review";
+import IUser from "../interface/user/User";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 

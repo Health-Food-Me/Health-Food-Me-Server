@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import AroundRestaurantDto from "../controllers/dto/restaurant/AroundRestaurantDto";
-import AutoCompleteSearchDto from "../controllers/dto/restaurant/AutoCompleteSearchDto";
-import ICategory from "../interface/Category";
-import MenuData from "../interface/MenuData";
-import RestaurantCard from "../interface/RestaurantCard";
+import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
+import AutoCompleteSearchDto from "../interface/restaurant/AutoCompleteSearchDto";
+import ICategory from "../interface/restaurant/Category";
+import MenuData from "../interface/restaurant/MenuData";
+import RestaurantCard from "../interface/restaurant/RestaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
 import Prescription from "../models/Prescription";
@@ -247,6 +247,9 @@ const getAroundRestaurants = async (
         },
       },
     ];
+
+    // category $or 로 변경
+
     if (category) {
       try {
         const result = await Category.findOne({ title: { $eq: category } });

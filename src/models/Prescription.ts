@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Prescription from "../interface/Prescription";
+import Prescription from "../interface/restaurant/Prescription";
 import { MongoEntity } from "./Model";
 
 const PrescriptionSchema = new mongoose.Schema({

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
-import { SocialUser } from "../interface/SocialUser";
+import { SocialUser } from "../interface/auth/SocialUser";
 import BaseResponse from "../modules/BaseResponse";
 import {
   default as em,
@@ -22,9 +22,10 @@ const getUser = async (req: Request, res: Response) => {
 
   if (!social || !token) {
     return res
-      .status(sc.UNAUTHORIZED)
-      .send(BaseResponse.failure(sc.UNAUTHORIZED, message.NULL_VALUE_TOKEN));
+      .status(sc.BAD_REQUEST)
+      .send(BaseResponse.failure(sc.BAD_REQUEST, message.NULL_VALUE));
   }
+
   try {
     const user = await UserService.getUser(social, token);
 
@@ -64,7 +65,11 @@ const getUser = async (req: Request, res: Response) => {
     await UserService.updateRefreshToken(existUser._id, refreshToken);
 
     const data = {
-      user: existUser,
+      user: {
+        _id: existUser._id,
+        name: existUser.name,
+        email: existUser.email,
+      },
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
@@ -96,7 +101,11 @@ async function createUser(social: string, user: SocialUser) {
   const accessToken = jwt.sign(newUser._id, newUser.email);
 
   return {
-    user: newUser,
+    user: {
+      _id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+    },
     accessToken: accessToken,
     refreshToken: refreshToken,
   };
