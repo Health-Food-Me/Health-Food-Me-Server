@@ -32,7 +32,7 @@ const findUserById = async (userId: string, social: string) => {
     return user;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -56,7 +56,7 @@ const signUpUser = async (
       name: nickname,
       social: social,
       socialId: socialId,
-      email: email ? email : null,
+      email: email ? email : "",
       scrapRestaurants: [],
       refreshToken: refreshToken,
     });
@@ -78,7 +78,7 @@ const updateRefreshToken = async (userId: string, refreshToken: string) => {
     );
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -91,7 +91,7 @@ const findUserByRfToken = async (refreshToken: string) => {
     return user;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -99,7 +99,7 @@ const findUserByRfToken = async (refreshToken: string) => {
 const scrapRestaurant = async (userId: string, restaurantId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (user == undefined) return "";
 
     let scraps = user.scrapRestaurants;
     if (scraps?.find((x) => x == restaurantId)) {
@@ -117,7 +117,7 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
     }
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -125,7 +125,7 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
 const getUserScrapList = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (user == undefined) return "";
 
     const userScrap = user.scrapRestaurants;
 
@@ -140,7 +140,7 @@ const getUserScrapList = async (userId: string) => {
           restaurant?.reviews as Types.ObjectId[],
         );
 
-        if (!restaurant) return null;
+        if (!restaurant) return "";
 
         const address = (restaurant.address as string).split(" ");
 
@@ -163,7 +163,7 @@ const getUserScrapList = async (userId: string) => {
     return scrapList;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).name === "CastError") return null;
+    if ((error as Error).name === "CastError") return "";
     throw error;
   }
 };
@@ -171,7 +171,7 @@ const getUserScrapList = async (userId: string) => {
 const getUserProfile = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (user == undefined) return "";
 
     const data: UserProfileDto = {
       _id: userId,
@@ -182,7 +182,7 @@ const getUserProfile = async (userId: string) => {
     return data;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -190,7 +190,7 @@ const getUserProfile = async (userId: string) => {
 const updateUserProfile = async (userId: string, name: string) => {
   try {
     let user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (user == undefined) return "";
 
     const userName = await User.findOne({ name: name });
     if (userName) return exceptionMessage.DUPLICATE_NAME;
@@ -209,7 +209,7 @@ const updateUserProfile = async (userId: string, name: string) => {
     return data;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
@@ -217,14 +217,14 @@ const updateUserProfile = async (userId: string, name: string) => {
 const withdrawUser = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (user == undefined) return "";
 
     await User.findByIdAndDelete(userId);
 
     return exceptionMessage.DELETE_USER;
   } catch (error) {
     logger.e(error);
-    if ((error as Error).message === "CastError") return null;
+    if ((error as Error).message === "CastError") return "";
     throw error;
   }
 };
