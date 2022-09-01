@@ -54,7 +54,7 @@ const deleteReview = async (id: string) => {
     reviews: id,
   });
 
-  if (!restaurant) return null;
+  if (!restaurant) return "";
 
   // 식당 리뷰 id 배열에서 삭제
   const reviewList = restaurant?.reviews;
@@ -68,7 +68,7 @@ const deleteReview = async (id: string) => {
 
   // aws 버킷에서 이미지 파일 삭제
   const review = await Review.findById(id);
-  if (!review) return null;
+  if (!review) return "";
 
   const promises = review.image.map(async (data) => {
     await multer.s3Delete(data.name);
@@ -127,7 +127,7 @@ const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
       reviewResponseDto.restaurantId,
     );
 
-    if (!restaurant) return null;
+    if (!restaurant) return "";
 
     const reviewList = restaurant.reviews;
     if (reviewList != undefined) {
@@ -153,7 +153,7 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     const reviewId = reviewResponseDto.reviewId;
     const review = await Review.findById(reviewId);
 
-    if (review == undefined) return null;
+    if (review == undefined) return "";
 
     const imageFileList = review.image;
     const imageList: { name: string; url: string }[] = [];
