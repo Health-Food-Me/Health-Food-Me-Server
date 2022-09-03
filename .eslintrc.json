@@ -14,9 +14,7 @@
     "parser": "@typescript-eslint/parser",
     "sourceType": "module"
   },
-  "ignorePatterns": [
-    "dist/**/*.js"
-  ],
+  "ignorePatterns": ["dist/**/*.js"],
   "rules": {
     "no-console": "off",
     "no-debugger": "warn",
@@ -30,7 +28,8 @@
         "trailingComma": "all",
         "printWidth": 80,
         "bracketSpacing": true,
-        "arrowParens": "always"
+        "arrowParens": "always",
+        "endOfLine": "auto"
       }
     ]
   }
