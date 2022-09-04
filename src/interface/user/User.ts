@@ -5,6 +5,7 @@ interface User {
   email: string;
   scrapRestaurants: string[];
   refreshToken: string;
+  userAgent: string;
 }
 
 export default User;
