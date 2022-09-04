@@ -15,20 +15,16 @@ const naverAuth = async (naverAccessToken: string) => {
     });
 
     const userId = user.data.response.id;
-
     if (!userId) return execptionMessage.INVALID_USER;
 
-    if (!user.data.response.email) {
-      // email : null -> 데이터 형식 통일 필요
-      return {
-        userId: userId,
-        email: null,
-      };
+    let email = "";
+    if (user.data.response.email) {
+      email = user.data.response.email;
     }
 
     const naverUser: SocialUser = {
       userId: userId,
-      email: user.data.response.email,
+      email: email,
     };
 
     return naverUser;
@@ -49,19 +45,16 @@ const kakaoAuth = async (kakaoAccessToken: string) => {
     });
 
     const userId = user.data.id;
-
     if (!userId) return execptionMessage.INVALID_USER;
 
-    if (!user.data.kakao_account) {
-      return {
-        userId: userId,
-        email: null,
-      };
+    let email = "";
+    if (user.data.kakao_account) {
+      email = user.data.kakao_account.email;
     }
 
     const kakaoUser: SocialUser = {
       userId: userId,
-      email: user.data.kakao_account.email,
+      email: email,
     };
 
     return kakaoUser;
@@ -77,16 +70,14 @@ const appleAuth = async (appleAccessToken: string) => {
     if (user === null) return null;
     if (!(user as jwt.JwtPayload).sub) return execptionMessage.INVALID_USER;
 
-    if (!(user as jwt.JwtPayload).email) {
-      return {
-        userId: (user as jwt.JwtPayload).sub,
-        email: null,
-      };
+    let email = "";
+    if ((user as jwt.JwtPayload).email) {
+      email = (user as jwt.JwtPayload).email;
     }
 
     const appleUser: SocialUser = {
       userId: (user as jwt.JwtPayload).sub as string,
-      email: (user as jwt.JwtPayload).email,
+      email: email,
     };
 
     return appleUser;
