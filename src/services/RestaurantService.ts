@@ -371,6 +371,10 @@ const getRestaurantCardList = async (
     });
     await Promise.all(promises);
 
+    result.sort(function (a, b) {
+      return a.distance > b.distance ? -1 : a.distance < b.distance ? 1 : 0;
+    });
+
     return result;
   } catch (error) {
     logger.e(error);
