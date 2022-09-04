@@ -6,6 +6,8 @@ interface RestaurantCard {
   category: string;
   score: number;
   distance: number;
+  longitude: number;
+  latitude: number;
   logo: string;
 }
 
