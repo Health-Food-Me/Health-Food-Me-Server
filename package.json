@@ -9,8 +9,7 @@
     "reset": "rm -rf node_modules && rm -rf dist && yarn install",
     "lint": "./node_modules/.bin/eslint .",
     "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --config jest.config.js --detectOpenHandles --forceExit",
-    "lint-staged": "lint-staged",
-    "prepare": "husky install"
+    "lint-staged": "lint-staged"
   },
   "author": "thguss <thgus345@naver.com>",
   "contributors": [
