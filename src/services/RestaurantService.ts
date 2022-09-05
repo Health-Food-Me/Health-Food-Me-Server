@@ -325,55 +325,57 @@ const getPrescription = async (restaurantId: string) => {
 };
 
 const getRestaurantCardList = async (
-  longtitude: number,
+  longitude: number,
   latitude: number,
   keyword: string,
 ) => {
   try {
-    const restaurantList = getAroundRestaurants(longtitude, latitude, 3000);
+    const foodList = await (
+      await Menu.find({
+        name: { $regex: `.*${keyword}.*` },
+      })
+    ).map((x) => x._id);
 
-    const searchList = (await restaurantList).filter((restaurant) =>
-      restaurant.name.includes(keyword),
-    );
+    const searchList = await Restaurant.find({
+      $or: [
+        {
+          name: { $regex: `.*${keyword}.*` },
+        },
+        { menus: { $in: foodList } },
+      ],
+    }).populate<{ category: ICategory }>("category");
 
-    const resultList: RestaurantCard[] = [];
-    const promises = searchList.map(async (data) => {
-      const restaurantId = data._id;
-      const restaurant = await Restaurant.findById(restaurantId).populate<{
-        category: ICategory;
-      }>("category");
+    const result: RestaurantCard[] = [];
 
-      if (restaurant != undefined) {
-        const reviewList = restaurant.reviews;
-        const score = await getScore(reviewList);
-        const restaurantLatitude = restaurant.location.coordinates.at(
-          0,
-        ) as number;
-        const restaurantLongtitude = restaurant.location.coordinates.at(
-          1,
-        ) as number;
-        const distance = await getDistance(
-          latitude,
-          longtitude,
-          restaurantLatitude,
-          restaurantLongtitude,
-        );
+    const promises = searchList.map(async (restaurant) => {
+      const score = await getScore(restaurant.reviews);
+      const distance = await getDistance(
+        latitude,
+        longitude,
+        restaurant.location.coordinates.at(1) as number,
+        restaurant.location.coordinates.at(0) as number,
+      );
 
-        const result: RestaurantCard = {
-          _id: restaurant._id,
-          name: restaurant.name,
-          category: restaurant.category.title,
-          score: score,
-          distance: distance,
-          logo: restaurant.logo,
-        };
+      const data: RestaurantCard = {
+        _id: restaurant._id,
+        name: restaurant.name,
+        category: restaurant.category.title,
+        score: score,
+        distance: distance,
+        longitude: restaurant.location.coordinates.at(0) as number,
+        latitude: restaurant.location.coordinates.at(1) as number,
+        logo: restaurant.logo,
+      };
 
-        resultList.push(result);
-      }
+      result.push(data);
     });
     await Promise.all(promises);
 
-    return resultList;
+    result.sort(function (a, b) {
+      return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
+    });
+
+    return result;
   } catch (error) {
     logger.e(error);
     throw error;
