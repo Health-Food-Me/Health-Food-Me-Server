@@ -23,12 +23,17 @@ const getUser = async (social: SocialPlatform, accessToken: string) => {
   }
 };
 
-const findUserById = async (userId: string, social: string) => {
+const findUserById = async (userId: string, social: string, agent: string) => {
   try {
     const user = await User.findOne({
       social: social,
       socialId: userId,
     });
+
+    if (!user) return null;
+
+    await User.findByIdAndUpdate(user._id, { userAgent: agent });
+
     return user;
   } catch (error) {
     logger.e(error);
@@ -42,6 +47,7 @@ const signUpUser = async (
   socialId: string,
   email: string,
   refreshToken: string,
+  agent: string,
 ) => {
   try {
     let nickname = (await randomName.createRandomName()).toString();
@@ -52,14 +58,14 @@ const signUpUser = async (
     });
     if (existName.length > 0) nickname = `${nickname}${existName.length + 1}`;
 
-    // email: null -> 데이터 형식 통일 필요
     const user = new User({
       name: nickname,
       social: social,
       socialId: socialId,
-      email: email ? email : null,
+      email: email,
       scrapRestaurants: [],
       refreshToken: refreshToken,
+      userAgent: agent,
     });
 
     await user.save();

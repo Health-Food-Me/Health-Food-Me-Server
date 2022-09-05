@@ -19,8 +19,9 @@ import UserService from "../services/UserService";
 const getUser = async (req: Request, res: Response) => {
   const social = req.body.social;
   const token = req.body.token;
+  const agent = req.body.agent;
 
-  if (!social || !token) {
+  if (!social || !token || !agent) {
     return res
       .status(sc.BAD_REQUEST)
       .send(BaseResponse.failure(sc.BAD_REQUEST, message.NULL_VALUE));
@@ -48,9 +49,10 @@ const getUser = async (req: Request, res: Response) => {
     const existUser = await UserService.findUserById(
       (user as SocialUser).userId,
       social,
+      agent,
     );
     if (!existUser) {
-      const data = createUser(social, user);
+      const data = createUser(social, user, agent);
 
       return res
         .status(sc.CREATED)
@@ -69,6 +71,7 @@ const getUser = async (req: Request, res: Response) => {
         _id: existUser._id,
         name: existUser.name,
         email: existUser.email,
+        agent: existUser.userAgent,
       },
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -90,13 +93,14 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
-async function createUser(social: string, user: SocialUser) {
+async function createUser(social: string, user: SocialUser, agent: string) {
   const refreshToken = jwt.createRefresh();
   const newUser = await UserService.signUpUser(
     social,
     (user as SocialUser).userId,
     (user as SocialUser).email,
     refreshToken,
+    agent,
   );
   const accessToken = jwt.sign(newUser._id, newUser.email);
 
@@ -105,6 +109,7 @@ async function createUser(social: string, user: SocialUser) {
       _id: newUser._id,
       name: newUser.name,
       email: newUser.email,
+      agent: newUser.userAgent,
     },
     accessToken: accessToken,
     refreshToken: refreshToken,
