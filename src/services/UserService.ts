@@ -251,6 +251,18 @@ const hasReviewed = async (userId: string, restaurantId: string) => {
   }
 };
 
+const updateAgent = async (userId: string, agent: string) => {
+  try {
+    const user = await User.findByIdAndUpdate(userId, {
+      userAgent: agent,
+    });
+    return user;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getUser,
   findUserById,
@@ -263,4 +275,5 @@ export default {
   updateUserProfile,
   withdrawUser,
   hasReviewed,
+  updateAgent,
 };

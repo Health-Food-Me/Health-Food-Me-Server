@@ -64,6 +64,7 @@ const getUser = async (req: Request, res: Response) => {
     const refreshToken = jwt.createRefresh();
     const accessToken = jwt.sign(existUser._id, existUser.email);
 
+    const updateUser = await UserService.updateAgent(existUser._id, agent);
     await UserService.updateRefreshToken(existUser._id, refreshToken);
 
     const data = {
@@ -71,7 +72,7 @@ const getUser = async (req: Request, res: Response) => {
         _id: existUser._id,
         name: existUser.name,
         email: existUser.email,
-        agent: existUser.userAgent,
+        agent: updateUser?.userAgent,
       },
       accessToken: accessToken,
       refreshToken: refreshToken,
