@@ -17,19 +17,21 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
       category: ICategory;
     }>("category");
-    const user = await User.findById(userId);
 
-    if (!restaurant || !user) {
-      return null;
-    }
-
+    if (!restaurant) return null;
     const reviewList = restaurant.reviews;
     const score = await getScore(reviewList);
-    const scrapList = user?.scrapRestaurants;
 
     let isScrap = false;
-    if (scrapList?.find((x) => x == restaurantId) !== undefined) {
-      isScrap = true;
+    if (userId !== "browsing") {
+      const user = await User.findById(userId);
+
+      if (!user) return null;
+      const scrapList = user.scrapRestaurants;
+
+      if (scrapList?.find((x) => x == restaurantId) !== undefined) {
+        isScrap = true;
+      }
     }
 
     const data = {
@@ -87,11 +89,8 @@ const getMenuDetail = async (
     const restaurant = await Restaurant.findById(restaurantId).populate<{
       category: ICategory;
     }>("category");
-    const user = await User.findById(userId);
 
-    if (!restaurant || !user) {
-      return null;
-    }
+    if (!restaurant) return null;
 
     const restaurantLatitude = restaurant.location.coordinates.at(1);
     const restaurantLongtitude = restaurant.location.coordinates.at(0);
@@ -119,9 +118,19 @@ const getMenuDetail = async (
       worktime = null;
     }
 
-    const scrapList = user.scrapRestaurants;
     let isScrap = false;
-    if (scrapList?.find((x) => x == restaurantId) !== undefined) isScrap = true;
+    if (userId !== "browsing") {
+      const user = await User.findById(userId);
+
+      if (!user) return null;
+
+      let scrapList = user.scrapRestaurants;
+      if (!scrapList) scrapList = [];
+
+      if (scrapList.find((x) => x == restaurantId) !== undefined) {
+        isScrap = true;
+      }
+    }
 
     const reviewList = restaurant.reviews;
     const score = await getScore(reviewList);
