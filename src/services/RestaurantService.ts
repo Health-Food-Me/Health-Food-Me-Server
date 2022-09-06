@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
-import AutoCompleteSearchDto from "../interface/restaurant/AutoCompleteSearchDto";
+import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
 import RestaurantCard from "../interface/restaurant/RestaurantCard";
@@ -382,26 +382,63 @@ const getRestaurantCardList = async (
   }
 };
 
-const getSearchAutoCompleteResult = async (query: string) => {
-  const result = await Restaurant.find({
+const getSearchAutoCompleteResult = async (
+  longitude: number,
+  latitude: number,
+  query: string,
+) => {
+  const categoryList = await Category.find({
+    title: { $regex: query },
+  });
+
+  const result: AutoCompleteSearch[] = [];
+
+  let promises = categoryList.map(async (category) => {
+    const data: AutoCompleteSearch = {
+      _id: category._id,
+      name: category.title,
+      isDietRestaurant: category.isDiet,
+      isCategory: true,
+      distance: 0,
+      longitude: 0,
+      latitude: 0,
+    };
+
+    result.push(data);
+  });
+  await Promise.all(promises);
+
+  const restaurantList = await Restaurant.find({
     name: { $regex: query },
   }).populate<{ category: ICategory }>("category");
 
-  const dietCategories = await Category.find({ isDiet: true });
+  promises = restaurantList.map(async (restaurant) => {
+    const distance = await getDistance(
+      latitude,
+      longitude,
+      restaurant.location.coordinates.at(1) as number,
+      restaurant.location.coordinates.at(0) as number,
+    );
 
-  const dietCategoryTitles = dietCategories.map((category) => {
-    return category.title;
-  });
-
-  const data: AutoCompleteSearchDto[] = result.map((restaurant) => {
-    return {
+    const data: AutoCompleteSearch = {
       _id: restaurant._id,
       name: restaurant.name,
-      isDietRestaurant: dietCategoryTitles.includes(restaurant.category.title),
+      isDietRestaurant: restaurant.category.isDiet,
+      isCategory: false,
+      distance: distance,
+      longitude: restaurant.location.coordinates.at(0) as number,
+      latitude: restaurant.location.coordinates.at(1) as number,
     };
+
+    result.push(data);
+  });
+  await Promise.all(promises);
+
+  result.sort(function (a, b) {
+    return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
   });
 
-  return data;
+  return result;
 };
 
 export default {
