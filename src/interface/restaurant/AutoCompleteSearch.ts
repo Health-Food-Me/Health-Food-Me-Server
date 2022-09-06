@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
-interface AutoCompleteSearchDto {
+interface AutoCompleteSearch {
   _id: mongoose.Types.ObjectId | string;
   name: string;
   isDietRestaurant: boolean;
+  isCategory: boolean;
 }
 
-export default AutoCompleteSearchDto;
+export default AutoCompleteSearch;
