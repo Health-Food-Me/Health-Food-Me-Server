@@ -245,11 +245,13 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant/search/auto?query=<검색어>
+ * @route GET /restaurant/search/auto?longitude=<경도>&latitude=<위도>&query=<검색어>
  * @desc 검색어가 포함된 식당 또는 카테고리 정보 배열 반환
  * @access Private
  */
 const getSearchAutoCompleteResult = async (req: Request, res: Response) => {
+  const longitude = req.query.longitude;
+  const latitude = req.query.latitude;
   const query = req.query.query;
 
   if (!query) {
@@ -260,6 +262,8 @@ const getSearchAutoCompleteResult = async (req: Request, res: Response) => {
 
   try {
     const data = await RestaurantService.getSearchAutoCompleteResult(
+      Number(longitude),
+      Number(latitude),
       query as string,
     );
 
