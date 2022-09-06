@@ -382,7 +382,11 @@ const getRestaurantCardList = async (
   }
 };
 
-const getSearchAutoCompleteResult = async (query: string) => {
+const getSearchAutoCompleteResult = async (
+  longitude: number,
+  latitude: number,
+  query: string,
+) => {
   const categoryList = await Category.find({
     title: { $regex: query },
   });
@@ -395,6 +399,9 @@ const getSearchAutoCompleteResult = async (query: string) => {
       name: category.title,
       isDietRestaurant: category.isDiet,
       isCategory: true,
+      distance: 0,
+      longitude: 0,
+      latitude: 0,
     };
 
     result.push(data);
@@ -406,16 +413,30 @@ const getSearchAutoCompleteResult = async (query: string) => {
   }).populate<{ category: ICategory }>("category");
 
   promises = restaurantList.map(async (restaurant) => {
+    const distance = await getDistance(
+      latitude,
+      longitude,
+      restaurant.location.coordinates.at(1) as number,
+      restaurant.location.coordinates.at(0) as number,
+    );
+
     const data: AutoCompleteSearch = {
       _id: restaurant._id,
       name: restaurant.name,
       isDietRestaurant: restaurant.category.isDiet,
       isCategory: false,
+      distance: distance,
+      longitude: restaurant.location.coordinates.at(0) as number,
+      latitude: restaurant.location.coordinates.at(1) as number,
     };
 
     result.push(data);
   });
   await Promise.all(promises);
+
+  result.sort(function (a, b) {
+    return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
+  });
 
   return result;
 };
