@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
-import AutoCompleteSearchDto from "../interface/restaurant/AutoCompleteSearchDto";
+import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
 import RestaurantCard from "../interface/restaurant/RestaurantCard";
@@ -383,25 +383,41 @@ const getRestaurantCardList = async (
 };
 
 const getSearchAutoCompleteResult = async (query: string) => {
-  const result = await Restaurant.find({
+  const categoryList = await Category.find({
+    title: { $regex: query },
+  });
+
+  const result: AutoCompleteSearch[] = [];
+
+  let promises = categoryList.map(async (category) => {
+    const data: AutoCompleteSearch = {
+      _id: category._id,
+      name: category.title,
+      isDietRestaurant: category.isDiet,
+      isCategory: true,
+    };
+
+    result.push(data);
+  });
+  await Promise.all(promises);
+
+  const restaurantList = await Restaurant.find({
     name: { $regex: query },
   }).populate<{ category: ICategory }>("category");
 
-  const dietCategories = await Category.find({ isDiet: true });
-
-  const dietCategoryTitles = dietCategories.map((category) => {
-    return category.title;
-  });
-
-  const data: AutoCompleteSearchDto[] = result.map((restaurant) => {
-    return {
+  promises = restaurantList.map(async (restaurant) => {
+    const data: AutoCompleteSearch = {
       _id: restaurant._id,
       name: restaurant.name,
-      isDietRestaurant: dietCategoryTitles.includes(restaurant.category.title),
+      isDietRestaurant: restaurant.category.isDiet,
+      isCategory: false,
     };
-  });
 
-  return data;
+    result.push(data);
+  });
+  await Promise.all(promises);
+
+  return result;
 };
 
 export default {
