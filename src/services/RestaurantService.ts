@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
+import AroundRestaurant from "../interface/restaurant/AroundRestaurant";
 import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
@@ -11,6 +11,7 @@ import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
+import exceptionMessage from "../modules/exceptionMessage";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
@@ -244,9 +245,8 @@ const getAroundRestaurants = async (
   category?: string,
 ) => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: any[] = [
-      {
+    const locationQuery = {
+      location: {
         $nearSphere: {
           $geometry: {
             type: "Point",
@@ -255,37 +255,43 @@ const getAroundRestaurants = async (
           $maxDistance: zoom,
         },
       },
-    ];
+    };
 
-    // category $or 로 변경
+    let noCategory = false;
+    const categoryQuery: any[] = [];
 
     if (category) {
-      try {
+      const categories = category.split(",");
+
+      const promises = categories.map(async (category) => {
         const result = await Category.findOne({ title: { $eq: category } });
-        if (result) {
-          query.push({
-            category: { $eq: result._id },
-          });
+
+        if (!result) {
+          noCategory = true;
+          return null;
         }
-      } catch (error) {
-        throw new Error(`There's no category: ${category}`);
-      }
+
+        categoryQuery.push({ category: { $in: result._id } });
+      });
+      await Promise.all(promises);
     }
 
+    if (noCategory) return exceptionMessage.NO_CATEGORY;
+
     const restaurants = await Restaurant.find({
-      $and: query,
-    }).populate<{
-      category: ICategory;
-    }>("category");
-    const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
+      $and: [locationQuery, { $or: categoryQuery }],
+    }).populate<{ category: ICategory }>("category");
+
+    const results: AroundRestaurant[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
         name: restaurant.name,
         longitude: restaurant.location.coordinates.at(0),
         latitude: restaurant.location.coordinates.at(1),
-        isDietRestaurant: restaurant.category.isDiet,
+        isDietRestaurant: restaurant.isDiet,
       };
     });
+
     return results;
   } catch (error) {
     logger.e(error);
