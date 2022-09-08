@@ -5,6 +5,7 @@ import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
 import PrescriptionResponse from "../interface/restaurant/PrescriptionResponse";
+import Query from "../interface/restaurant/Query";
 import RestaurantCard from "../interface/restaurant/RestaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
@@ -256,13 +257,13 @@ const getAroundRestaurants = async (
     };
 
     let noCategory = false;
-    const categoryQuery: any[] = [];
+    const categoryQuery: Query[] = [];
 
     if (category) {
       const categories = category.split(",");
 
       const promises = categories.map(async (category) => {
-        const result = await Category.findOne({ title: { $eq: category } });
+        const result = await Category.findOne({ title: category });
 
         if (!result) {
           noCategory = true;
