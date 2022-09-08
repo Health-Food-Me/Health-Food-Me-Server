@@ -1,20 +1,20 @@
 import { Types } from "mongoose";
 
 interface Restaurant {
-  name: string;
+  _id: Types.ObjectId;
   location: {
     type: { type: string };
     coordinates: number[];
   };
+  name: string;
+  logo: string;
+  category: Types.ObjectId;
+  hashtag: string[];
   address: string;
   workTime: string[];
   contact: string;
-  category: Types.ObjectId[];
-  isDiet: boolean;
-  logo: string;
-  menuBoard: string[];
-  menu: Types.ObjectId[];
-  review: Types.ObjectId[];
+  reviews: Types.ObjectId[];
+  menus: Types.ObjectId[];
 }
 
 export default Restaurant;
