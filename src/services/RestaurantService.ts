@@ -4,6 +4,7 @@ import AroundRestaurant from "../interface/restaurant/AroundRestaurant";
 import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
+import PrescriptionResponse from "../interface/restaurant/PrescriptionResponse";
 import RestaurantCard from "../interface/restaurant/RestaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
@@ -298,35 +299,37 @@ const getAroundRestaurants = async (
 
 const getPrescription = async (restaurantId: string) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    if (restaurant == undefined) {
-      return null;
-    }
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory[];
+    }>("category");
 
-    const category = await Category.findById(restaurant.category);
-    if (category == undefined) {
-      throw new Error("no category");
-    }
+    if (!restaurant) return null;
 
-    if (category.prescription == undefined) {
-      const data = {
-        category: category.title,
-        content: null,
-      };
-      return data;
-    }
+    const result: PrescriptionResponse[] = [];
 
-    const prescription = await Prescription.findById(category.prescription);
-    let content = prescription?.content;
+    const promises = restaurant.category.map(async (category) => {
+      if (!category.prescription) {
+        result.push({
+          category: category.title,
+          prescription: null,
+        });
+      } else {
+        const prescription = await Prescription.findById(category.prescription);
+        if (prescription) {
+          result.push({
+            category: category.title,
+            prescription: {
+              recommend: prescription.recommend,
+              tip: prescription.tip,
+            },
+          });
+        }
+      }
+    });
 
-    if (prescription == undefined) content = { recommend: [], tip: [] };
+    await Promise.all(promises);
 
-    const data = {
-      category: category.title,
-      content: content,
-    };
-
-    return data;
+    return result;
   } catch (error) {
     logger.e(error);
     if ((error as Error).name === "CastError") {
