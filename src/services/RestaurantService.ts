@@ -412,7 +412,7 @@ const getSearchAutoCompleteResult = async (
     const data: AutoCompleteSearch = {
       _id: category._id,
       name: category.title,
-      isDietRestaurant: category.isDiet,
+      isDiet: category.isDiet,
       isCategory: true,
       distance: 0,
       longitude: 0,
@@ -438,7 +438,7 @@ const getSearchAutoCompleteResult = async (
     const data: AutoCompleteSearch = {
       _id: restaurant._id,
       name: restaurant.name,
-      isDietRestaurant: restaurant.category.isDiet,
+      isDiet: restaurant.isDiet,
       isCategory: false,
       distance: distance,
       longitude: restaurant.location.coordinates.at(0) as number,
