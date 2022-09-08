@@ -16,10 +16,17 @@ import exceptionMessage from "../modules/exceptionMessage";
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
-      category: ICategory;
+      category: ICategory[];
     }>("category");
 
     if (!restaurant) return null;
+
+    const categories: string[] = [];
+    const categoryList = restaurant.category;
+    categoryList.map(async (category) => {
+      categories.push(category.title);
+    });
+
     const reviewList = restaurant.review;
     const score = await getScore(reviewList);
 
@@ -37,11 +44,11 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
 
     const data = {
       _id: restaurantId,
-      name: restaurant?.name,
-      logo: restaurant?.logo,
-      category: restaurant?.category.title,
-      workTime: restaurant?.workTime,
-      hashtag: restaurant.hashtag,
+      name: restaurant.name,
+      longitude: restaurant.location.coordinates.at(0),
+      latitude: restaurant.location.coordinates.at(1),
+      logo: restaurant.logo,
+      category: categories,
       score: score,
       isScrap: isScrap,
     };
