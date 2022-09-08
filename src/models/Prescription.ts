@@ -3,25 +3,18 @@ import Prescription from "../interface/restaurant/Prescription";
 import { MongoEntity } from "./Model";
 
 const PrescriptionSchema = new mongoose.Schema({
-  category: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Category",
-  },
-  content: {
-    recommend: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    tip: [
-      {
-        type: String,
-        require: true,
-      },
-    ],
-  },
+  recommend: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  tip: [
+    {
+      type: String,
+      require: true,
+    },
+  ],
 });
 
 export default mongoose.model<MongoEntity<Prescription>>(

@@ -19,7 +19,7 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
     }>("category");
 
     if (!restaurant) return null;
-    const reviewList = restaurant.reviews;
+    const reviewList = restaurant.review;
     const score = await getScore(reviewList);
 
     let isScrap = false;
@@ -101,7 +101,7 @@ const getMenuDetail = async (
       restaurantLongtitude as number,
     );
 
-    const menuIdList = restaurant.menus;
+    const menuIdList = restaurant.menu;
     const menuList = await getMenuList(menuIdList);
 
     const time = restaurant.workTime;
@@ -132,7 +132,7 @@ const getMenuDetail = async (
       }
     }
 
-    const reviewList = restaurant.reviews;
+    const reviewList = restaurant.review;
     const score = await getScore(reviewList);
 
     const data = {
@@ -357,7 +357,7 @@ const getRestaurantCardList = async (
     const result: RestaurantCard[] = [];
 
     const promises = searchList.map(async (restaurant) => {
-      const score = await getScore(restaurant.reviews);
+      const score = await getScore(restaurant.review);
       const distance = await getDistance(
         latitude,
         longitude,
