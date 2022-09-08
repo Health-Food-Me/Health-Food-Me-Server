@@ -3,6 +3,7 @@ const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -4;
 const DELETE_USER = 2;
 const DUPLICATE_NAME = -5;
+const NO_CATEGORY = -6;
 
 export default {
   INVALID_USER,
@@ -10,4 +11,5 @@ export default {
   TOKEN_INVALID,
   DELETE_USER,
   DUPLICATE_NAME,
+  NO_CATEGORY,
 };
