@@ -177,6 +177,12 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
 const getPrescription = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
 
+  if (!restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
   try {
     const prescription = await RestaurantService.getPrescription(restaurantId);
 
