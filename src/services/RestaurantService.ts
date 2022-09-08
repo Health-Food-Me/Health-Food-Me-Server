@@ -95,11 +95,27 @@ const getMenuDetail = async (
 ) => {
   try {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
-      category: ICategory;
+      category: ICategory[];
     }>("category");
 
     if (!restaurant) return null;
 
+    // 영업시간 월-일 순으로 정렬
+    const workTime: string[] = [];
+    const restaurantTime = restaurant.workTime;
+    if (restaurantTime) {
+      restaurant.workTime.map(async (time) => {
+        workTime.push(time.split(" ")[1]);
+      });
+    }
+
+    // 카테고리 title 정렬
+    const categories: string[] = [];
+    restaurant.category.map(async (category) => {
+      categories.push(category.title);
+    });
+
+    // 식당까지의 거리 계산
     const restaurantLatitude = restaurant.location.coordinates.at(1);
     const restaurantLongtitude = restaurant.location.coordinates.at(0);
     const distance = await getDistance(
@@ -109,53 +125,40 @@ const getMenuDetail = async (
       restaurantLongtitude as number,
     );
 
-    const menuIdList = restaurant.menu;
-    const menuList = await getMenuList(menuIdList);
+    // 리뷰 기반으로 평점 계싼
+    const reviewList = restaurant.review;
+    const score = await getScore(reviewList);
 
-    const time = restaurant.workTime;
-    let worktime;
-    if (time != undefined) {
-      worktime = [];
-      const promise = restaurant.workTime.map(async (data) => {
-        const timeData = data.split(" ");
-        // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
-        worktime.push(timeData[1]);
-      });
-      await Promise.all(promise);
-    } else {
-      worktime = null;
-    }
-
+    // 유저 스크랩 여부 판단 (둘러보기 경우 false)
     let isScrap = false;
     if (userId !== "browsing") {
       const user = await User.findById(userId);
-
       if (!user) return null;
-
       let scrapList = user.scrapRestaurants;
       if (!scrapList) scrapList = [];
-
       if (scrapList.find((x) => x == restaurantId) !== undefined) {
         isScrap = true;
       }
     }
 
-    const reviewList = restaurant.review;
-    const score = await getScore(reviewList);
+    // 식당 메뉴 배열
+    const menuIdList = restaurant.menu;
+    const menuList = await getMenuList(menuIdList);
 
     const data = {
       restaurant: {
         _id: restaurantId,
+        name: restaurant.name,
+        address: restaurant.address,
+        workTime: workTime,
+        contact: restaurant.contact,
+        category: categories,
+        isDiet: restaurant.isDiet,
+        logo: restaurant.logo,
+        menuBoard: restaurant.menuBoard,
         distance: distance,
-        name: restaurant?.name,
-        logo: restaurant?.logo,
-        category: restaurant?.category.title,
-        hashtag: restaurant.hashtag,
-        address: restaurant?.address,
-        workTime: worktime,
-        contact: restaurant?.contact,
-        isScrap: isScrap,
         score: score,
+        isScrap: isScrap,
       },
       menu: menuList,
     };
@@ -200,38 +203,25 @@ const getDistance = async (
 
 const getMenuList = async (menuIdList: Types.ObjectId[]) => {
   try {
-    if (menuIdList == undefined) {
-      return [];
-    }
-
-    if (menuIdList.length <= 0) {
-      return [];
-    }
+    if (!menuIdList) return [];
 
     const menuList: MenuData[] = [];
 
     const promises = menuIdList.map(async (menuId) => {
-      /*
-      const menu = await Menu.findById(menuId).populate<{
-        nutrient: INutrient;
-      }>("nutrient");
-      */
       const menu = await Menu.findById(menuId);
 
-      const menuData: MenuData = {
-        _id: menuId,
-        name: menu?.name as string,
-        image: menu?.image as string,
-        kcal: menu?.kcal as number,
-        per: menu?.per as number,
-        //carbohydrate: menu?.nutrient.carbohydrate as number,
-        //protein: menu?.nutrient.protein as number,
-        //fat: menu?.nutrient.fat as number,
-        price: menu?.price as number,
-        isPick: menu?.isHelfoomePick as boolean,
-      };
-
-      menuList.push(menuData);
+      if (menu) {
+        const menuData = {
+          _id: menuId,
+          name: menu.name,
+          image: menu.image,
+          kcal: menu.kcal,
+          per: menu.per,
+          price: menu.price,
+          isPick: menu.isPick,
+        };
+        menuList.push(menuData);
+      }
     });
     await Promise.all(promises);
 
