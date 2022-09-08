@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
 import BaseResponse from "../modules/BaseResponse";
+import exceptionMessage from "../modules/exceptionMessage";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import RestaurantService from "../services/RestaurantService";
@@ -111,7 +112,7 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
   const zoom = req.query.zoom;
   const category = req.query.category as string | undefined;
 
-  if (!longitude && !latitude && !zoom) {
+  if (!longitude || !latitude || !zoom) {
     res
       .status(statusCode.BAD_REQUEST)
       .send(
@@ -126,6 +127,14 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
       Number(zoom),
       category,
     );
+
+    if (restaurants === exceptionMessage.NO_CATEGORY) {
+      return res
+        .status(statusCode.BAD_REQUEST)
+        .send(
+          BaseResponse.failure(statusCode.BAD_REQUEST, message.NO_CATEGORY),
+        );
+    }
 
     if (!restaurants) {
       return res
