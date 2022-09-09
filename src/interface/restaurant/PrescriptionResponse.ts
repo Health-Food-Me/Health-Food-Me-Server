@@ -3,7 +3,7 @@ interface PrescriptionResponse {
   prescription: {
     recommend: string[];
     tip: string[];
-  } | null;
+  };
 }
 
 export default PrescriptionResponse;

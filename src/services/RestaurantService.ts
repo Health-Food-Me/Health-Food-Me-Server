@@ -312,7 +312,10 @@ const getPrescription = async (restaurantId: string) => {
       if (!category.prescription) {
         result.push({
           category: category.title,
-          prescription: null,
+          prescription: {
+            recommend: [],
+            tip: [],
+          },
         });
       } else {
         const prescription = await Prescription.findById(category.prescription);
