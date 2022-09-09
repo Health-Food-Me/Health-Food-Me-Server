@@ -11,7 +11,7 @@ router.delete("/:reviewId", auth, ReviewController.deleteReview);
 router.get("/restaurant/:name/blog", ReviewController.getReviewsFromNaver);
 
 router.post(
-  "/user/:userId/restaurant/:restaurantId",
+  "/:userId/:restaurantId",
   auth,
   multer.upload.array("image"),
   ReviewController.createReview,
