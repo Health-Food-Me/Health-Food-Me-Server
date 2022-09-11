@@ -163,15 +163,12 @@ const createReview = async (req: Request, res: Response) => {
   }
 
   try {
-    let imageList: S3ImageInfo[];
+    const imageList: S3ImageInfo[] = [];
     if (req.files) {
-      imageList = await Promise.all(
-        images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location };
-        }),
-      );
-    } else {
-      imageList = [];
+      const promises = images.map((image: Express.MulterS3.File) => {
+        imageList.push({ name: image.originalname, url: image.location });
+      });
+      await Promise.all(promises);
     }
 
     const responseData: ReveiwResponse = {
