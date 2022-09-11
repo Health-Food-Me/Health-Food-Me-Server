@@ -15,30 +15,15 @@ const pointSchema = new mongoose.Schema({
 });
 
 const ResaturantSchema = new mongoose.Schema({
-  location: {
-    type: pointSchema,
-    index: "2dsphere",
-  },
   name: {
     type: String,
     required: true,
     unique: true,
   },
-  logo: {
-    type: String,
-    required: true,
+  location: {
+    type: pointSchema,
+    index: "2dsphere",
   },
-  category: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Category",
-  },
-  hashtag: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
   address: {
     type: String,
     required: true,
@@ -51,17 +36,36 @@ const ResaturantSchema = new mongoose.Schema({
   contact: {
     type: String,
   },
-  reviews: [
+  category: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "Review",
+      ref: "Category",
     },
   ],
-  menus: [
+  isDiet: {
+    type: Boolean,
+    required: true,
+  },
+  logo: {
+    type: String,
+    required: true,
+  },
+  menuBoard: [
+    {
+      type: String,
+    },
+  ],
+  menu: [
     {
       type: mongoose.Types.ObjectId,
       required: true,
       ref: "Menu",
+    },
+  ],
+  review: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Review",
     },
   ],
 });
