@@ -127,18 +127,13 @@ const scrapRestaurant = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
 
   try {
-    const restaurantIds = await UserService.scrapRestaurant(
-      userId,
-      restaurantId,
-    );
+    const data = await UserService.scrapRestaurant(userId, restaurantId);
 
-    if (!restaurantIds) {
+    if (!data) {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
     }
-
-    const data = { restaurants: restaurantIds };
 
     return res
       .status(statusCode.OK)
