@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-interface GetReviewsDto {
-  id: string | mongoose.Types.ObjectId;
+interface GetReviews {
+  _id: string | mongoose.Types.ObjectId;
   writer?: string;
   restaurant?: string;
   restaurantId?: mongoose.Types.ObjectId;
@@ -15,4 +15,4 @@ interface GetReviewsDto {
   good: string[];
 }
 
-export default GetReviewsDto;
+export default GetReviews;
