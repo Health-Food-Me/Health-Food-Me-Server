@@ -2,7 +2,7 @@ import axios from "axios";
 import { Types } from "mongoose";
 import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
-import GetReviewsDto from "../interface/review/GetReviewsDto";
+import GetReviews from "../interface/review/GetReviews";
 import ReveiwResponse from "../interface/review/ReviewResponseDto";
 import IRestaurant from "../interface/restaurant/Restaurant";
 import { NaverBlogReviewResponse } from "../interface/review/Review";
@@ -11,23 +11,39 @@ import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
 
-const getReviewsByRestaurant = async (id: string) => {
-  const reviews = await Review.find({
-    restaurant: id,
-  }).populate<{ writer: IUser }>("writer");
+const getReviewsByRestaurant = async (restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
+  if (!restaurant) return null;
 
-  const reviewDto: GetReviewsDto[] = reviews.map((review) => {
-    return {
-      id: review._id,
-      writer: review.writer.name,
-      score: review.score,
-      content: review.content,
-      image: review.image,
-      taste: review.taste,
-      good: review.good,
-    };
+  const reviews = restaurant.review;
+  const reviewList: GetReviews[] = [];
+
+  const promises = reviews.map(async (reviewId) => {
+    const review = await Review.findById(reviewId).populate<{ writer: IUser }>(
+      "writer",
+    );
+
+    if (review) {
+      let images = review.image;
+      if (!images) images = [];
+      let goods = review.good;
+      if (!goods) goods = [];
+
+      const data: GetReviews = {
+        _id: reviewId,
+        writer: review.writer.name,
+        score: review.score,
+        content: review.content,
+        image: images,
+        taste: review.taste,
+        good: goods,
+      };
+      reviewList.push(data);
+    }
   });
-  return reviewDto;
+  await Promise.all(promises);
+
+  return reviewList;
 };
 
 const getReviewsByUser = async (id: string) => {
@@ -35,9 +51,9 @@ const getReviewsByUser = async (id: string) => {
     writer: id,
   }).populate<{ restaurant: IRestaurant }>("restaurant");
 
-  const reviewDto: GetReviewsDto[] = reviews.map((review) => {
+  const data: GetReviews[] = reviews.map((review) => {
     return {
-      id: review._id,
+      _id: review._id,
       restaurant: review.restaurant.name,
       restaurantId: review.restaurant._id,
       score: review.score,
@@ -47,7 +63,7 @@ const getReviewsByUser = async (id: string) => {
       good: review.good,
     };
   });
-  return reviewDto;
+  return data;
 };
 
 const deleteReview = async (id: string) => {
