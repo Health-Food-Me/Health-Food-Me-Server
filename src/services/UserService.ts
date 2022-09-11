@@ -9,6 +9,7 @@ import User from "../models/User";
 import exceptionMessage from "../modules/exceptionMessage";
 import randomName from "../modules/randomName";
 import RestaurantService from "./RestaurantService";
+import ReviewService from "./ReviewService";
 import { authStrategy } from "./SocialAuthStrategy";
 
 export type SocialPlatform = "kakao" | "naver" | "apple";
@@ -227,6 +228,12 @@ const withdrawUser = async (userId: string) => {
     if (user == undefined) return null;
 
     await User.findByIdAndDelete(userId);
+
+    const reviews = await Review.find({ writer: userId });
+
+    for (let i = 0; i < reviews.length; i++) {
+      await ReviewService.deleteReview(reviews[i]._id);
+    }
 
     return exceptionMessage.DELETE_USER;
   } catch (error) {

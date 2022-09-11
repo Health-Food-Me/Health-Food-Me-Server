@@ -53,20 +53,19 @@ const deleteReview = async (id: string) => {
   const restaurant = await Restaurant.findOne({
     reviews: id,
   });
-
-  if (!restaurant) return null;
+  console.log(restaurant);
 
   // 식당 리뷰 id 배열에서 삭제
-  const reviewList = restaurant?.reviews;
-  const updateList = reviewList.filter((review) => {
-    review !== (id as unknown as Types.ObjectId);
-  });
+  if (restaurant) {
+    const reviewList = restaurant?.reviews;
+    const updateList = reviewList.filter((review) => {
+      review !== (id as unknown as Types.ObjectId);
+    });
+    await Restaurant.findByIdAndUpdate(restaurant._id, {
+      $set: { reviews: updateList },
+    });
+  }
 
-  await Restaurant.findByIdAndUpdate(restaurant._id, {
-    $set: { reviews: updateList },
-  });
-
-  // aws 버킷에서 이미지 파일 삭제
   const review = await Review.findById(id);
   if (!review) return null;
 
