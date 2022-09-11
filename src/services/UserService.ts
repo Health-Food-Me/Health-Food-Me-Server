@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import ICategory from "../interface/restaurant/Category";
 import { ScrapData } from "../interface/restaurant/ScrapData";
-import UserProfileDto from "../interface/user/UserProfile";
+import UserProfile from "../interface/user/UserProfile";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -205,10 +205,9 @@ const getUserProfile = async (userId: string) => {
     const user = await User.findById(userId);
     if (user == undefined) return null;
 
-    const data: UserProfileDto = {
+    const data: UserProfile = {
       _id: userId,
       name: user.name,
-      scrapRestaurants: user.scrapRestaurants,
     };
 
     return data;
@@ -232,10 +231,9 @@ const updateUserProfile = async (userId: string, name: string) => {
     });
 
     user = await User.findById(userId);
-    const data: UserProfileDto = {
+    const data: UserProfile = {
       _id: userId,
       name: user?.name as string,
-      scrapRestaurants: user?.scrapRestaurants,
     };
 
     return data;
