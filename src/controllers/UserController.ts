@@ -94,6 +94,11 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route
+ * @desc
+ * @access
+ */
 async function createUser(social: string, user: SocialUser, agent: string) {
   const refreshToken = jwt.createRefresh();
   const newUser = await UserService.signUpUser(
@@ -159,7 +164,7 @@ const scrapRestaurant = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /user/:userId/scraps
+ * @route GET /user/:userId/scrapList
  * @desc 유저 스크랩 모아보기
  * @access Private
  */
