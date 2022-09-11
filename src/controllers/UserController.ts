@@ -330,12 +330,20 @@ const getHasReviewed = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const restaurantId = req.params.restaurantId;
 
-  try {
-    const hasReview = await UserService.hasReviewed(userId, restaurantId);
+  if (!userId || !restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
 
-    const data = {
-      hasReview: hasReview,
-    };
+  try {
+    const data = await UserService.hasReviewed(userId, restaurantId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
