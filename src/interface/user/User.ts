@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 
 interface User {
+  _id: Types.ObjectId;
   name: string;
   social: string;
   socialId: string;
