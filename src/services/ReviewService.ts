@@ -74,7 +74,6 @@ const deleteReview = async (id: string) => {
   await Promise.all(promises);
 
   // 데이터 삭제
-  //await Review.deleteOne({ _id: id });
   await Review.findByIdAndDelete(id);
 };
 
