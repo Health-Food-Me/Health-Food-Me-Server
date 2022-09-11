@@ -92,12 +92,18 @@ const deleteReview = async (req: Request, res: Response) => {
 
   if (!reviewId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    await ReviewService.deleteReview(reviewId);
+    const data = await ReviewService.deleteReview(reviewId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
