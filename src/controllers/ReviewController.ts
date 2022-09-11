@@ -5,7 +5,7 @@ import BaseResponse from "../modules/BaseResponse";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import ReviewService from "../services/ReviewService";
-import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
+import ReveiwResponse from "../interface/review/ReviewResponseDto";
 
 /**
  * @route GET /review/restaurant/:restaurantId
@@ -174,7 +174,7 @@ const createReview = async (req: Request, res: Response) => {
       imageList = [];
     }
 
-    const responseData: ReveiwResponseDto = {
+    const responseData: ReveiwResponse = {
       restaurantId: req.params.restaurantId,
       writerId: req.params.userId,
       reviewId: "",
@@ -255,7 +255,7 @@ const updateReview = async (req: Request, res: Response) => {
     let nameList = [];
     if (req.body.nameList) nameList = req.body.nameList;
 
-    const responseData: ReveiwResponseDto = {
+    const responseData: ReveiwResponse = {
       restaurantId: "",
       writerId: "",
       reviewId: reviewId,
