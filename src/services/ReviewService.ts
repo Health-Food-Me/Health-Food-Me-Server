@@ -53,18 +53,17 @@ const deleteReview = async (id: string) => {
   const restaurant = await Restaurant.findOne({
     reviews: id,
   });
-  console.log(restaurant);
 
   // 식당 리뷰 id 배열에서 삭제
-  if (restaurant) {
-    const reviewList = restaurant?.reviews;
-    const updateList = reviewList.filter((review) => {
-      review !== (id as unknown as Types.ObjectId);
-    });
-    await Restaurant.findByIdAndUpdate(restaurant._id, {
-      $set: { reviews: updateList },
-    });
-  }
+  if (!restaurant) return null;
+
+  const reviewList = restaurant.reviews;
+  const updateList = reviewList.filter((review) => {
+    review !== (id as unknown as Types.ObjectId);
+  });
+  await Restaurant.findByIdAndUpdate(restaurant._id, {
+    $set: { reviews: updateList },
+  });
 
   const review = await Review.findById(id);
   if (!review) return null;
@@ -75,7 +74,7 @@ const deleteReview = async (id: string) => {
   await Promise.all(promises);
 
   // 데이터 삭제
-  await Review.deleteOne({ _id: id });
+  await Review.findByIdAndDelete(id);
 };
 
 const getReviewsFromNaver = async (name: string) => {
