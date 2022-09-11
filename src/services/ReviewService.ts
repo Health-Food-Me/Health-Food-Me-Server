@@ -160,8 +160,7 @@ const updateReview = async (reviewResponse: ReveiwResponse) => {
   try {
     const reviewId = reviewResponse.reviewId;
     const review = await Review.findById(reviewId);
-
-    if (review == undefined) return null;
+    if (!review) return null;
 
     const imageFileList = review.image;
     const imageList: { name: string; url: string }[] = [];
@@ -180,19 +179,46 @@ const updateReview = async (reviewResponse: ReveiwResponse) => {
     });
     await Promise.all(promiseMerge);
 
-    await Review.findByIdAndUpdate(reviewResponse.reviewId, {
-      $set: {
-        score: reviewResponse.score,
-        taste: reviewResponse.taste,
-        good: reviewResponse.good,
-        content: reviewResponse.content,
-        image: imageList,
+    const result = await Review.findByIdAndUpdate(
+      reviewResponse.reviewId,
+      {
+        $set: {
+          score: reviewResponse.score,
+          taste: reviewResponse.taste,
+          good: reviewResponse.good,
+          content: reviewResponse.content,
+          image: imageList,
+        },
       },
-    });
+      { new: true },
+    );
 
-    const result = await Review.findById(reviewId);
+    if (!result) return null;
 
-    return result;
+    const restaurantId = result.restaurant;
+    const restaurant = await Restaurant.findById(restaurantId);
+    const userId = result.writer;
+    const user = await User.findById(userId);
+
+    if (!restaurant || !user) {
+      await deleteReview(result._id);
+      return null;
+    }
+
+    const data = {
+      _id: result._id,
+      restaurantId: restaurantId,
+      restaurant: restaurant.name,
+      writerId: userId,
+      writer: user.name,
+      score: result.score,
+      content: result.content,
+      image: result.image,
+      taste: result.taste,
+      good: result.good,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     throw error;
