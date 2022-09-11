@@ -220,20 +220,22 @@ const getUserProfile = async (userId: string) => {
 
 const updateUserProfile = async (userId: string, name: string) => {
   try {
-    let user = await User.findById(userId);
-    if (user == undefined) return null;
+    const user = await User.findById(userId);
+    if (!user) return null;
 
     const userName = await User.findOne({ name: name });
     if (userName) return exceptionMessage.DUPLICATE_NAME;
 
-    await User.findByIdAndUpdate(userId, {
-      $set: { name: name },
-    });
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { $set: { name: name } },
+      { new: true },
+    );
+    if (!result) return null;
 
-    user = await User.findById(userId);
     const data: UserProfile = {
-      _id: userId,
-      name: user?.name as string,
+      _id: result._id,
+      name: result.name,
     };
 
     return data;
