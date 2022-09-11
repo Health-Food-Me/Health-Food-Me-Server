@@ -13,8 +13,11 @@ import UserService from "../services/UserService";
  * @access private
  */
 const getToken = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken;
+  const accessToken = req.headers.token;
   const refreshToken = req.headers.refreshtoken;
+
+  console.log(`accessToken : ${accessToken}`);
+  console.log(`refreshToken: ${refreshToken}`);
 
   if (!accessToken || !refreshToken) {
     return res
