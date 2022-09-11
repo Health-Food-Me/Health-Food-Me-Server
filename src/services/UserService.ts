@@ -249,19 +249,19 @@ const updateUserProfile = async (userId: string, name: string) => {
 const withdrawUser = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
-    await User.findByIdAndDelete(userId);
+    const reviews = user.reviews;
 
-    const reviews = await Review.find({ writer: userId });
-
-    const promises = reviews.map(async (review) => {
-      const result = await ReviewService.deleteReview(review._id);
+    const promises = reviews.map(async (reviewId) => {
+      const result = await ReviewService.deleteReview(String(reviewId));
       if (!result) {
-        await Review.findByIdAndDelete(review._id);
+        await Review.findByIdAndDelete(reviewId);
       }
     });
     await Promise.all(promises);
+
+    await User.findByIdAndDelete(userId);
 
     return exceptionMessage.DELETE_USER;
   } catch (error) {
