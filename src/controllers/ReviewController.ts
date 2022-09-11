@@ -56,20 +56,23 @@ const getReviewsByUser = async (req: Request, res: Response) => {
 
   if (!userId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    const reviews = await ReviewService.getReviewsByUser(userId);
+    const data = await ReviewService.getReviewsByUser(userId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
     return res
       .status(statusCode.OK)
       .send(
-        BaseResponse.success(
-          statusCode.OK,
-          message.READ_REVIEWS_BY_USER,
-          reviews,
-        ),
+        BaseResponse.success(statusCode.OK, message.READ_REVIEWS_BY_USER, data),
       );
   } catch (error) {
     logger.e(`Review getReviewsByUser ${error}`);
