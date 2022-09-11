@@ -273,13 +273,25 @@ const withdrawUser = async (userId: string) => {
 
 const hasReviewed = async (userId: string, restaurantId: string) => {
   try {
+    const user = await User.findById(userId);
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!user || !restaurant) return null;
+
     const review = await Review.findOne({
       writer: userId,
       restaurant: restaurantId,
     });
 
-    if (review) return true;
-    else return false;
+    let hasReview;
+    if (review) hasReview = true;
+    else hasReview = false;
+
+    const data = {
+      hasReview: hasReview,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     throw error;
