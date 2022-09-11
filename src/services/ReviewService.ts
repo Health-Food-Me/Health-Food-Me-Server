@@ -111,7 +111,11 @@ const deleteReview = async (id: string) => {
   await Review.findByIdAndDelete(id);
 };
 
-const getReviewsFromNaver = async (name: string) => {
+const getReviewsFromNaver = async (restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
+  if (!restaurant) return null;
+
+  const name = restaurant.name;
   const encodedName = encodeURI(name);
   const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${encodedName}`;
   const result = await axios.get<NaverBlogReviewResponse>(requestUrl, {
