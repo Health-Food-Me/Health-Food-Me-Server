@@ -53,7 +53,6 @@ const deleteReview = async (id: string) => {
   const restaurant = await Restaurant.findOne({
     reviews: id,
   });
-  console.log(restaurant);
 
   // 식당 리뷰 id 배열에서 삭제
   if (restaurant) {
