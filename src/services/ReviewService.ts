@@ -83,32 +83,37 @@ const getReviewsByUser = async (userId: string) => {
   return reviewList;
 };
 
-const deleteReview = async (id: string) => {
-  const restaurant = await Restaurant.findOne({
-    reviews: id,
-  });
+const deleteReview = async (reviewId: string) => {
+  const review = await Review.findById(reviewId)
+    .populate<{ writer: IUser }>("writer")
+    .populate<{ restaurant: IRestaurant }>("restaurant");
 
-  // 식당 리뷰 id 배열에서 삭제
-  if (!restaurant) return null;
-
-  const reviewList = restaurant.review;
-  const updateList = reviewList.filter((review) => {
-    review !== (id as unknown as Types.ObjectId);
-  });
-  await Restaurant.findByIdAndUpdate(restaurant._id, {
-    $set: { reviews: updateList },
-  });
-
-  const review = await Review.findById(id);
   if (!review) return null;
+
+  const restaurantReviewList = review.restaurant.review;
+  const restaurantReviewResult = restaurantReviewList.filter((reviewId) => {
+    reviewId != review.restaurant._id;
+  });
+  await Restaurant.findByIdAndUpdate(review.restaurant._id, {
+    $set: { review: restaurantReviewResult },
+  });
+
+  const userReviewList = review.writer.reviews;
+  const userReviewResult = userReviewList.filter((reviewId) => {
+    reviewId != review.writer._id;
+  });
+  await User.findByIdAndUpdate(review.writer._id, {
+    $set: { reviews: userReviewResult },
+  });
 
   const promises = review.image.map(async (data) => {
     await multer.s3Delete(data.name);
   });
   await Promise.all(promises);
 
-  // 데이터 삭제
-  await Review.findByIdAndDelete(id);
+  await Review.findByIdAndDelete(reviewId);
+
+  return true;
 };
 
 const getReviewsFromNaver = async (restaurantId: string) => {
