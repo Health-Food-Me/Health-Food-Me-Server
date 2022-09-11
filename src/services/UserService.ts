@@ -107,22 +107,41 @@ const findUserByRfToken = async (refreshToken: string) => {
 const scrapRestaurant = async (userId: string, restaurantId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
     let scraps = user.scrapRestaurants;
-    if (scraps?.find((x) => x == restaurantId)) {
-      scraps = scraps.filter((y) => y != restaurantId);
+    let isScrap;
+
+    if (!scraps) {
+      const data = [];
+      data.push(restaurantId);
       await User.findByIdAndUpdate(userId, {
-        $set: { scrapRestaurants: scraps },
+        $set: { scrapRestaurants: data },
       });
-      return scraps;
-    } else {
-      scraps?.push(restaurantId);
-      await User.findByIdAndUpdate(userId, {
-        $set: { scrapRestaurants: scraps },
-      });
-      return scraps;
+      isScrap = true;
     }
+
+    if (scraps.find((scrapId) => scrapId == restaurantId)) {
+      scraps = scraps.filter((scrapId) => scrapId != restaurantId);
+      await User.findByIdAndUpdate(userId, {
+        $set: { scrapRestaurants: scraps },
+      });
+      isScrap = false;
+    } else {
+      scraps.push(restaurantId);
+      await User.findByIdAndUpdate(userId, {
+        $set: { scrapRestaurants: scraps },
+      });
+      isScrap = true;
+    }
+
+    const data = {
+      userId: userId,
+      restaurantId: restaurantId,
+      isScrap: isScrap,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     if ((error as Error).message === "CastError") return null;
