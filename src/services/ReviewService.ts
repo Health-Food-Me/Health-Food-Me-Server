@@ -46,24 +46,41 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
   return reviewList;
 };
 
-const getReviewsByUser = async (id: string) => {
-  const reviews = await Review.find({
-    writer: id,
-  }).populate<{ restaurant: IRestaurant }>("restaurant");
+const getReviewsByUser = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) return null;
 
-  const data: GetReviews[] = reviews.map((review) => {
-    return {
-      _id: review._id,
-      restaurant: review.restaurant.name,
-      restaurantId: review.restaurant._id,
-      score: review.score,
-      content: review.content,
-      image: review.image,
-      taste: review.taste,
-      good: review.good,
-    };
+  const reviews = user.reviews;
+  const reviewList: GetReviews[] = [];
+
+  const promises = reviews.map(async (reviewId) => {
+    const review = await Review.findById(reviewId).populate<{
+      restaurant: IRestaurant;
+    }>("restaurant");
+
+    if (review) {
+      let images = review.image;
+      if (!images) images = [];
+      let goods = review.good;
+      if (!goods) goods = [];
+
+      const data: GetReviews = {
+        _id: review._id,
+        restaurantId: review.restaurant._id,
+        restaurant: review.restaurant.name,
+        score: review.score,
+        content: review.content,
+        image: images,
+        taste: review.taste,
+        good: goods,
+      };
+
+      reviewList.push(data);
+    }
   });
-  return data;
+  await Promise.all(promises);
+
+  return reviewList;
 };
 
 const deleteReview = async (id: string) => {
