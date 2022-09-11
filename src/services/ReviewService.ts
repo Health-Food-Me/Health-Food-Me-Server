@@ -9,6 +9,7 @@ import IUser from "../interface/user/User";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
+import config from "../config";
 
 const getReviewsByRestaurant = async (restaurantId: string) => {
   const restaurant = await Restaurant.findById(restaurantId);
@@ -124,8 +125,8 @@ const getReviewsFromNaver = async (restaurantId: string) => {
   const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${encodedName}`;
   const result = await axios.get<NaverBlogReviewResponse>(requestUrl, {
     headers: {
-      "X-Naver-Client-Id": "SG2hLClLCFrOIl5uQh3y",
-      "X-Naver-Client-Secret": "xwsh8rft0T",
+      "X-Naver-Client-Id": config.naverClientId,
+      "X-Naver-Client-Secret": config.naverClientSecret,
     },
   });
 
