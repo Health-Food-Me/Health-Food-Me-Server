@@ -116,16 +116,22 @@ const deleteReview = async (req: Request, res: Response) => {
 };
 
 const getReviewsFromNaver = async (req: Request, res: Response) => {
-  const name = req.params.name;
+  const restaurantId = req.params.restaurantId;
 
-  if (!name) {
+  if (!restaurantId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    const blogReviews = await ReviewService.getReviewsFromNaver(name);
+    const data = await ReviewService.getReviewsFromNaver(restaurantId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
@@ -133,7 +139,7 @@ const getReviewsFromNaver = async (req: Request, res: Response) => {
         BaseResponse.success(
           statusCode.OK,
           message.READ_REVIEWS_FROM_NAVER,
-          blogReviews,
+          data,
         ),
       );
   } catch (error) {
