@@ -296,6 +296,12 @@ const updateUserProfile = async (req: Request, res: Response) => {
 const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
+  if (!userId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
   try {
     const result = await UserService.withdrawUser(userId);
 
