@@ -152,22 +152,28 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
 const getUserScrapList = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
     const userScrap = user.scrapRestaurants;
+    if (!userScrap) return [];
 
     const scrapList: ScrapData[] = [];
-    if (userScrap != undefined) {
-      const promises = userScrap.map(async (restaurantId) => {
-        const restaurant = await Restaurant.findById(restaurantId).populate<{
-          category: ICategory;
-        }>("category");
+
+    const promises = userScrap.map(async (restaurantId) => {
+      const restaurant = await Restaurant.findById(restaurantId).populate<{
+        category: ICategory[];
+      }>("category");
+
+      if (restaurant) {
+        const categories: string[] = [];
+        const categoryPromises = restaurant.category.map(async (category) => {
+          categories.push(category.title);
+        });
+        await Promise.all(categoryPromises);
 
         const score = await RestaurantService.getScore(
-          restaurant?.reviews as Types.ObjectId[],
+          restaurant.review as Types.ObjectId[],
         );
-
-        if (!restaurant) return null;
 
         const address = (restaurant.address as string).split(" ");
 
@@ -176,16 +182,15 @@ const getUserScrapList = async (userId: string) => {
           name: restaurant.name as string,
           logo: restaurant.logo as string,
           score: score,
-          category: restaurant.category.title,
-          hashtag: restaurant.hashtag,
+          category: categories,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
           address: `${address[0]} ${address[1]}`,
         };
         scrapList.push(data);
-      });
-      await Promise.all(promises);
-    } else return [];
+      }
+    });
+    await Promise.all(promises);
 
     return scrapList;
   } catch (error) {
