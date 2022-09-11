@@ -146,7 +146,7 @@ type S3ImageInfo = {
 };
 
 /**
- * @route POST /review/user/:userId/restaurant/:restaurantId
+ * @route POST /review/:userId/:restaurantId
  * @desc 리뷰 작성
  * @access Private
  */
