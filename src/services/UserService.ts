@@ -231,9 +231,13 @@ const withdrawUser = async (userId: string) => {
 
     const reviews = await Review.find({ writer: userId });
 
-    for (let i = 0; i < reviews.length; i++) {
-      await ReviewService.deleteReview(reviews[i]._id);
-    }
+    const promises = reviews.map(async (review) => {
+      const result = await ReviewService.deleteReview(review._id);
+      if (!result) {
+        await Review.findByIdAndDelete(review._id);
+      }
+    });
+    await Promise.all(promises);
 
     return exceptionMessage.DELETE_USER;
   } catch (error) {
