@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Types } from "mongoose";
 import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
 import GetReviews from "../interface/review/GetReviews";
