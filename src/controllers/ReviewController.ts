@@ -165,7 +165,7 @@ const createReview = async (req: Request, res: Response) => {
   try {
     const imageList: S3ImageInfo[] = [];
     if (req.files) {
-      const promises = images.map((image: Express.MulterS3.File) => {
+      const promises = images.map(async (image: Express.MulterS3.File) => {
         imageList.push({ name: image.originalname, url: image.location });
       });
       await Promise.all(promises);
@@ -220,9 +220,6 @@ const createReview = async (req: Request, res: Response) => {
  */
 const updateReview = async (req: Request, res: Response) => {
   const reviewId = req.params.reviewId;
-  const review = await Review.findById(reviewId);
-  if (review == undefined) return null;
-
   const score = req.body.score;
   const taste = req.body.taste;
   const content = req.body.content;
@@ -235,18 +232,12 @@ const updateReview = async (req: Request, res: Response) => {
   }
 
   try {
-    let imageList: {
-      name: string;
-      url: string;
-    }[];
+    const imageList: S3ImageInfo[] = [];
     if (req.files) {
-      imageList = await Promise.all(
-        images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location };
-        }),
-      );
-    } else {
-      imageList = [];
+      const promises = images.map(async (image: Express.MulterS3.File) => {
+        imageList.push({ name: image.originalname, url: image.location });
+      });
+      await Promise.all(promises);
     }
 
     let nameList = [];
