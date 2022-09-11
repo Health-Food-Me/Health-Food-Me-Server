@@ -164,7 +164,7 @@ const getUserScrapList = async (req: Request, res: Response) => {
   try {
     const scrapList = await UserService.getUserScrapList(userId);
 
-    if (!scrapList) {
+    if (scrapList === null) {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
