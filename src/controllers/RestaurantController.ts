@@ -304,6 +304,51 @@ const getSearchAutoCompleteResult = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /restaurant/search/category?longitude=<경도>&latitude=<위도>&category=<검색어>
+ * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
+ * @access Public
+ */
+const searchCategoryRestaurantList = async (req: Request, res: Response) => {
+  const longitude = req.query.longitude;
+  const latitude = req.query.latitude;
+  const category = req.query.category;
+
+  if (!longitude || !latitude || !category) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
+  try {
+    const data = await RestaurantService.getRestaurantCardList(
+      Number(longitude),
+      Number(latitude),
+      category as string,
+    );
+
+    return res
+      .status(statusCode.OK)
+      .send(
+        BaseResponse.success(
+          statusCode.OK,
+          message.SEARCH_RESTAURANT_CARD_SUCCESS,
+          data,
+        ),
+      );
+  } catch (error) {
+    logger.e("RestaurantController.searchRestaurantCardList error", error);
+    return res
+      .status(statusCode.INTERNAL_SERVER_ERROR)
+      .send(
+        BaseResponse.failure(
+          statusCode.INTERNAL_SERVER_ERROR,
+          message.INTERNAL_SERVER_ERROR,
+        ),
+      );
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
@@ -311,4 +356,5 @@ export default {
   getPrescription,
   searchRestaurantCardList,
   getSearchAutoCompleteResult,
+  searchCategoryRestaurantList,
 };
