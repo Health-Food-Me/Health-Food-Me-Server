@@ -1,5 +1,5 @@
 interface PrescriptionResponse {
-  category: string[];
+  category: string;
   prescription: {
     recommend: string[];
     tip: string[];
