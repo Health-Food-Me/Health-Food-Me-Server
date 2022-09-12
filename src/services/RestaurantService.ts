@@ -460,6 +460,60 @@ const getSearchAutoCompleteResult = async (
   return result;
 };
 
+const searchCategoryRestaurantList = async (
+  longitude: number,
+  latitude: number,
+  category: string,
+) => {
+  try {
+    const categoryData = await Category.findOne({ title: category });
+
+    if (!categoryData) return null;
+
+    const searchList = await Restaurant.find({
+      category: { $in: [categoryData._id] },
+    }).populate<{ category: ICategory[] }>("category");
+
+    const result: RestaurantCard[] = [];
+
+    const promises = searchList.map(async (restaurant) => {
+      const categories = restaurant.category.map((data) => {
+        return data.title;
+      });
+      const score = await getScore(restaurant.review);
+      const distance = await getDistance(
+        latitude,
+        longitude,
+        restaurant.location.coordinates.at(1) as number,
+        restaurant.location.coordinates.at(0) as number,
+      );
+
+      const data: RestaurantCard = {
+        _id: restaurant._id,
+        category: categories,
+        name: restaurant.name,
+        score: score,
+        distance: distance,
+        longitude: restaurant.location.coordinates.at(0) as number,
+        latitude: restaurant.location.coordinates.at(1) as number,
+        logo: restaurant.logo,
+      };
+
+      result.push(data);
+    });
+    await Promise.all(promises);
+
+    result.sort(function (a, b) {
+      return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0;
+    });
+
+    return result;
+  } catch (error) {
+    logger.e(error);
+    throw error;
+  }
+};
+
 export default {
   getRestaurantSummary,
   getMenuDetail,
@@ -468,4 +522,5 @@ export default {
   getRestaurantCardList,
   getScore,
   getSearchAutoCompleteResult,
+  searchCategoryRestaurantList,
 };
