@@ -1,89 +1,132 @@
 import axios from "axios";
-import { Types } from "mongoose";
 import multer from "../config/multer";
 import { logger } from "../config/winstonConfig";
-import GetReviewsDto from "../interface/review/GetReviewsDto";
-import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
+import GetReviews from "../interface/review/GetReviews";
+import ReveiwResponse from "../interface/review/ReviewResponseDto";
 import IRestaurant from "../interface/restaurant/Restaurant";
 import { NaverBlogReviewResponse } from "../interface/review/Review";
 import IUser from "../interface/user/User";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
+import User from "../models/User";
+import config from "../config";
 
-const getReviewsByRestaurant = async (id: string) => {
-  const reviews = await Review.find({
-    restaurant: id,
-  }).populate<{ writer: IUser }>("writer");
-
-  const reviewDto: GetReviewsDto[] = reviews.map((review) => {
-    return {
-      id: review._id,
-      writer: review.writer.name,
-      score: review.score,
-      content: review.content,
-      image: review.image,
-      taste: review.taste,
-      good: review.good,
-    };
-  });
-  return reviewDto;
-};
-
-const getReviewsByUser = async (id: string) => {
-  const reviews = await Review.find({
-    writer: id,
-  }).populate<{ restaurant: IRestaurant }>("restaurant");
-
-  const reviewDto: GetReviewsDto[] = reviews.map((review) => {
-    return {
-      id: review._id,
-      restaurant: review.restaurant.name,
-      restaurantId: review.restaurant._id,
-      score: review.score,
-      content: review.content,
-      image: review.image,
-      taste: review.taste,
-      good: review.good,
-    };
-  });
-  return reviewDto;
-};
-
-const deleteReview = async (id: string) => {
-  const restaurant = await Restaurant.findOne({
-    reviews: id,
-  });
-
-  // 식당 리뷰 id 배열에서 삭제
+const getReviewsByRestaurant = async (restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
   if (!restaurant) return null;
 
-  const reviewList = restaurant.reviews;
-  const updateList = reviewList.filter((review) => {
-    review !== (id as unknown as Types.ObjectId);
+  const reviews = restaurant.review;
+  const reviewList: GetReviews[] = [];
+
+  const promises = reviews.map(async (reviewId) => {
+    const review = await Review.findById(reviewId).populate<{ writer: IUser }>(
+      "writer",
+    );
+
+    if (review) {
+      let images = review.image;
+      if (!images) images = [];
+      let goods = review.good;
+      if (!goods) goods = [];
+
+      const data: GetReviews = {
+        _id: reviewId,
+        writer: review.writer.name,
+        score: review.score,
+        content: review.content,
+        image: images,
+        taste: review.taste,
+        good: goods,
+      };
+      reviewList.push(data);
+    }
   });
-  await Restaurant.findByIdAndUpdate(restaurant._id, {
-    $set: { reviews: updateList },
+  await Promise.all(promises);
+
+  return reviewList;
+};
+
+const getReviewsByUser = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) return null;
+
+  const reviews = user.reviews;
+  const reviewList: GetReviews[] = [];
+
+  const promises = reviews.map(async (reviewId) => {
+    const review = await Review.findById(reviewId).populate<{
+      restaurant: IRestaurant;
+    }>("restaurant");
+
+    if (review) {
+      let images = review.image;
+      if (!images) images = [];
+      let goods = review.good;
+      if (!goods) goods = [];
+
+      const data: GetReviews = {
+        _id: review._id,
+        restaurantId: review.restaurant._id,
+        restaurant: review.restaurant.name,
+        score: review.score,
+        content: review.content,
+        image: images,
+        taste: review.taste,
+        good: goods,
+      };
+
+      reviewList.push(data);
+    }
+  });
+  await Promise.all(promises);
+
+  return reviewList;
+};
+
+const deleteReview = async (reviewId: string) => {
+  const review = await Review.findById(reviewId)
+    .populate<{ writer: IUser }>("writer")
+    .populate<{ restaurant: IRestaurant }>("restaurant");
+
+  if (!review) return null;
+
+  const restaurantReviewList = review.restaurant.review;
+  const restaurantReviewResult = restaurantReviewList.filter((reviewId) => {
+    reviewId != review.restaurant._id;
+  });
+  await Restaurant.findByIdAndUpdate(review.restaurant._id, {
+    $set: { review: restaurantReviewResult },
   });
 
-  const review = await Review.findById(id);
-  if (!review) return null;
+  const userReviewList = review.writer.reviews;
+  const userReviewResult = userReviewList.filter((reviewId) => {
+    reviewId != review.writer._id;
+  });
+  await User.findByIdAndUpdate(review.writer._id, {
+    $set: { reviews: userReviewResult },
+  });
 
   const promises = review.image.map(async (data) => {
     await multer.s3Delete(data.name);
   });
   await Promise.all(promises);
 
-  // 데이터 삭제
-  await Review.findByIdAndDelete(id);
+  await Review.findByIdAndDelete(reviewId);
+
+  return true;
 };
 
-const getReviewsFromNaver = async (name: string) => {
+const getReviewsFromNaver = async (restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
+  if (!restaurant) return null;
+
+  const name = restaurant.name;
   const encodedName = encodeURI(name);
   const requestUrl = `https://openapi.naver.com/v1/search/blog?query=${encodedName}`;
   const result = await axios.get<NaverBlogReviewResponse>(requestUrl, {
     headers: {
-      "X-Naver-Client-Id": "SG2hLClLCFrOIl5uQh3y",
-      "X-Naver-Client-Secret": "xwsh8rft0T",
+      "X-Naver-Client-Id": config.naverClientId,
+      "X-Naver-Client-Secret": config.naverClientSecret,
     },
   });
 
@@ -95,49 +138,58 @@ const getReviewsFromNaver = async (name: string) => {
   return blogReviews;
 };
 
-const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
+const createReview = async (reviewResponse: ReveiwResponse) => {
   try {
-    let review;
-    if (reviewResponseDto.good) {
-      review = new Review({
-        restaurant: reviewResponseDto.restaurantId,
-        writer: reviewResponseDto.writerId,
-        score: reviewResponseDto.score,
-        content: reviewResponseDto.content,
-        image: reviewResponseDto.image,
-        taste: reviewResponseDto.taste,
-        good: reviewResponseDto.good,
-      });
-    } else {
-      review = new Review({
-        restaurant: reviewResponseDto.restaurantId,
-        writer: reviewResponseDto.writerId,
-        score: reviewResponseDto.score,
-        content: reviewResponseDto.content,
-        image: reviewResponseDto.image,
-        taste: reviewResponseDto.taste,
-      });
-    }
+    const restaurantId = reviewResponse.restaurantId;
+    const restaurant = await Restaurant.findById(restaurantId);
 
-    const data = await review.save();
+    const userId = reviewResponse.writerId;
+    const user = await User.findById(userId);
 
-    const restaurant = await Restaurant.findById(
-      reviewResponseDto.restaurantId,
-    );
+    if (!restaurant || !user) return null;
 
-    if (!restaurant) return null;
+    let good = reviewResponse.good;
+    if (!good) good = [];
 
-    const reviewList = restaurant.reviews;
-    if (reviewList != undefined) {
-      reviewList.push(data._id);
-      await Restaurant.findByIdAndUpdate(reviewResponseDto.restaurantId, {
-        $set: { reviews: reviewList },
-      });
-    } else {
-      await Restaurant.findByIdAndUpdate(reviewResponseDto.restaurantId, {
-        $set: { reviews: [data._id] },
-      });
-    }
+    const review = new Review({
+      restaurant: restaurantId,
+      writer: userId,
+      score: reviewResponse.score,
+      content: reviewResponse.content,
+      image: reviewResponse.image,
+      taste: reviewResponse.taste,
+      good: good,
+    });
+    const result = await review.save();
+
+    let restaurantReviewList = restaurant.review;
+    if (!restaurantReviewList) restaurantReviewList = [];
+
+    restaurantReviewList.push(result._id);
+    await Restaurant.findByIdAndUpdate(restaurantId, {
+      $set: { review: restaurantReviewList },
+    });
+
+    let userReviewList = user.reviews;
+    if (!userReviewList) userReviewList = [];
+
+    userReviewList.push(result._id);
+    await User.findByIdAndUpdate(userId, {
+      $set: { reviews: userReviewList },
+    });
+
+    const data = {
+      _id: result._id,
+      restaurantId: restaurantId,
+      restaurant: restaurant.name,
+      writerId: userId,
+      writer: user.name,
+      score: result.score,
+      content: result.content,
+      image: result.image,
+      taste: result.taste,
+      good: result.good,
+    };
 
     return data;
   } catch (error) {
@@ -146,18 +198,17 @@ const createReview = async (reviewResponseDto: ReveiwResponseDto) => {
   }
 };
 
-const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
+const updateReview = async (reviewResponse: ReveiwResponse) => {
   try {
-    const reviewId = reviewResponseDto.reviewId;
+    const reviewId = reviewResponse.reviewId;
     const review = await Review.findById(reviewId);
-
-    if (review == undefined) return null;
+    if (!review) return null;
 
     const imageFileList = review.image;
     const imageList: { name: string; url: string }[] = [];
 
     const promises = imageFileList.map(async (file) => {
-      if (reviewResponseDto.nameList.includes(file.name)) {
+      if (reviewResponse.nameList.includes(file.name)) {
         imageList.push(file);
       } else {
         await multer.s3Delete(file.name);
@@ -165,24 +216,51 @@ const updateReview = async (reviewResponseDto: ReveiwResponseDto) => {
     });
     await Promise.all(promises);
 
-    const promiseMerge = reviewResponseDto.image.map(async (image) => {
+    const promiseMerge = reviewResponse.image.map(async (image) => {
       imageList.push(image);
     });
     await Promise.all(promiseMerge);
 
-    await Review.findByIdAndUpdate(reviewResponseDto.reviewId, {
-      $set: {
-        score: reviewResponseDto.score,
-        taste: reviewResponseDto.taste,
-        good: reviewResponseDto.good,
-        content: reviewResponseDto.content,
-        image: imageList,
+    const result = await Review.findByIdAndUpdate(
+      reviewResponse.reviewId,
+      {
+        $set: {
+          score: reviewResponse.score,
+          taste: reviewResponse.taste,
+          good: reviewResponse.good,
+          content: reviewResponse.content,
+          image: imageList,
+        },
       },
-    });
+      { new: true },
+    );
 
-    const result = await Review.findById(reviewId);
+    if (!result) return null;
 
-    return result;
+    const restaurantId = result.restaurant;
+    const restaurant = await Restaurant.findById(restaurantId);
+    const userId = result.writer;
+    const user = await User.findById(userId);
+
+    if (!restaurant || !user) {
+      await deleteReview(result._id);
+      return null;
+    }
+
+    const data = {
+      _id: result._id,
+      restaurantId: restaurantId,
+      restaurant: restaurant.name,
+      writerId: userId,
+      writer: user.name,
+      score: result.score,
+      content: result.content,
+      image: result.image,
+      taste: result.taste,
+      good: result.good,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     throw error;

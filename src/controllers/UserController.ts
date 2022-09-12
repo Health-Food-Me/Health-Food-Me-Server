@@ -130,18 +130,13 @@ const scrapRestaurant = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
 
   try {
-    const restaurantIds = await UserService.scrapRestaurant(
-      userId,
-      restaurantId,
-    );
+    const data = await UserService.scrapRestaurant(userId, restaurantId);
 
-    if (!restaurantIds) {
+    if (!data) {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
     }
-
-    const data = { restaurants: restaurantIds };
 
     return res
       .status(statusCode.OK)
@@ -172,7 +167,7 @@ const getUserScrapList = async (req: Request, res: Response) => {
   try {
     const scrapList = await UserService.getUserScrapList(userId);
 
-    if (!scrapList) {
+    if (scrapList === null) {
       return res
         .status(statusCode.NOT_FOUND)
         .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
@@ -304,6 +299,12 @@ const updateUserProfile = async (req: Request, res: Response) => {
 const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
+  if (!userId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
+
   try {
     const result = await UserService.withdrawUser(userId);
 
@@ -338,12 +339,20 @@ const getHasReviewed = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   const restaurantId = req.params.restaurantId;
 
-  try {
-    const hasReview = await UserService.hasReviewed(userId, restaurantId);
+  if (!userId || !restaurantId) {
+    return res
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
+  }
 
-    const data = {
-      hasReview: hasReview,
-    };
+  try {
+    const data = await UserService.hasReviewed(userId, restaurantId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)

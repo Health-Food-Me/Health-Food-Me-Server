@@ -1,4 +1,4 @@
-interface AroundRestaurantDto {
+interface AroundRestaurant {
   _id: string;
   name: string;
   longitude: number | undefined;
@@ -6,4 +6,4 @@ interface AroundRestaurantDto {
   isDietRestaurant: boolean;
 }
 
-export default AroundRestaurantDto;
+export default AroundRestaurant;

@@ -1,9 +1,11 @@
 import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
-import AroundRestaurantDto from "../interface/restaurant/AroundRestaurantDto";
+import AroundRestaurant from "../interface/restaurant/AroundRestaurant";
 import AutoCompleteSearch from "../interface/restaurant/AutoCompleteSearch";
 import ICategory from "../interface/restaurant/Category";
 import MenuData from "../interface/restaurant/MenuData";
+import PrescriptionResponse from "../interface/restaurant/PrescriptionResponse";
+import Query from "../interface/restaurant/Query";
 import RestaurantCard from "../interface/restaurant/RestaurantCard";
 import Category from "../models/Category";
 import Menu from "../models/Menu";
@@ -11,15 +13,23 @@ import Prescription from "../models/Prescription";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
+import exceptionMessage from "../modules/exceptionMessage";
 
 const getRestaurantSummary = async (restaurantId: string, userId: string) => {
   try {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
-      category: ICategory;
+      category: ICategory[];
     }>("category");
 
     if (!restaurant) return null;
-    const reviewList = restaurant.reviews;
+
+    const categories: string[] = [];
+    const categoryList = restaurant.category;
+    categoryList.map(async (category) => {
+      categories.push(category.title);
+    });
+
+    const reviewList = restaurant.review;
     const score = await getScore(reviewList);
 
     let isScrap = false;
@@ -36,11 +46,11 @@ const getRestaurantSummary = async (restaurantId: string, userId: string) => {
 
     const data = {
       _id: restaurantId,
-      name: restaurant?.name,
-      logo: restaurant?.logo,
-      category: restaurant?.category.title,
-      workTime: restaurant?.workTime,
-      hashtag: restaurant.hashtag,
+      name: restaurant.name,
+      longitude: restaurant.location.coordinates.at(0),
+      latitude: restaurant.location.coordinates.at(1),
+      logo: restaurant.logo,
+      category: categories,
       score: score,
       isScrap: isScrap,
     };
@@ -87,11 +97,27 @@ const getMenuDetail = async (
 ) => {
   try {
     const restaurant = await Restaurant.findById(restaurantId).populate<{
-      category: ICategory;
+      category: ICategory[];
     }>("category");
 
     if (!restaurant) return null;
 
+    // 영업시간 월-일 순으로 정렬
+    const workTime: string[] = [];
+    const restaurantTime = restaurant.workTime;
+    if (restaurantTime) {
+      restaurant.workTime.map(async (time) => {
+        workTime.push(time.split(" ")[1]);
+      });
+    }
+
+    // 카테고리 title 정렬
+    const categories: string[] = [];
+    restaurant.category.map(async (category) => {
+      categories.push(category.title);
+    });
+
+    // 식당까지의 거리 계산
     const restaurantLatitude = restaurant.location.coordinates.at(1);
     const restaurantLongtitude = restaurant.location.coordinates.at(0);
     const distance = await getDistance(
@@ -101,53 +127,40 @@ const getMenuDetail = async (
       restaurantLongtitude as number,
     );
 
-    const menuIdList = restaurant.menus;
-    const menuList = await getMenuList(menuIdList);
+    // 리뷰 기반으로 평점 계싼
+    const reviewList = restaurant.review;
+    const score = await getScore(reviewList);
 
-    const time = restaurant.workTime;
-    let worktime;
-    if (time != undefined) {
-      worktime = [];
-      const promise = restaurant.workTime.map(async (data) => {
-        const timeData = data.split(" ");
-        // [월, 화, 수, 목, 금, 토, 일] 순으로 영업시간 push
-        worktime.push(timeData[1]);
-      });
-      await Promise.all(promise);
-    } else {
-      worktime = null;
-    }
-
+    // 유저 스크랩 여부 판단 (둘러보기 경우 false)
     let isScrap = false;
     if (userId !== "browsing") {
       const user = await User.findById(userId);
-
       if (!user) return null;
-
       let scrapList = user.scrapRestaurants;
       if (!scrapList) scrapList = [];
-
       if (scrapList.find((x) => x == restaurantId) !== undefined) {
         isScrap = true;
       }
     }
 
-    const reviewList = restaurant.reviews;
-    const score = await getScore(reviewList);
+    // 식당 메뉴 배열
+    const menuIdList = restaurant.menu;
+    const menuList = await getMenuList(menuIdList);
 
     const data = {
       restaurant: {
         _id: restaurantId,
+        name: restaurant.name,
+        address: restaurant.address,
+        workTime: workTime,
+        contact: restaurant.contact,
+        category: categories,
+        isDiet: restaurant.isDiet,
+        logo: restaurant.logo,
+        menuBoard: restaurant.menuBoard,
         distance: distance,
-        name: restaurant?.name,
-        logo: restaurant?.logo,
-        category: restaurant?.category.title,
-        hashtag: restaurant.hashtag,
-        address: restaurant?.address,
-        workTime: worktime,
-        contact: restaurant?.contact,
-        isScrap: isScrap,
         score: score,
+        isScrap: isScrap,
       },
       menu: menuList,
     };
@@ -192,38 +205,25 @@ const getDistance = async (
 
 const getMenuList = async (menuIdList: Types.ObjectId[]) => {
   try {
-    if (menuIdList == undefined) {
-      return [];
-    }
-
-    if (menuIdList.length <= 0) {
-      return [];
-    }
+    if (!menuIdList) return [];
 
     const menuList: MenuData[] = [];
 
     const promises = menuIdList.map(async (menuId) => {
-      /*
-      const menu = await Menu.findById(menuId).populate<{
-        nutrient: INutrient;
-      }>("nutrient");
-      */
       const menu = await Menu.findById(menuId);
 
-      const menuData: MenuData = {
-        _id: menuId,
-        name: menu?.name as string,
-        image: menu?.image as string,
-        kcal: menu?.kcal as number,
-        per: menu?.per as number,
-        //carbohydrate: menu?.nutrient.carbohydrate as number,
-        //protein: menu?.nutrient.protein as number,
-        //fat: menu?.nutrient.fat as number,
-        price: menu?.price as number,
-        isPick: menu?.isHelfoomePick as boolean,
-      };
-
-      menuList.push(menuData);
+      if (menu) {
+        const menuData = {
+          _id: menuId,
+          name: menu.name,
+          image: menu.image,
+          kcal: menu.kcal,
+          per: menu.per,
+          price: menu.price,
+          isPick: menu.isPick,
+        };
+        menuList.push(menuData);
+      }
     });
     await Promise.all(promises);
 
@@ -244,9 +244,8 @@ const getAroundRestaurants = async (
   category?: string,
 ) => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: any[] = [
-      {
+    const locationQuery = {
+      location: {
         $nearSphere: {
           $geometry: {
             type: "Point",
@@ -255,37 +254,43 @@ const getAroundRestaurants = async (
           $maxDistance: zoom,
         },
       },
-    ];
+    };
 
-    // category $or 로 변경
+    let noCategory = false;
+    const categoryQuery: Query[] = [];
 
     if (category) {
-      try {
-        const result = await Category.findOne({ title: { $eq: category } });
-        if (result) {
-          query.push({
-            category: { $eq: result._id },
-          });
+      const categories = category.split(",");
+
+      const promises = categories.map(async (category) => {
+        const result = await Category.findOne({ title: category });
+
+        if (!result) {
+          noCategory = true;
+          return null;
         }
-      } catch (error) {
-        throw new Error(`There's no category: ${category}`);
-      }
+
+        categoryQuery.push({ category: { $in: result._id } });
+      });
+      await Promise.all(promises);
     }
 
+    if (noCategory) return exceptionMessage.NO_CATEGORY;
+
     const restaurants = await Restaurant.find({
-      $and: query,
-    }).populate<{
-      category: ICategory;
-    }>("category");
-    const results: AroundRestaurantDto[] = restaurants.map((restaurant) => {
+      $and: [locationQuery, { $or: categoryQuery }],
+    }).populate<{ category: ICategory }>("category");
+
+    const results: AroundRestaurant[] = restaurants.map((restaurant) => {
       return {
         _id: restaurant._id as string,
         name: restaurant.name,
         longitude: restaurant.location.coordinates.at(0),
         latitude: restaurant.location.coordinates.at(1),
-        isDietRestaurant: restaurant.category.isDiet,
+        isDietRestaurant: restaurant.isDiet,
       };
     });
+
     return results;
   } catch (error) {
     logger.e(error);
@@ -295,35 +300,40 @@ const getAroundRestaurants = async (
 
 const getPrescription = async (restaurantId: string) => {
   try {
-    const restaurant = await Restaurant.findById(restaurantId);
-    if (restaurant == undefined) {
-      return null;
-    }
+    const restaurant = await Restaurant.findById(restaurantId).populate<{
+      category: ICategory[];
+    }>("category");
 
-    const category = await Category.findById(restaurant.category);
-    if (category == undefined) {
-      throw new Error("no category");
-    }
+    if (!restaurant) return null;
 
-    if (category.prescription == undefined) {
-      const data = {
-        category: category.title,
-        content: null,
-      };
-      return data;
-    }
+    const result: PrescriptionResponse[] = [];
 
-    const prescription = await Prescription.findById(category.prescription);
-    let content = prescription?.content;
+    const promises = restaurant.category.map(async (category) => {
+      if (!category.prescription) {
+        result.push({
+          category: category.title,
+          prescription: {
+            recommend: [],
+            tip: [],
+          },
+        });
+      } else {
+        const prescription = await Prescription.findById(category.prescription);
+        if (prescription) {
+          result.push({
+            category: category.title,
+            prescription: {
+              recommend: prescription.recommend,
+              tip: prescription.tip,
+            },
+          });
+        }
+      }
+    });
 
-    if (prescription == undefined) content = { recommend: [], tip: [] };
+    await Promise.all(promises);
 
-    const data = {
-      category: category.title,
-      content: content,
-    };
-
-    return data;
+    return result;
   } catch (error) {
     logger.e(error);
     if ((error as Error).name === "CastError") {
@@ -357,7 +367,7 @@ const getRestaurantCardList = async (
     const result: RestaurantCard[] = [];
 
     const promises = searchList.map(async (restaurant) => {
-      const score = await getScore(restaurant.reviews);
+      const score = await getScore(restaurant.review);
       const distance = await getDistance(
         latitude,
         longitude,
@@ -406,7 +416,7 @@ const getSearchAutoCompleteResult = async (
     const data: AutoCompleteSearch = {
       _id: category._id,
       name: category.title,
-      isDietRestaurant: category.isDiet,
+      isDiet: category.isDiet,
       isCategory: true,
       distance: 0,
       longitude: 0,
@@ -432,7 +442,7 @@ const getSearchAutoCompleteResult = async (
     const data: AutoCompleteSearch = {
       _id: restaurant._id,
       name: restaurant.name,
-      isDietRestaurant: restaurant.category.isDiet,
+      isDiet: restaurant.isDiet,
       isCategory: false,
       distance: distance,
       longitude: restaurant.location.coordinates.at(0) as number,

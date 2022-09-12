@@ -8,6 +8,7 @@ const message = {
   INVALID_PASSWORD: "비밀번호 오류",
   NULL_VALUE_PARAM: "param 값이 없음",
   NO_USER: "존재하지 않은 유저",
+  NO_CATEGORY: "해당 카테고리가 존재하지 않음",
 
   //token
   NULL_VALUE_TOKEN: "토큰이 없음",

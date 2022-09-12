@@ -8,7 +8,7 @@ const router = Router();
 router.get("/restaurant/:restaurantId", ReviewController.getReviewByRestaurant);
 router.get("/user/:userId", auth, ReviewController.getReviewsByUser);
 router.delete("/:reviewId", auth, ReviewController.deleteReview);
-router.get("/restaurant/:name/blog", ReviewController.getReviewsFromNaver);
+router.get("/:restaurantId/blog", ReviewController.getReviewsFromNaver);
 
 router.post(
   "/:userId/:restaurantId",

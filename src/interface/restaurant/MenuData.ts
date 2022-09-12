@@ -5,9 +5,6 @@ interface MenuData {
   name: string;
   image: string;
   kcal: number;
-  //carbohydrate: number;
-  //protein: number;
-  //fat: number;
   per: number;
   price: number;
   isPick: boolean;

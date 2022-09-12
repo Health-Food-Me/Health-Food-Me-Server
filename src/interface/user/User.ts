@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 interface User {
+  _id: Types.ObjectId;
   name: string;
   social: string;
   socialId: string;
@@ -6,6 +9,7 @@ interface User {
   scrapRestaurants: string[];
   refreshToken: string;
   userAgent: string;
+  reviews: Types.ObjectId[];
 }
 
 export default User;

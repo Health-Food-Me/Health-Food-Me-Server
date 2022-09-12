@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { logger } from "../config/winstonConfig";
 import ICategory from "../interface/restaurant/Category";
 import { ScrapData } from "../interface/restaurant/ScrapData";
-import UserProfileDto from "../interface/user/UserProfile";
+import UserProfile from "../interface/user/UserProfile";
 import Restaurant from "../models/Restaurant";
 import Review from "../models/Review";
 import User from "../models/User";
@@ -107,22 +107,41 @@ const findUserByRfToken = async (refreshToken: string) => {
 const scrapRestaurant = async (userId: string, restaurantId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
     let scraps = user.scrapRestaurants;
-    if (scraps?.find((x) => x == restaurantId)) {
-      scraps = scraps.filter((y) => y != restaurantId);
+    let isScrap;
+
+    if (!scraps) {
+      const data = [];
+      data.push(restaurantId);
       await User.findByIdAndUpdate(userId, {
-        $set: { scrapRestaurants: scraps },
+        $set: { scrapRestaurants: data },
       });
-      return scraps;
-    } else {
-      scraps?.push(restaurantId);
-      await User.findByIdAndUpdate(userId, {
-        $set: { scrapRestaurants: scraps },
-      });
-      return scraps;
+      isScrap = true;
     }
+
+    if (scraps.find((scrapId) => scrapId == restaurantId)) {
+      scraps = scraps.filter((scrapId) => scrapId != restaurantId);
+      await User.findByIdAndUpdate(userId, {
+        $set: { scrapRestaurants: scraps },
+      });
+      isScrap = false;
+    } else {
+      scraps.push(restaurantId);
+      await User.findByIdAndUpdate(userId, {
+        $set: { scrapRestaurants: scraps },
+      });
+      isScrap = true;
+    }
+
+    const data = {
+      userId: userId,
+      restaurantId: restaurantId,
+      isScrap: isScrap,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     if ((error as Error).message === "CastError") return null;
@@ -133,22 +152,28 @@ const scrapRestaurant = async (userId: string, restaurantId: string) => {
 const getUserScrapList = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
     const userScrap = user.scrapRestaurants;
+    if (!userScrap) return [];
 
     const scrapList: ScrapData[] = [];
-    if (userScrap != undefined) {
-      const promises = userScrap.map(async (restaurantId) => {
-        const restaurant = await Restaurant.findById(restaurantId).populate<{
-          category: ICategory;
-        }>("category");
+
+    const promises = userScrap.map(async (restaurantId) => {
+      const restaurant = await Restaurant.findById(restaurantId).populate<{
+        category: ICategory[];
+      }>("category");
+
+      if (restaurant) {
+        const categories: string[] = [];
+        const categoryPromises = restaurant.category.map(async (category) => {
+          categories.push(category.title);
+        });
+        await Promise.all(categoryPromises);
 
         const score = await RestaurantService.getScore(
-          restaurant?.reviews as Types.ObjectId[],
+          restaurant.review as Types.ObjectId[],
         );
-
-        if (!restaurant) return null;
 
         const address = (restaurant.address as string).split(" ");
 
@@ -157,16 +182,15 @@ const getUserScrapList = async (userId: string) => {
           name: restaurant.name as string,
           logo: restaurant.logo as string,
           score: score,
-          category: restaurant.category.title,
-          hashtag: restaurant.hashtag,
+          category: categories,
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
           address: `${address[0]} ${address[1]}`,
         };
         scrapList.push(data);
-      });
-      await Promise.all(promises);
-    } else return [];
+      }
+    });
+    await Promise.all(promises);
 
     return scrapList;
   } catch (error) {
@@ -181,10 +205,9 @@ const getUserProfile = async (userId: string) => {
     const user = await User.findById(userId);
     if (user == undefined) return null;
 
-    const data: UserProfileDto = {
+    const data: UserProfile = {
       _id: userId,
       name: user.name,
-      scrapRestaurants: user.scrapRestaurants,
     };
 
     return data;
@@ -197,21 +220,22 @@ const getUserProfile = async (userId: string) => {
 
 const updateUserProfile = async (userId: string, name: string) => {
   try {
-    let user = await User.findById(userId);
-    if (user == undefined) return null;
+    const user = await User.findById(userId);
+    if (!user) return null;
 
     const userName = await User.findOne({ name: name });
     if (userName) return exceptionMessage.DUPLICATE_NAME;
 
-    await User.findByIdAndUpdate(userId, {
-      $set: { name: name },
-    });
+    const result = await User.findByIdAndUpdate(
+      userId,
+      { $set: { name: name } },
+      { new: true },
+    );
+    if (!result) return null;
 
-    user = await User.findById(userId);
-    const data: UserProfileDto = {
-      _id: userId,
-      name: user?.name as string,
-      scrapRestaurants: user?.scrapRestaurants,
+    const data: UserProfile = {
+      _id: result._id,
+      name: result.name,
     };
 
     return data;
@@ -225,19 +249,19 @@ const updateUserProfile = async (userId: string, name: string) => {
 const withdrawUser = async (userId: string) => {
   try {
     const user = await User.findById(userId);
-    if (user == undefined) return null;
+    if (!user) return null;
 
-    await User.findByIdAndDelete(userId);
+    const reviews = user.reviews;
 
-    const reviews = await Review.find({ writer: userId });
-
-    const promises = reviews.map(async (review) => {
-      const result = await ReviewService.deleteReview(review._id);
+    const promises = reviews.map(async (reviewId) => {
+      const result = await ReviewService.deleteReview(String(reviewId));
       if (!result) {
-        await Review.findByIdAndDelete(review._id);
+        await Review.findByIdAndDelete(reviewId);
       }
     });
     await Promise.all(promises);
+
+    await User.findByIdAndDelete(userId);
 
     return exceptionMessage.DELETE_USER;
   } catch (error) {
@@ -249,13 +273,25 @@ const withdrawUser = async (userId: string) => {
 
 const hasReviewed = async (userId: string, restaurantId: string) => {
   try {
+    const user = await User.findById(userId);
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!user || !restaurant) return null;
+
     const review = await Review.findOne({
       writer: userId,
       restaurant: restaurantId,
     });
 
-    if (review) return true;
-    else return false;
+    let hasReview;
+    if (review) hasReview = true;
+    else hasReview = false;
+
+    const data = {
+      hasReview: hasReview,
+    };
+
+    return data;
   } catch (error) {
     logger.e(error);
     throw error;

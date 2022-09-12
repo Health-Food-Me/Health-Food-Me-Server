@@ -11,11 +11,6 @@ const MenuSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  nutrient: {
-    type: mongoose.Types.ObjectId,
-    //required: true,
-    ref: "Nutrient",
-  },
   kcal: {
     type: Number,
   },
@@ -26,7 +21,7 @@ const MenuSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  isHelfoomePick: {
+  isPick: {
     type: Boolean,
     required: true,
   },

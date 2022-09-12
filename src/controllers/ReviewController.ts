@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { logger } from "../config/winstonConfig";
-import Review from "../models/Review";
 import BaseResponse from "../modules/BaseResponse";
 import message from "../modules/responseMessage";
 import statusCode from "../modules/statusCode";
 import ReviewService from "../services/ReviewService";
-import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
+import ReveiwResponse from "../interface/review/ReviewResponseDto";
 
 /**
  * @route GET /review/restaurant/:restaurantId
@@ -17,19 +16,26 @@ const getReviewByRestaurant = async (req: Request, res: Response) => {
 
   if (!restaurantId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NULL_VALUE));
   }
 
   try {
-    const reviews = await ReviewService.getReviewsByRestaurant(restaurantId);
+    const data = await ReviewService.getReviewsByRestaurant(restaurantId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
     return res
       .status(statusCode.OK)
       .send(
         BaseResponse.success(
           statusCode.OK,
           message.READ_REVIEWS_BY_RESTAURANT,
-          reviews,
+          data,
         ),
       );
   } catch (error) {
@@ -55,20 +61,23 @@ const getReviewsByUser = async (req: Request, res: Response) => {
 
   if (!userId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    const reviews = await ReviewService.getReviewsByUser(userId);
+    const data = await ReviewService.getReviewsByUser(userId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
+
     return res
       .status(statusCode.OK)
       .send(
-        BaseResponse.success(
-          statusCode.OK,
-          message.READ_REVIEWS_BY_USER,
-          reviews,
-        ),
+        BaseResponse.success(statusCode.OK, message.READ_REVIEWS_BY_USER, data),
       );
   } catch (error) {
     logger.e(`Review getReviewsByUser ${error}`);
@@ -93,12 +102,18 @@ const deleteReview = async (req: Request, res: Response) => {
 
   if (!reviewId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    await ReviewService.deleteReview(reviewId);
+    const data = await ReviewService.deleteReview(reviewId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
@@ -122,16 +137,22 @@ const deleteReview = async (req: Request, res: Response) => {
  * @access Public
  */
 const getReviewsFromNaver = async (req: Request, res: Response) => {
-  const name = req.params.name;
+  const restaurantId = req.params.restaurantId;
 
-  if (!name) {
+  if (!restaurantId) {
     return res
-      .status(statusCode.NOT_FOUND)
-      .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+      .status(statusCode.BAD_REQUEST)
+      .send(BaseResponse.failure(statusCode.BAD_REQUEST, message.NULL_VALUE));
   }
 
   try {
-    const blogReviews = await ReviewService.getReviewsFromNaver(name);
+    const data = await ReviewService.getReviewsFromNaver(restaurantId);
+
+    if (!data) {
+      return res
+        .status(statusCode.NOT_FOUND)
+        .send(BaseResponse.failure(statusCode.NOT_FOUND, message.NOT_FOUND));
+    }
 
     return res
       .status(statusCode.OK)
@@ -139,7 +160,7 @@ const getReviewsFromNaver = async (req: Request, res: Response) => {
         BaseResponse.success(
           statusCode.OK,
           message.READ_REVIEWS_FROM_NAVER,
-          blogReviews,
+          data,
         ),
       );
   } catch (error) {
@@ -178,18 +199,15 @@ const createReview = async (req: Request, res: Response) => {
   }
 
   try {
-    let imageList: S3ImageInfo[];
+    const imageList: S3ImageInfo[] = [];
     if (req.files) {
-      imageList = await Promise.all(
-        images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location };
-        }),
-      );
-    } else {
-      imageList = [];
+      const promises = images.map(async (image: Express.MulterS3.File) => {
+        imageList.push({ name: image.originalname, url: image.location });
+      });
+      await Promise.all(promises);
     }
 
-    const responseData: ReveiwResponseDto = {
+    const responseData: ReveiwResponse = {
       restaurantId: req.params.restaurantId,
       writerId: req.params.userId,
       reviewId: "",
@@ -238,9 +256,6 @@ const createReview = async (req: Request, res: Response) => {
  */
 const updateReview = async (req: Request, res: Response) => {
   const reviewId = req.params.reviewId;
-  const review = await Review.findById(reviewId);
-  if (review == undefined) return null;
-
   const score = req.body.score;
   const taste = req.body.taste;
   const content = req.body.content;
@@ -253,24 +268,18 @@ const updateReview = async (req: Request, res: Response) => {
   }
 
   try {
-    let imageList: {
-      name: string;
-      url: string;
-    }[];
+    const imageList: S3ImageInfo[] = [];
     if (req.files) {
-      imageList = await Promise.all(
-        images.map((image: Express.MulterS3.File) => {
-          return { name: image.originalname, url: image.location };
-        }),
-      );
-    } else {
-      imageList = [];
+      const promises = images.map(async (image: Express.MulterS3.File) => {
+        imageList.push({ name: image.originalname, url: image.location });
+      });
+      await Promise.all(promises);
     }
 
     let nameList = [];
     if (req.body.nameList) nameList = req.body.nameList;
 
-    const responseData: ReveiwResponseDto = {
+    const responseData: ReveiwResponse = {
       restaurantId: "",
       writerId: "",
       reviewId: reviewId,
