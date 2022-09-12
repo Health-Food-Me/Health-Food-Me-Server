@@ -48,7 +48,7 @@ const getRestaurantSummary = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /restaurant/:restaurantId/menus
+ * @route GET /restaurant/:restaurantId/:userId/menus
  * @desc Restaurant's menu detail
  * @access Private
  */
@@ -103,7 +103,7 @@ const getMenuDetail = async (req: Request, res: Response) => {
 /**
  * @route GET /restaurant?longitude=number&latitude=number&zoom=number&category=string
  * @desc 식당 카드의 요약 정보를 호출
- * @access Private
+ * @access Public
  */
 const getAroundRestaurants = async (req: Request, res: Response) => {
   const longitude = req.query.longitude;
@@ -163,7 +163,7 @@ const getAroundRestaurants = async (req: Request, res: Response) => {
 /**
  * @route GET /restaurant/:restaurantId/prescription
  * @desc 외식 대처법 정보 조회
- * @access Private
+ * @access Public
  */
 const getPrescription = async (req: Request, res: Response) => {
   const restaurantId = req.params.restaurantId;
@@ -202,7 +202,7 @@ const getPrescription = async (req: Request, res: Response) => {
 /**
  * @route GET /restaurant/search/card?longitude=<경도>&latitude=<위도>&keyword=<검색어>
  * @desc 식당 후 검색어가 포함된 명칭의 주변 식당 정보 카드 리스트 조회
- * @access Private
+ * @access Public
  */
 const searchRestaurantCardList = async (req: Request, res: Response) => {
   const longitude = req.query.longitude;
@@ -247,7 +247,7 @@ const searchRestaurantCardList = async (req: Request, res: Response) => {
 /**
  * @route GET /restaurant/search/auto?longitude=<경도>&latitude=<위도>&query=<검색어>
  * @desc 검색어가 포함된 식당 또는 카테고리 정보 배열 반환
- * @access Private
+ * @access Public
  */
 const getSearchAutoCompleteResult = async (req: Request, res: Response) => {
   const longitude = req.query.longitude;

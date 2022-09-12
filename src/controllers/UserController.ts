@@ -94,6 +94,9 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @desc getUser 내에서 호출
+ */
 async function createUser(social: string, user: SocialUser, agent: string) {
   const refreshToken = jwt.createRefresh();
   const newUser = await UserService.signUpUser(
@@ -159,7 +162,7 @@ const scrapRestaurant = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /user/:userId/scraps
+ * @route GET /user/:userId/scrapList
  * @desc 유저 스크랩 모아보기
  * @access Private
  */
@@ -327,7 +330,7 @@ const withdrawUser = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /review/check/:userId/:restaurantId
+ * @route GET /user/check/:userId/:restaurantId
  * @desc 해당 식당에 해당 유저가 리뷰를 남긴 적이 있는가
  * @access Private
  */

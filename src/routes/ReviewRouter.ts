@@ -24,6 +24,4 @@ router.put(
   ReviewController.updateReview,
 );
 
-router.get("/check/:userId/:restaurantId", auth, UserController.getHasReviewed);
-
 export default router;

@@ -14,5 +14,5 @@ router.get("/:userId/scrapList", auth, UserController.getUserScrapList);
 router.get("/:userId/profile", auth, UserController.getUserProfile);
 
 router.put("/:userId/profile", auth, UserController.updateUserProfile);
-
+router.get("/check/:userId/:restaurantId", auth, UserController.getHasReviewed);
 export default router;

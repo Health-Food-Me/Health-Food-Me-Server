@@ -10,7 +10,7 @@ import ReveiwResponseDto from "../interface/review/ReviewResponseDto";
 /**
  * @route GET /review/restaurant/:restaurantId
  * @desc 식당 리뷰 조회
- * @access Private
+ * @access Public
  */
 const getReviewByRestaurant = async (req: Request, res: Response) => {
   const restaurantId: string = req.params.restaurantId;
@@ -45,6 +45,11 @@ const getReviewByRestaurant = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /review/user/:userId
+ * @desc 해당 유저가 쓴 리뷰 조회
+ * @access Private
+ */
 const getReviewsByUser = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
 
@@ -78,6 +83,11 @@ const getReviewsByUser = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route DELETE /review/:reviewId
+ * @desc 리뷰 삭제
+ * @access Private
+ */
 const deleteReview = async (req: Request, res: Response) => {
   const reviewId = req.params.reviewId;
 
@@ -106,6 +116,11 @@ const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @route GET /review/:restaurantId/blog
+ * @desc 네이버블로그 리뷰 조회
+ * @access Public
+ */
 const getReviewsFromNaver = async (req: Request, res: Response) => {
   const name = req.params.name;
 
