@@ -474,12 +474,15 @@ const searchCategoryRestaurantList = async (
     if (!categoryData) return null;
 
     const searchList = await Restaurant.find({
-      category: { $in: categoryData._id },
-    }).populate<{ category: ICategory }>("category");
+      category: { $in: [categoryData._id] },
+    }).populate<{ category: ICategory[] }>("category");
 
     const result: RestaurantCard[] = [];
 
     const promises = searchList.map(async (restaurant) => {
+      const categories = restaurant.category.map((data) => {
+        return data.title;
+      });
       const score = await getScore(restaurant.review);
       const distance = await getDistance(
         latitude,
@@ -490,7 +493,7 @@ const searchCategoryRestaurantList = async (
 
       const data: RestaurantCard = {
         _id: restaurant._id,
-        category: restaurant.category.title,
+        category: categories,
         name: restaurant.name,
         score: score,
         distance: distance,
