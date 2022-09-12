@@ -6,6 +6,10 @@ const router = Router();
 
 router.get("/search/auto", RestaurantController.getSearchAutoCompleteResult);
 router.get("/search/card", RestaurantController.searchRestaurantCardList);
+router.get(
+  "/search/category",
+  RestaurantController.searchCategoryRestaurantList,
+);
 
 router.get(
   "/:restaurantId/:userId/menus",
