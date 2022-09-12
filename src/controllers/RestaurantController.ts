@@ -321,7 +321,7 @@ const searchCategoryRestaurantList = async (req: Request, res: Response) => {
   }
 
   try {
-    const data = await RestaurantService.getRestaurantCardList(
+    const data = await RestaurantService.searchCategoryRestaurantList(
       Number(longitude),
       Number(latitude),
       category as string,
