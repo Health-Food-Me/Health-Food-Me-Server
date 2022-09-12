@@ -1,9 +1,8 @@
 import { Types } from "mongoose";
 
 interface Query {
-  category: {
-    $in: Types.ObjectId;
-  };
+  category?: { $in: Types.ObjectId };
+  name?: { $regex: string };
 }
 
 export default Query;

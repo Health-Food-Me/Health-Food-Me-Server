@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 interface RestaurantCard {
   _id: Types.ObjectId;
   name: string;
-  category: string;
+  category: string[];
   score: number;
   distance: number;
   longitude: number;

@@ -279,7 +279,7 @@ const getAroundRestaurants = async (
 
     const restaurants = await Restaurant.find({
       $and: [locationQuery, { $or: categoryQuery }],
-    }).populate<{ category: ICategory }>("category");
+    }).populate<{ category: ICategory[] }>("category");
 
     const results: AroundRestaurant[] = restaurants.map((restaurant) => {
       return {
@@ -349,24 +349,24 @@ const getRestaurantCardList = async (
   keyword: string,
 ) => {
   try {
-    const foodList = await (
-      await Menu.find({
-        name: { $regex: `.*${keyword}.*` },
-      })
-    ).map((x) => x._id);
+    const searchCategory = await Category.findOne({ title: keyword });
+
+    const query: Query[] = [{ name: { $regex: `.*${keyword}.*` } }];
+    if (searchCategory) {
+      query.push({ category: { $in: searchCategory._id } });
+    }
 
     const searchList = await Restaurant.find({
-      $or: [
-        {
-          name: { $regex: `.*${keyword}.*` },
-        },
-        { menus: { $in: foodList } },
-      ],
-    }).populate<{ category: ICategory }>("category");
+      $or: query,
+    }).populate<{ category: ICategory[] }>("category");
 
     const result: RestaurantCard[] = [];
 
     const promises = searchList.map(async (restaurant) => {
+      const categories = restaurant.category;
+      const categoryList = categories.map((category) => {
+        return category.title;
+      });
       const score = await getScore(restaurant.review);
       const distance = await getDistance(
         latitude,
@@ -378,7 +378,7 @@ const getRestaurantCardList = async (
       const data: RestaurantCard = {
         _id: restaurant._id,
         name: restaurant.name,
-        category: restaurant.category.title,
+        category: categoryList,
         score: score,
         distance: distance,
         longitude: restaurant.location.coordinates.at(0) as number,
@@ -429,7 +429,7 @@ const getSearchAutoCompleteResult = async (
 
   const restaurantList = await Restaurant.find({
     name: { $regex: query },
-  }).populate<{ category: ICategory }>("category");
+  }).populate<{ category: ICategory[] }>("category");
 
   promises = restaurantList.map(async (restaurant) => {
     const distance = await getDistance(
