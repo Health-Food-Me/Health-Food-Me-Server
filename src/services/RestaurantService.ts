@@ -360,13 +360,16 @@ const getRestaurantCardList = async (
         {
           name: { $regex: `.*${keyword}.*` },
         },
-        { menus: { $in: foodList } },
+        { menu: { $in: foodList } },
       ],
-    }).populate<{ category: ICategory }>("category");
+    }).populate<{ category: ICategory[] }>("category");
 
     const result: RestaurantCard[] = [];
 
     const promises = searchList.map(async (restaurant) => {
+      const categories = restaurant.category.map((category) => {
+        return category.title;
+      });
       const score = await getScore(restaurant.review);
       const distance = await getDistance(
         latitude,
@@ -378,7 +381,7 @@ const getRestaurantCardList = async (
       const data: RestaurantCard = {
         _id: restaurant._id,
         name: restaurant.name,
-        category: restaurant.category.title,
+        category: categories,
         score: score,
         distance: distance,
         longitude: restaurant.location.coordinates.at(0) as number,
