@@ -117,7 +117,7 @@ const deleteReview = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /review/restaurant/:name/blog
+ * @route GET /review/:restaurantId/blog
  * @desc 네이버블로그 리뷰 조회
  * @access Public
  */
