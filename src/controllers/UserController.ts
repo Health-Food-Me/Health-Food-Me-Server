@@ -95,9 +95,7 @@ const getUser = async (req: Request, res: Response) => {
 };
 
 /**
- * @route
- * @desc
- * @access
+ * @desc getUser 내에서 호출
  */
 async function createUser(social: string, user: SocialUser, agent: string) {
   const refreshToken = jwt.createRefresh();
@@ -332,7 +330,7 @@ const withdrawUser = async (req: Request, res: Response) => {
 };
 
 /**
- * @route GET /review/check/:userId/:restaurantId
+ * @route GET /user/check/:userId/:restaurantId
  * @desc 해당 식당에 해당 유저가 리뷰를 남긴 적이 있는가
  * @access Private
  */
