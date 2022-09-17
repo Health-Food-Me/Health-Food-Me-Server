@@ -8,7 +8,7 @@ import { logger } from "./winstonConfig";
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: config.bucketName,
+    bucket: `${config.bucketName}/review`,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: "public-read",
     key: function (req: Express.Request, file: Express.MulterS3.File, cb) {
