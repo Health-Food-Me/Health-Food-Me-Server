@@ -256,29 +256,21 @@ const getAroundRestaurants = async (
       },
     };
 
+    const query: Query[] = [locationQuery];
+
     let noCategory = false;
-    const categoryQuery: Query[] = [];
 
     if (category) {
-      const categories = category.split(",");
+      const result = await Category.findOne({ title: category });
 
-      const promises = categories.map(async (category) => {
-        const result = await Category.findOne({ title: category });
-
-        if (!result) {
-          noCategory = true;
-          return null;
-        }
-
-        categoryQuery.push({ category: { $in: result._id } });
-      });
-      await Promise.all(promises);
+      if (!result) noCategory = true;
+      else query.push({ category: { $in: result._id } });
     }
 
     if (noCategory) return exceptionMessage.NO_CATEGORY;
 
     const restaurants = await Restaurant.find({
-      $and: [locationQuery, { $or: categoryQuery }],
+      $and: query,
     }).populate<{ category: ICategory[] }>("category");
 
     const results: AroundRestaurant[] = restaurants.map((restaurant) => {
