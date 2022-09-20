@@ -9,5 +9,3 @@ export {
   RestaurantController,
   ReviewController,
 };
-
-//test
