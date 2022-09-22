@@ -90,21 +90,25 @@ const deleteReview = async (reviewId: string) => {
 
   if (!review) return null;
 
-  const restaurantReviewList = review.restaurant.review;
-  const restaurantReviewResult = restaurantReviewList.filter((reviewId) => {
-    reviewId != review.restaurant._id;
-  });
-  await Restaurant.findByIdAndUpdate(review.restaurant._id, {
-    $set: { review: restaurantReviewResult },
-  });
+  if (review.restaurant) {
+    const restaurantReviewList = review.restaurant.review;
+    const restaurantReviewResult = restaurantReviewList.filter((reviewId) => {
+      reviewId != review._id;
+    });
+    await Restaurant.findByIdAndUpdate(review.restaurant._id, {
+      $set: { review: restaurantReviewResult },
+    });
+  }
 
-  const userReviewList = review.writer.reviews;
-  const userReviewResult = userReviewList.filter((reviewId) => {
-    reviewId != review.writer._id;
-  });
-  await User.findByIdAndUpdate(review.writer._id, {
-    $set: { reviews: userReviewResult },
-  });
+  if (review.writer) {
+    const userReviewList = review.writer.reviews;
+    const userReviewResult = userReviewList.filter((reviewId) => {
+      reviewId != review._id;
+    });
+    await User.findByIdAndUpdate(review.writer._id, {
+      $set: { reviews: userReviewResult },
+    });
+  }
 
   const promises = review.image.map(async (data) => {
     await multer.s3Delete(data.name);
