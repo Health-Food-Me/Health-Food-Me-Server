@@ -237,6 +237,7 @@ const getMenuList = async (menuIdList: Types.ObjectId[]) => {
   }
 };
 
+// CICD TEST
 const getAroundRestaurants = async (
   longitude: number,
   latitude: number,
