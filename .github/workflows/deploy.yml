@@ -5,7 +5,9 @@ name: deploy
 
 on:
   push:
-    branches: [develop, main]
+    branches: [develop]
+  pull_request:
+    branches: [develop]
 
 jobs:
   build:
@@ -13,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.14.2]
+        node-version: [16.17.0]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
