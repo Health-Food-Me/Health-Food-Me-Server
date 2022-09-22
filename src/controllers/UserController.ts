@@ -204,7 +204,7 @@ const getUserProfile = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
   try {
-    //const userProfile = await UserService.getUserProfile(userId);
+    const userProfile = await UserService.getUserProfile(userId);
 
     if (!userProfile) {
       return res
