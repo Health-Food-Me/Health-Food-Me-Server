@@ -210,7 +210,7 @@ const getUserProfile = async (userId: string) => {
       name: user.name,
     };
 
-    return " ";
+    return "랄";
   } catch (error) {
     logger.e(error);
     if ((error as Error).message === "CastError") return null;
