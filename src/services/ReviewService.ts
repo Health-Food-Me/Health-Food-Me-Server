@@ -92,9 +92,11 @@ const deleteReview = async (reviewId: string) => {
 
   if (review.restaurant) {
     const restaurantReviewList = review.restaurant.review;
-    const restaurantReviewResult = restaurantReviewList.filter((reviewId) => {
-      reviewId != review._id;
-    });
+
+    const restaurantReviewResult = restaurantReviewList.filter(
+      (review) => review.toString() !== reviewId,
+    );
+
     await Restaurant.findByIdAndUpdate(review.restaurant._id, {
       $set: { review: restaurantReviewResult },
     });
@@ -102,9 +104,11 @@ const deleteReview = async (reviewId: string) => {
 
   if (review.writer) {
     const userReviewList = review.writer.reviews;
-    const userReviewResult = userReviewList.filter((reviewId) => {
-      reviewId != review._id;
-    });
+
+    const userReviewResult = userReviewList.filter(
+      (review) => review.toString() !== reviewId,
+    );
+
     await User.findByIdAndUpdate(review.writer._id, {
       $set: { reviews: userReviewResult },
     });
