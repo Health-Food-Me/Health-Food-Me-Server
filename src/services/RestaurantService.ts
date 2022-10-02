@@ -107,7 +107,7 @@ const getMenuDetail = async (
     const restaurantTime = restaurant.workTime;
     if (restaurantTime) {
       restaurant.workTime.map(async (time) => {
-        workTime.push(time.split(" ")[1]);
+        workTime.push(`${time.split(" ")[1]} - ${time.split(" ")[3]}`);
       });
     }
 
