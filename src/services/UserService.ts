@@ -186,6 +186,7 @@ const getUserScrapList = async (userId: string) => {
           latitude: restaurant.location.coordinates.at(1) as number,
           longtitude: restaurant.location.coordinates.at(0) as number,
           address: `${address[0]} ${address[1]}`,
+          isDiet: restaurant.isDiet,
         };
         scrapList.push(data);
       }

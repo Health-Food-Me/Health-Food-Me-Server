@@ -7,4 +7,5 @@ export interface ScrapData {
   latitude: number;
   longtitude: number;
   address: string;
+  isDiet: boolean;
 }

@@ -379,6 +379,7 @@ const getRestaurantCardList = async (
         longitude: restaurant.location.coordinates.at(0) as number,
         latitude: restaurant.location.coordinates.at(1) as number,
         logo: restaurant.logo,
+        isDiet: restaurant.isDiet,
       };
 
       result.push(data);
@@ -492,6 +493,7 @@ const searchCategoryRestaurantList = async (
         longitude: restaurant.location.coordinates.at(0) as number,
         latitude: restaurant.location.coordinates.at(1) as number,
         logo: restaurant.logo,
+        isDiet: restaurant.isDiet,
       };
 
       result.push(data);
