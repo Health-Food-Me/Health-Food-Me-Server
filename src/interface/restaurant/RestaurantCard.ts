@@ -9,6 +9,7 @@ interface RestaurantCard {
   longitude: number;
   latitude: number;
   logo: string;
+  isDiet: boolean;
 }
 
 export default RestaurantCard;
