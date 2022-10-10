@@ -12,76 +12,64 @@ import User from "../models/User";
 import config from "../config";
 
 const getReviewsByRestaurant = async (restaurantId: string) => {
-  const reviews = await Review.find({ restaurant: restaurantId });
+  const reviews = await Review.find({ restaurant: restaurantId }).sort({
+    createdAt: -1,
+  });
 
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (review) => {
-    const user = await User.findById(review.writer); // 먼저 찾는게 먼저 들어감
+  for (let i = 0; i < reviews.length; i++) {
+    const user = await User.findById(reviews[i].writer); // 먼저 찾는게 먼저 들어감
     if (!user) return null;
 
-    let images = review.image;
+    let images = reviews[i].image;
     if (!images) images = [];
-    let goods = review.good;
+    let goods = reviews[i].good;
     if (!goods) goods = [];
 
     const data: GetReviews = {
-      _id: review._id,
+      _id: reviews[i]._id,
       writer: user.name,
-      score: review.score,
-      content: review.content,
+      score: reviews[i].score,
+      content: reviews[i].content,
       image: images,
-      taste: review.taste,
+      taste: reviews[i].taste,
       good: goods,
-      createdAt: review.createdAt,
     };
     reviewList.push(data);
-  });
-
-  await Promise.all(promises);
-
-  reviewList.sort((a: GetReviews, b: GetReviews): number => {
-    if (a.createdAt >= b.createdAt) return -1;
-    else return 1;
-  });
+  }
 
   return reviewList;
 };
 
 const getReviewsByUser = async (userId: string) => {
-  const reviews = await Review.find({ writer: userId });
-
+  const reviews = await Review.find({ writer: userId }).sort({
+    createdAt: -1,
+  });
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (review) => {
-    const restaurant = await Restaurant.findById(review.restaurant);
+  for (let i = 0; i < reviews.length; i++) {
+    const restaurant = await Restaurant.findById(reviews[i].restaurant);
     if (!restaurant) return null;
 
-    let images = review.image;
+    let images = reviews[i].image;
     if (!images) images = [];
-    let goods = review.good;
+    let goods = reviews[i].good;
     if (!goods) goods = [];
 
     const data: GetReviews = {
-      _id: review._id,
+      _id: reviews[i]._id,
       restaurantId: restaurant._id,
       restaurant: restaurant.name,
-      score: review.score,
-      content: review.content,
+      score: reviews[i].score,
+      content: reviews[i].content,
       image: images,
-      taste: review.taste,
+      taste: reviews[i].taste,
       good: goods,
-      createdAt: review.createdAt,
     };
 
     reviewList.push(data);
-  });
-  await Promise.all(promises);
-
-  reviewList.sort((a: GetReviews, b: GetReviews): number => {
-    if (a.createdAt >= b.createdAt) return -1;
-    else return 1;
-  });
+  }
 
   return reviewList;
 };
