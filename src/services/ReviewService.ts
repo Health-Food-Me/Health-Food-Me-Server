@@ -12,14 +12,12 @@ import User from "../models/User";
 import config from "../config";
 
 const getReviewsByRestaurant = async (restaurantId: string) => {
-  const reviews = await Review.find({ restaurant: restaurantId }).sort({
-    createdAt: -1,
-  });
+  const reviews = await Review.find({ restaurant: restaurantId });
 
   const reviewList: GetReviews[] = [];
 
   const promises = reviews.map(async (review) => {
-    const user = await User.findById(review.writer);
+    const user = await User.findById(review.writer); // 먼저 찾는게 먼저 들어감
     if (!user) return null;
 
     let images = review.image;
@@ -35,48 +33,55 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
       image: images,
       taste: review.taste,
       good: goods,
+      createdAt: review.createdAt,
     };
     reviewList.push(data);
   });
 
   await Promise.all(promises);
 
+  reviewList.sort((a: GetReviews, b: GetReviews): number => {
+    if (a.createdAt >= b.createdAt) return -1;
+    else return 1;
+  });
+
   return reviewList;
 };
 
 const getReviewsByUser = async (userId: string) => {
-  const user = await User.findById(userId);
-  if (!user) return null;
+  const reviews = await Review.find({ writer: userId });
 
-  const reviews = user.reviews;
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (reviewId) => {
-    const review = await Review.findById(reviewId).populate<{
-      restaurant: IRestaurant;
-    }>("restaurant");
+  const promises = reviews.map(async (review) => {
+    const restaurant = await Restaurant.findById(review.restaurant);
+    if (!restaurant) return null;
 
-    if (review) {
-      let images = review.image;
-      if (!images) images = [];
-      let goods = review.good;
-      if (!goods) goods = [];
+    let images = review.image;
+    if (!images) images = [];
+    let goods = review.good;
+    if (!goods) goods = [];
 
-      const data: GetReviews = {
-        _id: review._id,
-        restaurantId: review.restaurant._id,
-        restaurant: review.restaurant.name,
-        score: review.score,
-        content: review.content,
-        image: images,
-        taste: review.taste,
-        good: goods,
-      };
+    const data: GetReviews = {
+      _id: review._id,
+      restaurantId: restaurant._id,
+      restaurant: restaurant.name,
+      score: review.score,
+      content: review.content,
+      image: images,
+      taste: review.taste,
+      good: goods,
+      createdAt: review.createdAt,
+    };
 
-      reviewList.push(data);
-    }
+    reviewList.push(data);
   });
   await Promise.all(promises);
+
+  reviewList.sort((a: GetReviews, b: GetReviews): number => {
+    if (a.createdAt >= b.createdAt) return -1;
+    else return 1;
+  });
 
   return reviewList;
 };
