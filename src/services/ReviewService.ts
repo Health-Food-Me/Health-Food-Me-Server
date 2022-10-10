@@ -12,35 +12,33 @@ import User from "../models/User";
 import config from "../config";
 
 const getReviewsByRestaurant = async (restaurantId: string) => {
-  const restaurant = await Restaurant.findById(restaurantId);
-  if (!restaurant) return null;
+  const reviews = await Review.find({ restaurant: restaurantId }).sort({
+    createdAt: -1,
+  });
 
-  const reviews = restaurant.review;
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (reviewId) => {
-    const review = await Review.findById(reviewId).populate<{ writer: IUser }>(
-      "writer",
-    );
+  const promises = reviews.map(async (review) => {
+    const user = await User.findById(review.writer);
+    if (!user) return null;
 
-    if (review) {
-      let images = review.image;
-      if (!images) images = [];
-      let goods = review.good;
-      if (!goods) goods = [];
+    let images = review.image;
+    if (!images) images = [];
+    let goods = review.good;
+    if (!goods) goods = [];
 
-      const data: GetReviews = {
-        _id: reviewId,
-        writer: review.writer.name,
-        score: review.score,
-        content: review.content,
-        image: images,
-        taste: review.taste,
-        good: goods,
-      };
-      reviewList.push(data);
-    }
+    const data: GetReviews = {
+      _id: review._id,
+      writer: user.name,
+      score: review.score,
+      content: review.content,
+      image: images,
+      taste: review.taste,
+      good: goods,
+    };
+    reviewList.push(data);
   });
+
   await Promise.all(promises);
 
   return reviewList;
