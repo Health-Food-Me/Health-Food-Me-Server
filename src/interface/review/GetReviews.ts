@@ -13,7 +13,6 @@ interface GetReviews {
   }[];
   taste: string;
   good: string[];
-  createdAt: string;
 }
 
 export default GetReviews;
