@@ -12,6 +12,9 @@ import User from "../models/User";
 import config from "../config";
 
 const getReviewsByRestaurant = async (restaurantId: string) => {
+  const restaurant = await Restaurant.findById(restaurantId);
+  if (!restaurant) return null;
+
   const reviews = await Review.find({ restaurant: restaurantId }).sort({
     createdAt: -1,
   });
@@ -19,8 +22,14 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
   const reviewList: GetReviews[] = [];
 
   for (let i = 0; i < reviews.length; i++) {
-    const user = await User.findById(reviews[i].writer); // 먼저 찾는게 먼저 들어감
-    if (!user) return null;
+    const user = await User.findById(reviews[i].writer);
+    if (!user) {
+      const result = await deleteReview(reviews[i]._id);
+      if (!result) {
+        await Review.findByIdAndDelete(reviews[i]._id);
+      }
+      return null;
+    }
 
     let images = reviews[i].image;
     if (!images) images = [];
@@ -43,6 +52,9 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
 };
 
 const getReviewsByUser = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) return null;
+
   const reviews = await Review.find({ writer: userId }).sort({
     createdAt: -1,
   });
@@ -50,7 +62,13 @@ const getReviewsByUser = async (userId: string) => {
 
   for (let i = 0; i < reviews.length; i++) {
     const restaurant = await Restaurant.findById(reviews[i].restaurant);
-    if (!restaurant) return null;
+    if (!restaurant) {
+      const result = await deleteReview(reviews[i]._id);
+      if (!result) {
+        await Review.findByIdAndDelete(reviews[i]._id);
+      }
+      return null;
+    }
 
     let images = reviews[i].image;
     if (!images) images = [];
