@@ -28,7 +28,7 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
       if (!result) {
         await Review.findByIdAndDelete(reviews[i]._id);
       }
-      return null;
+      continue;
     }
 
     let images = reviews[i].image;
@@ -67,7 +67,7 @@ const getReviewsByUser = async (userId: string) => {
       if (!result) {
         await Review.findByIdAndDelete(reviews[i]._id);
       }
-      return null;
+      continue;
     }
 
     let images = reviews[i].image;
