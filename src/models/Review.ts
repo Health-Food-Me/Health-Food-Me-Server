@@ -38,6 +38,10 @@ const ReviewSchema = new mongoose.Schema({
     required: true,
   },
   good: [{ type: String }],
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 export default mongoose.model<MongoEntity<Review>>("Review", ReviewSchema);

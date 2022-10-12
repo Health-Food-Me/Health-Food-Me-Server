@@ -15,33 +15,38 @@ const getReviewsByRestaurant = async (restaurantId: string) => {
   const restaurant = await Restaurant.findById(restaurantId);
   if (!restaurant) return null;
 
-  const reviews = restaurant.review;
+  const reviews = await Review.find({ restaurant: restaurantId }).sort({
+    createdAt: -1,
+  });
+
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (reviewId) => {
-    const review = await Review.findById(reviewId).populate<{ writer: IUser }>(
-      "writer",
-    );
-
-    if (review) {
-      let images = review.image;
-      if (!images) images = [];
-      let goods = review.good;
-      if (!goods) goods = [];
-
-      const data: GetReviews = {
-        _id: reviewId,
-        writer: review.writer.name,
-        score: review.score,
-        content: review.content,
-        image: images,
-        taste: review.taste,
-        good: goods,
-      };
-      reviewList.push(data);
+  for (let i = 0; i < reviews.length; i++) {
+    const user = await User.findById(reviews[i].writer);
+    if (!user) {
+      const result = await deleteReview(reviews[i]._id);
+      if (!result) {
+        await Review.findByIdAndDelete(reviews[i]._id);
+      }
+      continue;
     }
-  });
-  await Promise.all(promises);
+
+    let images = reviews[i].image;
+    if (!images) images = [];
+    let goods = reviews[i].good;
+    if (!goods) goods = [];
+
+    const data: GetReviews = {
+      _id: reviews[i]._id,
+      writer: user.name,
+      score: reviews[i].score,
+      content: reviews[i].content,
+      image: images,
+      taste: reviews[i].taste,
+      good: goods,
+    };
+    reviewList.push(data);
+  }
 
   return reviewList;
 };
@@ -50,35 +55,39 @@ const getReviewsByUser = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) return null;
 
-  const reviews = user.reviews;
+  const reviews = await Review.find({ writer: userId }).sort({
+    createdAt: -1,
+  });
   const reviewList: GetReviews[] = [];
 
-  const promises = reviews.map(async (reviewId) => {
-    const review = await Review.findById(reviewId).populate<{
-      restaurant: IRestaurant;
-    }>("restaurant");
-
-    if (review) {
-      let images = review.image;
-      if (!images) images = [];
-      let goods = review.good;
-      if (!goods) goods = [];
-
-      const data: GetReviews = {
-        _id: review._id,
-        restaurantId: review.restaurant._id,
-        restaurant: review.restaurant.name,
-        score: review.score,
-        content: review.content,
-        image: images,
-        taste: review.taste,
-        good: goods,
-      };
-
-      reviewList.push(data);
+  for (let i = 0; i < reviews.length; i++) {
+    const restaurant = await Restaurant.findById(reviews[i].restaurant);
+    if (!restaurant) {
+      const result = await deleteReview(reviews[i]._id);
+      if (!result) {
+        await Review.findByIdAndDelete(reviews[i]._id);
+      }
+      continue;
     }
-  });
-  await Promise.all(promises);
+
+    let images = reviews[i].image;
+    if (!images) images = [];
+    let goods = reviews[i].good;
+    if (!goods) goods = [];
+
+    const data: GetReviews = {
+      _id: reviews[i]._id,
+      restaurantId: restaurant._id,
+      restaurant: restaurant.name,
+      score: reviews[i].score,
+      content: reviews[i].content,
+      image: images,
+      taste: reviews[i].taste,
+      good: goods,
+    };
+
+    reviewList.push(data);
+  }
 
   return reviewList;
 };
