@@ -68,7 +68,7 @@ jobs:
 
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
-          --application-name helfme-codedeploy
+          --application-name helfme-deploy
           --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name GROUP
+          --deployment-group-name helfme-group
           --s3-location bucket=health-me-food-build,bundleType=zip,key=deploy/helfme.zip
