@@ -1,0 +1,1 @@
+{"version":3,"file":"s3Config.js","sourceRoot":"","sources":["../../src/config/s3Config.ts"],"names":[],"mappings":";;;;;AAAA,sDAA0B;AAC1B,yCAAuB;AAEvB,MAAM,OAAO,GAAW,IAAI,iBAAG,CAAC,EAAE,CAAC;IACjC,WAAW,EAAE,UAAM,CAAC,WAAW;IAC/B,eAAe,EAAE,UAAM,CAAC,WAAW;IACnC,MAAM,EAAE,gBAAgB;CACzB,CAAC,CAAC;AAEH,kBAAe,OAAO,CAAC"}
